@@ -14,6 +14,9 @@ _$OpenBillPayloadImpl _$$OpenBillPayloadImplFromJson(
   customerName: json['customer_name'] as String?,
   guestCount: (json['guest_count'] as num?)?.toInt(),
   memberId: (json['member_id'] as num?)?.toInt(),
+  items: (json['items'] as List<dynamic>?)
+      ?.map((e) => CartItemPayload.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$$OpenBillPayloadImplToJson(
@@ -24,4 +27,5 @@ Map<String, dynamic> _$$OpenBillPayloadImplToJson(
   'customer_name': instance.customerName,
   'guest_count': instance.guestCount,
   'member_id': instance.memberId,
+  'items': instance.items?.map((e) => e.toJson()).toList(),
 };

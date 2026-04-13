@@ -32,9 +32,9 @@ mixin _$MemberModel {
   String get tier => throw _privateConstructorUsedError;
   List<MemberVoucherModel> get vouchers =>
       throw _privateConstructorUsedError; // Insight CRM
-  @JsonKey(name: 'last_visit')
+  @JsonKey(name: 'last_visit', readValue: _readLastVisit)
   String? get lastVisit => throw _privateConstructorUsedError;
-  @JsonKey(name: 'favorite_product')
+  @JsonKey(name: 'favorite_product', readValue: _readFavoriteProduct)
   String? get favoriteProduct => throw _privateConstructorUsedError;
   @JsonKey(name: 'total_spend', readValue: _readTotalSpend)
   double? get totalSpend => throw _privateConstructorUsedError;
@@ -65,8 +65,9 @@ abstract class $MemberModelCopyWith<$Res> {
     @JsonKey(name: 'points') int? currentPoints,
     String tier,
     List<MemberVoucherModel> vouchers,
-    @JsonKey(name: 'last_visit') String? lastVisit,
-    @JsonKey(name: 'favorite_product') String? favoriteProduct,
+    @JsonKey(name: 'last_visit', readValue: _readLastVisit) String? lastVisit,
+    @JsonKey(name: 'favorite_product', readValue: _readFavoriteProduct)
+    String? favoriteProduct,
     @JsonKey(name: 'total_spend', readValue: _readTotalSpend)
     double? totalSpend,
   });
@@ -169,8 +170,9 @@ abstract class _$$MemberModelImplCopyWith<$Res>
     @JsonKey(name: 'points') int? currentPoints,
     String tier,
     List<MemberVoucherModel> vouchers,
-    @JsonKey(name: 'last_visit') String? lastVisit,
-    @JsonKey(name: 'favorite_product') String? favoriteProduct,
+    @JsonKey(name: 'last_visit', readValue: _readLastVisit) String? lastVisit,
+    @JsonKey(name: 'favorite_product', readValue: _readFavoriteProduct)
+    String? favoriteProduct,
     @JsonKey(name: 'total_spend', readValue: _readTotalSpend)
     double? totalSpend,
   });
@@ -265,8 +267,9 @@ class _$MemberModelImpl implements _MemberModel {
     @JsonKey(name: 'points') this.currentPoints,
     this.tier = 'Basic',
     final List<MemberVoucherModel> vouchers = const [],
-    @JsonKey(name: 'last_visit') this.lastVisit,
-    @JsonKey(name: 'favorite_product') this.favoriteProduct,
+    @JsonKey(name: 'last_visit', readValue: _readLastVisit) this.lastVisit,
+    @JsonKey(name: 'favorite_product', readValue: _readFavoriteProduct)
+    this.favoriteProduct,
     @JsonKey(name: 'total_spend', readValue: _readTotalSpend) this.totalSpend,
   }) : _vouchers = vouchers;
 
@@ -301,10 +304,10 @@ class _$MemberModelImpl implements _MemberModel {
 
   // Insight CRM
   @override
-  @JsonKey(name: 'last_visit')
+  @JsonKey(name: 'last_visit', readValue: _readLastVisit)
   final String? lastVisit;
   @override
-  @JsonKey(name: 'favorite_product')
+  @JsonKey(name: 'favorite_product', readValue: _readFavoriteProduct)
   final String? favoriteProduct;
   @override
   @JsonKey(name: 'total_spend', readValue: _readTotalSpend)
@@ -379,8 +382,10 @@ abstract class _MemberModel implements MemberModel {
     @JsonKey(name: 'points') final int? currentPoints,
     final String tier,
     final List<MemberVoucherModel> vouchers,
-    @JsonKey(name: 'last_visit') final String? lastVisit,
-    @JsonKey(name: 'favorite_product') final String? favoriteProduct,
+    @JsonKey(name: 'last_visit', readValue: _readLastVisit)
+    final String? lastVisit,
+    @JsonKey(name: 'favorite_product', readValue: _readFavoriteProduct)
+    final String? favoriteProduct,
     @JsonKey(name: 'total_spend', readValue: _readTotalSpend)
     final double? totalSpend,
   }) = _$MemberModelImpl;
@@ -407,10 +412,10 @@ abstract class _MemberModel implements MemberModel {
   @override
   List<MemberVoucherModel> get vouchers; // Insight CRM
   @override
-  @JsonKey(name: 'last_visit')
+  @JsonKey(name: 'last_visit', readValue: _readLastVisit)
   String? get lastVisit;
   @override
-  @JsonKey(name: 'favorite_product')
+  @JsonKey(name: 'favorite_product', readValue: _readFavoriteProduct)
   String? get favoriteProduct;
   @override
   @JsonKey(name: 'total_spend', readValue: _readTotalSpend)

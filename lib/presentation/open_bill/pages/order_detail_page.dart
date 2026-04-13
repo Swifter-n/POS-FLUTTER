@@ -1,7 +1,8 @@
 import 'package:avis_pos/core/components/buttons.dart';
 import 'package:avis_pos/core/constants/colors.dart';
+// ✅ IMPORT CART BLOC
+import 'package:avis_pos/presentation/home/bloc/cart/cart_bloc.dart';
 import 'package:avis_pos/presentation/open_bill/bloc/open_bill/open_bill_bloc.dart';
-import 'package:avis_pos/presentation/open_bill/pages/bill_product_selector_page.dart';
 import 'package:avis_pos/presentation/open_bill/pages/success_payment_page.dart';
 import 'package:avis_pos/presentation/open_bill/widgets/open_bill_payment_modal.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,6 @@ class OrderDetailPage extends StatelessWidget {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         actions: [
-          // Tombol Batal/Kosongkan Meja
           BlocBuilder<OpenBillBloc, OpenBillState>(
             builder: (context, state) {
               return state.maybeWhen(
@@ -54,8 +54,6 @@ class OrderDetailPage extends StatelessWidget {
         listener: (context, state) {
           state.maybeWhen(
             success: (message) {
-              // ✅ FIX 1: Jangan lakukan pop() otomatis saat pembayaran berhasil!
-              // Biarkan modal yang tertutup dan mengembalikan amountPaid untuk membuka Halaman Sukses
               if (!message.contains('Pembayaran berhasil')) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -344,11 +342,26 @@ class OrderDetailPage extends StatelessWidget {
                                   label: 'Tambah Pesanan',
                                   isOutlined: true,
                                   onPressed: () {
-                                    Navigator.push(
+                                    // ✅ FIX: Gunakan Cart Context & Kembali ke Homepage
+                                    context.read<CartBloc>().add(
+                                      CartEvent.setContext(
+                                        tableNumber: selectedOrder.tableNumber,
+                                        activeOrder: selectedOrder,
+                                      ),
+                                    );
+
+                                    Navigator.popUntil(
                                       context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            const BillProductSelectorPage(),
+                                      (route) => route.isFirst,
+                                    );
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Mode: Menambah pesanan untuk Meja ${selectedOrder.tableNumber}',
+                                        ),
+                                        backgroundColor: Colors.blue.shade700,
+                                        behavior: SnackBarBehavior.floating,
                                       ),
                                     );
                                   },
@@ -367,7 +380,6 @@ class OrderDetailPage extends StatelessWidget {
                                     );
 
                                     if (amountPaid != null && context.mounted) {
-                                      // ✅ FIX 2: Gunakan Navigator.push karena SuccessPaymentPage adalah Scaffold (halaman penuh)
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(

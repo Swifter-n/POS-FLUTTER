@@ -38,6 +38,9 @@ _$OrderModelImpl _$$OrderModelImplFromJson(
           ?.map((e) => OrderItemModel.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  member: json['member'] == null
+      ? null
+      : MemberModel.fromJson(json['member'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$$OrderModelImplToJson(_$OrderModelImpl instance) =>
@@ -61,4 +64,5 @@ Map<String, dynamic> _$$OrderModelImplToJson(_$OrderModelImpl instance) =>
       'guest_count': instance.guestCount,
       'created_at': instance.createdAt?.toIso8601String(),
       'items': instance.items,
+      'member': instance.member,
     };

@@ -27,6 +27,8 @@ mixin _$CartEvent {
     required TResult Function() clearCart,
     required TResult Function(QuickCheckoutPayload payload) checkout,
     required TResult Function(String ruleName) ignorePromo,
+    required TResult Function(String? tableNumber, OrderModel? activeOrder)
+    setContext,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
@@ -38,6 +40,7 @@ mixin _$CartEvent {
     TResult? Function()? clearCart,
     TResult? Function(QuickCheckoutPayload payload)? checkout,
     TResult? Function(String ruleName)? ignorePromo,
+    TResult? Function(String? tableNumber, OrderModel? activeOrder)? setContext,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
@@ -49,6 +52,7 @@ mixin _$CartEvent {
     TResult Function()? clearCart,
     TResult Function(QuickCheckoutPayload payload)? checkout,
     TResult Function(String ruleName)? ignorePromo,
+    TResult Function(String? tableNumber, OrderModel? activeOrder)? setContext,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -60,6 +64,7 @@ mixin _$CartEvent {
     required TResult Function(_ClearCart value) clearCart,
     required TResult Function(_Checkout value) checkout,
     required TResult Function(_IgnorePromo value) ignorePromo,
+    required TResult Function(_SetContext value) setContext,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
@@ -70,6 +75,7 @@ mixin _$CartEvent {
     TResult? Function(_ClearCart value)? clearCart,
     TResult? Function(_Checkout value)? checkout,
     TResult? Function(_IgnorePromo value)? ignorePromo,
+    TResult? Function(_SetContext value)? setContext,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
@@ -80,6 +86,7 @@ mixin _$CartEvent {
     TResult Function(_ClearCart value)? clearCart,
     TResult Function(_Checkout value)? checkout,
     TResult Function(_IgnorePromo value)? ignorePromo,
+    TResult Function(_SetContext value)? setContext,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -155,6 +162,8 @@ class _$StartedImpl implements _Started {
     required TResult Function() clearCart,
     required TResult Function(QuickCheckoutPayload payload) checkout,
     required TResult Function(String ruleName) ignorePromo,
+    required TResult Function(String? tableNumber, OrderModel? activeOrder)
+    setContext,
   }) {
     return started();
   }
@@ -170,6 +179,7 @@ class _$StartedImpl implements _Started {
     TResult? Function()? clearCart,
     TResult? Function(QuickCheckoutPayload payload)? checkout,
     TResult? Function(String ruleName)? ignorePromo,
+    TResult? Function(String? tableNumber, OrderModel? activeOrder)? setContext,
   }) {
     return started?.call();
   }
@@ -185,6 +195,7 @@ class _$StartedImpl implements _Started {
     TResult Function()? clearCart,
     TResult Function(QuickCheckoutPayload payload)? checkout,
     TResult Function(String ruleName)? ignorePromo,
+    TResult Function(String? tableNumber, OrderModel? activeOrder)? setContext,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -203,6 +214,7 @@ class _$StartedImpl implements _Started {
     required TResult Function(_ClearCart value) clearCart,
     required TResult Function(_Checkout value) checkout,
     required TResult Function(_IgnorePromo value) ignorePromo,
+    required TResult Function(_SetContext value) setContext,
   }) {
     return started(this);
   }
@@ -217,6 +229,7 @@ class _$StartedImpl implements _Started {
     TResult? Function(_ClearCart value)? clearCart,
     TResult? Function(_Checkout value)? checkout,
     TResult? Function(_IgnorePromo value)? ignorePromo,
+    TResult? Function(_SetContext value)? setContext,
   }) {
     return started?.call(this);
   }
@@ -231,6 +244,7 @@ class _$StartedImpl implements _Started {
     TResult Function(_ClearCart value)? clearCart,
     TResult Function(_Checkout value)? checkout,
     TResult Function(_IgnorePromo value)? ignorePromo,
+    TResult Function(_SetContext value)? setContext,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -334,6 +348,8 @@ class _$AddItemImpl implements _AddItem {
     required TResult Function() clearCart,
     required TResult Function(QuickCheckoutPayload payload) checkout,
     required TResult Function(String ruleName) ignorePromo,
+    required TResult Function(String? tableNumber, OrderModel? activeOrder)
+    setContext,
   }) {
     return addItem(item);
   }
@@ -349,6 +365,7 @@ class _$AddItemImpl implements _AddItem {
     TResult? Function()? clearCart,
     TResult? Function(QuickCheckoutPayload payload)? checkout,
     TResult? Function(String ruleName)? ignorePromo,
+    TResult? Function(String? tableNumber, OrderModel? activeOrder)? setContext,
   }) {
     return addItem?.call(item);
   }
@@ -364,6 +381,7 @@ class _$AddItemImpl implements _AddItem {
     TResult Function()? clearCart,
     TResult Function(QuickCheckoutPayload payload)? checkout,
     TResult Function(String ruleName)? ignorePromo,
+    TResult Function(String? tableNumber, OrderModel? activeOrder)? setContext,
     required TResult orElse(),
   }) {
     if (addItem != null) {
@@ -382,6 +400,7 @@ class _$AddItemImpl implements _AddItem {
     required TResult Function(_ClearCart value) clearCart,
     required TResult Function(_Checkout value) checkout,
     required TResult Function(_IgnorePromo value) ignorePromo,
+    required TResult Function(_SetContext value) setContext,
   }) {
     return addItem(this);
   }
@@ -396,6 +415,7 @@ class _$AddItemImpl implements _AddItem {
     TResult? Function(_ClearCart value)? clearCart,
     TResult? Function(_Checkout value)? checkout,
     TResult? Function(_IgnorePromo value)? ignorePromo,
+    TResult? Function(_SetContext value)? setContext,
   }) {
     return addItem?.call(this);
   }
@@ -410,6 +430,7 @@ class _$AddItemImpl implements _AddItem {
     TResult Function(_ClearCart value)? clearCart,
     TResult Function(_Checkout value)? checkout,
     TResult Function(_IgnorePromo value)? ignorePromo,
+    TResult Function(_SetContext value)? setContext,
     required TResult orElse(),
   }) {
     if (addItem != null) {
@@ -517,6 +538,8 @@ class _$RemoveItemImpl implements _RemoveItem {
     required TResult Function() clearCart,
     required TResult Function(QuickCheckoutPayload payload) checkout,
     required TResult Function(String ruleName) ignorePromo,
+    required TResult Function(String? tableNumber, OrderModel? activeOrder)
+    setContext,
   }) {
     return removeItem(productId, uom);
   }
@@ -532,6 +555,7 @@ class _$RemoveItemImpl implements _RemoveItem {
     TResult? Function()? clearCart,
     TResult? Function(QuickCheckoutPayload payload)? checkout,
     TResult? Function(String ruleName)? ignorePromo,
+    TResult? Function(String? tableNumber, OrderModel? activeOrder)? setContext,
   }) {
     return removeItem?.call(productId, uom);
   }
@@ -547,6 +571,7 @@ class _$RemoveItemImpl implements _RemoveItem {
     TResult Function()? clearCart,
     TResult Function(QuickCheckoutPayload payload)? checkout,
     TResult Function(String ruleName)? ignorePromo,
+    TResult Function(String? tableNumber, OrderModel? activeOrder)? setContext,
     required TResult orElse(),
   }) {
     if (removeItem != null) {
@@ -565,6 +590,7 @@ class _$RemoveItemImpl implements _RemoveItem {
     required TResult Function(_ClearCart value) clearCart,
     required TResult Function(_Checkout value) checkout,
     required TResult Function(_IgnorePromo value) ignorePromo,
+    required TResult Function(_SetContext value) setContext,
   }) {
     return removeItem(this);
   }
@@ -579,6 +605,7 @@ class _$RemoveItemImpl implements _RemoveItem {
     TResult? Function(_ClearCart value)? clearCart,
     TResult? Function(_Checkout value)? checkout,
     TResult? Function(_IgnorePromo value)? ignorePromo,
+    TResult? Function(_SetContext value)? setContext,
   }) {
     return removeItem?.call(this);
   }
@@ -593,6 +620,7 @@ class _$RemoveItemImpl implements _RemoveItem {
     TResult Function(_ClearCart value)? clearCart,
     TResult Function(_Checkout value)? checkout,
     TResult Function(_IgnorePromo value)? ignorePromo,
+    TResult Function(_SetContext value)? setContext,
     required TResult orElse(),
   }) {
     if (removeItem != null) {
@@ -717,6 +745,8 @@ class _$UpdateQuantityImpl implements _UpdateQuantity {
     required TResult Function() clearCart,
     required TResult Function(QuickCheckoutPayload payload) checkout,
     required TResult Function(String ruleName) ignorePromo,
+    required TResult Function(String? tableNumber, OrderModel? activeOrder)
+    setContext,
   }) {
     return updateQuantity(productId, uom, quantity);
   }
@@ -732,6 +762,7 @@ class _$UpdateQuantityImpl implements _UpdateQuantity {
     TResult? Function()? clearCart,
     TResult? Function(QuickCheckoutPayload payload)? checkout,
     TResult? Function(String ruleName)? ignorePromo,
+    TResult? Function(String? tableNumber, OrderModel? activeOrder)? setContext,
   }) {
     return updateQuantity?.call(productId, uom, quantity);
   }
@@ -747,6 +778,7 @@ class _$UpdateQuantityImpl implements _UpdateQuantity {
     TResult Function()? clearCart,
     TResult Function(QuickCheckoutPayload payload)? checkout,
     TResult Function(String ruleName)? ignorePromo,
+    TResult Function(String? tableNumber, OrderModel? activeOrder)? setContext,
     required TResult orElse(),
   }) {
     if (updateQuantity != null) {
@@ -765,6 +797,7 @@ class _$UpdateQuantityImpl implements _UpdateQuantity {
     required TResult Function(_ClearCart value) clearCart,
     required TResult Function(_Checkout value) checkout,
     required TResult Function(_IgnorePromo value) ignorePromo,
+    required TResult Function(_SetContext value) setContext,
   }) {
     return updateQuantity(this);
   }
@@ -779,6 +812,7 @@ class _$UpdateQuantityImpl implements _UpdateQuantity {
     TResult? Function(_ClearCart value)? clearCart,
     TResult? Function(_Checkout value)? checkout,
     TResult? Function(_IgnorePromo value)? ignorePromo,
+    TResult? Function(_SetContext value)? setContext,
   }) {
     return updateQuantity?.call(this);
   }
@@ -793,6 +827,7 @@ class _$UpdateQuantityImpl implements _UpdateQuantity {
     TResult Function(_ClearCart value)? clearCart,
     TResult Function(_Checkout value)? checkout,
     TResult Function(_IgnorePromo value)? ignorePromo,
+    TResult Function(_SetContext value)? setContext,
     required TResult orElse(),
   }) {
     if (updateQuantity != null) {
@@ -871,6 +906,8 @@ class _$ClearCartImpl implements _ClearCart {
     required TResult Function() clearCart,
     required TResult Function(QuickCheckoutPayload payload) checkout,
     required TResult Function(String ruleName) ignorePromo,
+    required TResult Function(String? tableNumber, OrderModel? activeOrder)
+    setContext,
   }) {
     return clearCart();
   }
@@ -886,6 +923,7 @@ class _$ClearCartImpl implements _ClearCart {
     TResult? Function()? clearCart,
     TResult? Function(QuickCheckoutPayload payload)? checkout,
     TResult? Function(String ruleName)? ignorePromo,
+    TResult? Function(String? tableNumber, OrderModel? activeOrder)? setContext,
   }) {
     return clearCart?.call();
   }
@@ -901,6 +939,7 @@ class _$ClearCartImpl implements _ClearCart {
     TResult Function()? clearCart,
     TResult Function(QuickCheckoutPayload payload)? checkout,
     TResult Function(String ruleName)? ignorePromo,
+    TResult Function(String? tableNumber, OrderModel? activeOrder)? setContext,
     required TResult orElse(),
   }) {
     if (clearCart != null) {
@@ -919,6 +958,7 @@ class _$ClearCartImpl implements _ClearCart {
     required TResult Function(_ClearCart value) clearCart,
     required TResult Function(_Checkout value) checkout,
     required TResult Function(_IgnorePromo value) ignorePromo,
+    required TResult Function(_SetContext value) setContext,
   }) {
     return clearCart(this);
   }
@@ -933,6 +973,7 @@ class _$ClearCartImpl implements _ClearCart {
     TResult? Function(_ClearCart value)? clearCart,
     TResult? Function(_Checkout value)? checkout,
     TResult? Function(_IgnorePromo value)? ignorePromo,
+    TResult? Function(_SetContext value)? setContext,
   }) {
     return clearCart?.call(this);
   }
@@ -947,6 +988,7 @@ class _$ClearCartImpl implements _ClearCart {
     TResult Function(_ClearCart value)? clearCart,
     TResult Function(_Checkout value)? checkout,
     TResult Function(_IgnorePromo value)? ignorePromo,
+    TResult Function(_SetContext value)? setContext,
     required TResult orElse(),
   }) {
     if (clearCart != null) {
@@ -1050,6 +1092,8 @@ class _$CheckoutImpl implements _Checkout {
     required TResult Function() clearCart,
     required TResult Function(QuickCheckoutPayload payload) checkout,
     required TResult Function(String ruleName) ignorePromo,
+    required TResult Function(String? tableNumber, OrderModel? activeOrder)
+    setContext,
   }) {
     return checkout(payload);
   }
@@ -1065,6 +1109,7 @@ class _$CheckoutImpl implements _Checkout {
     TResult? Function()? clearCart,
     TResult? Function(QuickCheckoutPayload payload)? checkout,
     TResult? Function(String ruleName)? ignorePromo,
+    TResult? Function(String? tableNumber, OrderModel? activeOrder)? setContext,
   }) {
     return checkout?.call(payload);
   }
@@ -1080,6 +1125,7 @@ class _$CheckoutImpl implements _Checkout {
     TResult Function()? clearCart,
     TResult Function(QuickCheckoutPayload payload)? checkout,
     TResult Function(String ruleName)? ignorePromo,
+    TResult Function(String? tableNumber, OrderModel? activeOrder)? setContext,
     required TResult orElse(),
   }) {
     if (checkout != null) {
@@ -1098,6 +1144,7 @@ class _$CheckoutImpl implements _Checkout {
     required TResult Function(_ClearCart value) clearCart,
     required TResult Function(_Checkout value) checkout,
     required TResult Function(_IgnorePromo value) ignorePromo,
+    required TResult Function(_SetContext value) setContext,
   }) {
     return checkout(this);
   }
@@ -1112,6 +1159,7 @@ class _$CheckoutImpl implements _Checkout {
     TResult? Function(_ClearCart value)? clearCart,
     TResult? Function(_Checkout value)? checkout,
     TResult? Function(_IgnorePromo value)? ignorePromo,
+    TResult? Function(_SetContext value)? setContext,
   }) {
     return checkout?.call(this);
   }
@@ -1126,6 +1174,7 @@ class _$CheckoutImpl implements _Checkout {
     TResult Function(_ClearCart value)? clearCart,
     TResult Function(_Checkout value)? checkout,
     TResult Function(_IgnorePromo value)? ignorePromo,
+    TResult Function(_SetContext value)? setContext,
     required TResult orElse(),
   }) {
     if (checkout != null) {
@@ -1226,6 +1275,8 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     required TResult Function() clearCart,
     required TResult Function(QuickCheckoutPayload payload) checkout,
     required TResult Function(String ruleName) ignorePromo,
+    required TResult Function(String? tableNumber, OrderModel? activeOrder)
+    setContext,
   }) {
     return ignorePromo(ruleName);
   }
@@ -1241,6 +1292,7 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     TResult? Function()? clearCart,
     TResult? Function(QuickCheckoutPayload payload)? checkout,
     TResult? Function(String ruleName)? ignorePromo,
+    TResult? Function(String? tableNumber, OrderModel? activeOrder)? setContext,
   }) {
     return ignorePromo?.call(ruleName);
   }
@@ -1256,6 +1308,7 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     TResult Function()? clearCart,
     TResult Function(QuickCheckoutPayload payload)? checkout,
     TResult Function(String ruleName)? ignorePromo,
+    TResult Function(String? tableNumber, OrderModel? activeOrder)? setContext,
     required TResult orElse(),
   }) {
     if (ignorePromo != null) {
@@ -1274,6 +1327,7 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     required TResult Function(_ClearCart value) clearCart,
     required TResult Function(_Checkout value) checkout,
     required TResult Function(_IgnorePromo value) ignorePromo,
+    required TResult Function(_SetContext value) setContext,
   }) {
     return ignorePromo(this);
   }
@@ -1288,6 +1342,7 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     TResult? Function(_ClearCart value)? clearCart,
     TResult? Function(_Checkout value)? checkout,
     TResult? Function(_IgnorePromo value)? ignorePromo,
+    TResult? Function(_SetContext value)? setContext,
   }) {
     return ignorePromo?.call(this);
   }
@@ -1302,6 +1357,7 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     TResult Function(_ClearCart value)? clearCart,
     TResult Function(_Checkout value)? checkout,
     TResult Function(_IgnorePromo value)? ignorePromo,
+    TResult Function(_SetContext value)? setContext,
     required TResult orElse(),
   }) {
     if (ignorePromo != null) {
@@ -1324,6 +1380,217 @@ abstract class _IgnorePromo implements CartEvent {
 }
 
 /// @nodoc
+abstract class _$$SetContextImplCopyWith<$Res> {
+  factory _$$SetContextImplCopyWith(
+    _$SetContextImpl value,
+    $Res Function(_$SetContextImpl) then,
+  ) = __$$SetContextImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String? tableNumber, OrderModel? activeOrder});
+
+  $OrderModelCopyWith<$Res>? get activeOrder;
+}
+
+/// @nodoc
+class __$$SetContextImplCopyWithImpl<$Res>
+    extends _$CartEventCopyWithImpl<$Res, _$SetContextImpl>
+    implements _$$SetContextImplCopyWith<$Res> {
+  __$$SetContextImplCopyWithImpl(
+    _$SetContextImpl _value,
+    $Res Function(_$SetContextImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CartEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? tableNumber = freezed, Object? activeOrder = freezed}) {
+    return _then(
+      _$SetContextImpl(
+        tableNumber: freezed == tableNumber
+            ? _value.tableNumber
+            : tableNumber // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        activeOrder: freezed == activeOrder
+            ? _value.activeOrder
+            : activeOrder // ignore: cast_nullable_to_non_nullable
+                  as OrderModel?,
+      ),
+    );
+  }
+
+  /// Create a copy of CartEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $OrderModelCopyWith<$Res>? get activeOrder {
+    if (_value.activeOrder == null) {
+      return null;
+    }
+
+    return $OrderModelCopyWith<$Res>(_value.activeOrder!, (value) {
+      return _then(_value.copyWith(activeOrder: value));
+    });
+  }
+}
+
+/// @nodoc
+
+class _$SetContextImpl implements _SetContext {
+  const _$SetContextImpl({this.tableNumber, this.activeOrder});
+
+  @override
+  final String? tableNumber;
+  @override
+  final OrderModel? activeOrder;
+
+  @override
+  String toString() {
+    return 'CartEvent.setContext(tableNumber: $tableNumber, activeOrder: $activeOrder)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SetContextImpl &&
+            (identical(other.tableNumber, tableNumber) ||
+                other.tableNumber == tableNumber) &&
+            (identical(other.activeOrder, activeOrder) ||
+                other.activeOrder == activeOrder));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, tableNumber, activeOrder);
+
+  /// Create a copy of CartEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SetContextImplCopyWith<_$SetContextImpl> get copyWith =>
+      __$$SetContextImplCopyWithImpl<_$SetContextImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() started,
+    required TResult Function(CartItemPayload item) addItem,
+    required TResult Function(int productId, String uom) removeItem,
+    required TResult Function(int productId, String uom, double quantity)
+    updateQuantity,
+    required TResult Function() clearCart,
+    required TResult Function(QuickCheckoutPayload payload) checkout,
+    required TResult Function(String ruleName) ignorePromo,
+    required TResult Function(String? tableNumber, OrderModel? activeOrder)
+    setContext,
+  }) {
+    return setContext(tableNumber, activeOrder);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? started,
+    TResult? Function(CartItemPayload item)? addItem,
+    TResult? Function(int productId, String uom)? removeItem,
+    TResult? Function(int productId, String uom, double quantity)?
+    updateQuantity,
+    TResult? Function()? clearCart,
+    TResult? Function(QuickCheckoutPayload payload)? checkout,
+    TResult? Function(String ruleName)? ignorePromo,
+    TResult? Function(String? tableNumber, OrderModel? activeOrder)? setContext,
+  }) {
+    return setContext?.call(tableNumber, activeOrder);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? started,
+    TResult Function(CartItemPayload item)? addItem,
+    TResult Function(int productId, String uom)? removeItem,
+    TResult Function(int productId, String uom, double quantity)?
+    updateQuantity,
+    TResult Function()? clearCart,
+    TResult Function(QuickCheckoutPayload payload)? checkout,
+    TResult Function(String ruleName)? ignorePromo,
+    TResult Function(String? tableNumber, OrderModel? activeOrder)? setContext,
+    required TResult orElse(),
+  }) {
+    if (setContext != null) {
+      return setContext(tableNumber, activeOrder);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Started value) started,
+    required TResult Function(_AddItem value) addItem,
+    required TResult Function(_RemoveItem value) removeItem,
+    required TResult Function(_UpdateQuantity value) updateQuantity,
+    required TResult Function(_ClearCart value) clearCart,
+    required TResult Function(_Checkout value) checkout,
+    required TResult Function(_IgnorePromo value) ignorePromo,
+    required TResult Function(_SetContext value) setContext,
+  }) {
+    return setContext(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Started value)? started,
+    TResult? Function(_AddItem value)? addItem,
+    TResult? Function(_RemoveItem value)? removeItem,
+    TResult? Function(_UpdateQuantity value)? updateQuantity,
+    TResult? Function(_ClearCart value)? clearCart,
+    TResult? Function(_Checkout value)? checkout,
+    TResult? Function(_IgnorePromo value)? ignorePromo,
+    TResult? Function(_SetContext value)? setContext,
+  }) {
+    return setContext?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Started value)? started,
+    TResult Function(_AddItem value)? addItem,
+    TResult Function(_RemoveItem value)? removeItem,
+    TResult Function(_UpdateQuantity value)? updateQuantity,
+    TResult Function(_ClearCart value)? clearCart,
+    TResult Function(_Checkout value)? checkout,
+    TResult Function(_IgnorePromo value)? ignorePromo,
+    TResult Function(_SetContext value)? setContext,
+    required TResult orElse(),
+  }) {
+    if (setContext != null) {
+      return setContext(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _SetContext implements CartEvent {
+  const factory _SetContext({
+    final String? tableNumber,
+    final OrderModel? activeOrder,
+  }) = _$SetContextImpl;
+
+  String? get tableNumber;
+  OrderModel? get activeOrder;
+
+  /// Create a copy of CartEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SetContextImplCopyWith<_$SetContextImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$CartState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
@@ -1336,6 +1603,8 @@ mixin _$CartState {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )
     loaded,
     required TResult Function(OrderModel order) checkoutSuccess,
@@ -1352,6 +1621,8 @@ mixin _$CartState {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult? Function(OrderModel order)? checkoutSuccess,
@@ -1368,6 +1639,8 @@ mixin _$CartState {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult Function(OrderModel order)? checkoutSuccess,
@@ -1473,6 +1746,8 @@ class _$InitialImpl implements _Initial {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )
     loaded,
     required TResult Function(OrderModel order) checkoutSuccess,
@@ -1493,6 +1768,8 @@ class _$InitialImpl implements _Initial {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult? Function(OrderModel order)? checkoutSuccess,
@@ -1513,6 +1790,8 @@ class _$InitialImpl implements _Initial {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult Function(OrderModel order)? checkoutSuccess,
@@ -1622,6 +1901,8 @@ class _$LoadingImpl implements _Loading {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )
     loaded,
     required TResult Function(OrderModel order) checkoutSuccess,
@@ -1642,6 +1923,8 @@ class _$LoadingImpl implements _Loading {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult? Function(OrderModel order)? checkoutSuccess,
@@ -1662,6 +1945,8 @@ class _$LoadingImpl implements _Loading {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult Function(OrderModel order)? checkoutSuccess,
@@ -1733,7 +2018,11 @@ abstract class _$$LoadedImplCopyWith<$Res> {
     double tax,
     List<String> appliedPromos,
     List<String> ignoredRules,
+    String? tableNumber,
+    OrderModel? activeOrder,
   });
+
+  $OrderModelCopyWith<$Res>? get activeOrder;
 }
 
 /// @nodoc
@@ -1756,6 +2045,8 @@ class __$$LoadedImplCopyWithImpl<$Res>
     Object? tax = null,
     Object? appliedPromos = null,
     Object? ignoredRules = null,
+    Object? tableNumber = freezed,
+    Object? activeOrder = freezed,
   }) {
     return _then(
       _$LoadedImpl(
@@ -1783,8 +2074,30 @@ class __$$LoadedImplCopyWithImpl<$Res>
             ? _value._ignoredRules
             : ignoredRules // ignore: cast_nullable_to_non_nullable
                   as List<String>,
+        tableNumber: freezed == tableNumber
+            ? _value.tableNumber
+            : tableNumber // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        activeOrder: freezed == activeOrder
+            ? _value.activeOrder
+            : activeOrder // ignore: cast_nullable_to_non_nullable
+                  as OrderModel?,
       ),
     );
+  }
+
+  /// Create a copy of CartState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $OrderModelCopyWith<$Res>? get activeOrder {
+    if (_value.activeOrder == null) {
+      return null;
+    }
+
+    return $OrderModelCopyWith<$Res>(_value.activeOrder!, (value) {
+      return _then(_value.copyWith(activeOrder: value));
+    });
   }
 }
 
@@ -1798,6 +2111,8 @@ class _$LoadedImpl implements _Loaded {
     this.tax = 0,
     final List<String> appliedPromos = const [],
     final List<String> ignoredRules = const [],
+    this.tableNumber,
+    this.activeOrder,
   }) : _items = items,
        _appliedPromos = appliedPromos,
        _ignoredRules = ignoredRules;
@@ -1839,8 +2154,13 @@ class _$LoadedImpl implements _Loaded {
   }
 
   @override
+  final String? tableNumber;
+  @override
+  final OrderModel? activeOrder;
+
+  @override
   String toString() {
-    return 'CartState.loaded(items: $items, subtotal: $subtotal, discount: $discount, tax: $tax, appliedPromos: $appliedPromos, ignoredRules: $ignoredRules)';
+    return 'CartState.loaded(items: $items, subtotal: $subtotal, discount: $discount, tax: $tax, appliedPromos: $appliedPromos, ignoredRules: $ignoredRules, tableNumber: $tableNumber, activeOrder: $activeOrder)';
   }
 
   @override
@@ -1861,7 +2181,11 @@ class _$LoadedImpl implements _Loaded {
             const DeepCollectionEquality().equals(
               other._ignoredRules,
               _ignoredRules,
-            ));
+            ) &&
+            (identical(other.tableNumber, tableNumber) ||
+                other.tableNumber == tableNumber) &&
+            (identical(other.activeOrder, activeOrder) ||
+                other.activeOrder == activeOrder));
   }
 
   @override
@@ -1873,6 +2197,8 @@ class _$LoadedImpl implements _Loaded {
     tax,
     const DeepCollectionEquality().hash(_appliedPromos),
     const DeepCollectionEquality().hash(_ignoredRules),
+    tableNumber,
+    activeOrder,
   );
 
   /// Create a copy of CartState
@@ -1895,12 +2221,23 @@ class _$LoadedImpl implements _Loaded {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )
     loaded,
     required TResult Function(OrderModel order) checkoutSuccess,
     required TResult Function(String message) error,
   }) {
-    return loaded(items, subtotal, discount, tax, appliedPromos, ignoredRules);
+    return loaded(
+      items,
+      subtotal,
+      discount,
+      tax,
+      appliedPromos,
+      ignoredRules,
+      tableNumber,
+      activeOrder,
+    );
   }
 
   @override
@@ -1915,6 +2252,8 @@ class _$LoadedImpl implements _Loaded {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult? Function(OrderModel order)? checkoutSuccess,
@@ -1927,6 +2266,8 @@ class _$LoadedImpl implements _Loaded {
       tax,
       appliedPromos,
       ignoredRules,
+      tableNumber,
+      activeOrder,
     );
   }
 
@@ -1942,6 +2283,8 @@ class _$LoadedImpl implements _Loaded {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult Function(OrderModel order)? checkoutSuccess,
@@ -1956,6 +2299,8 @@ class _$LoadedImpl implements _Loaded {
         tax,
         appliedPromos,
         ignoredRules,
+        tableNumber,
+        activeOrder,
       );
     }
     return orElse();
@@ -2010,6 +2355,8 @@ abstract class _Loaded implements CartState {
     final double tax,
     final List<String> appliedPromos,
     final List<String> ignoredRules,
+    final String? tableNumber,
+    final OrderModel? activeOrder,
   }) = _$LoadedImpl;
 
   List<CartItemPayload> get items;
@@ -2018,6 +2365,8 @@ abstract class _Loaded implements CartState {
   double get tax;
   List<String> get appliedPromos;
   List<String> get ignoredRules;
+  String? get tableNumber;
+  OrderModel? get activeOrder;
 
   /// Create a copy of CartState
   /// with the given fields replaced by the non-null parameter values.
@@ -2120,6 +2469,8 @@ class _$CheckoutSuccessImpl implements _CheckoutSuccess {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )
     loaded,
     required TResult Function(OrderModel order) checkoutSuccess,
@@ -2140,6 +2491,8 @@ class _$CheckoutSuccessImpl implements _CheckoutSuccess {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult? Function(OrderModel order)? checkoutSuccess,
@@ -2160,6 +2513,8 @@ class _$CheckoutSuccessImpl implements _CheckoutSuccess {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult Function(OrderModel order)? checkoutSuccess,
@@ -2305,6 +2660,8 @@ class _$ErrorImpl implements _Error {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )
     loaded,
     required TResult Function(OrderModel order) checkoutSuccess,
@@ -2325,6 +2682,8 @@ class _$ErrorImpl implements _Error {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult? Function(OrderModel order)? checkoutSuccess,
@@ -2345,6 +2704,8 @@ class _$ErrorImpl implements _Error {
       double tax,
       List<String> appliedPromos,
       List<String> ignoredRules,
+      String? tableNumber,
+      OrderModel? activeOrder,
     )?
     loaded,
     TResult Function(OrderModel order)? checkoutSuccess,

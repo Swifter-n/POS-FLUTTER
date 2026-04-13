@@ -7,6 +7,10 @@ class OpenBillEvent with _$OpenBillEvent {
       _CreateOpenBill;
   const factory OpenBillEvent.addItemToBill(int orderId, CartItemPayload item) =
       _AddItemToBill;
+  const factory OpenBillEvent.addItemsToBill(
+    int orderId,
+    List<CartItemPayload> items,
+  ) = _AddItemsToBill;
   const factory OpenBillEvent.removeItemFromBill(int orderId, int itemId) =
       _RemoveItemFromBill;
 

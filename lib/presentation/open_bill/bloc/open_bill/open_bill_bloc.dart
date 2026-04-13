@@ -16,6 +16,7 @@ class OpenBillBloc extends Bloc<OpenBillEvent, OpenBillState> {
     on<_FetchOpenBills>(_onFetchOpenBills);
     on<_CreateOpenBill>(_onCreateOpenBill);
     on<_AddItemToBill>(_onAddItemToBill);
+    on<_AddItemsToBill>(_onAddItemsToBill);
     on<_RemoveItemFromBill>(_onRemoveItemFromBill); // Handler Baru
     on<_PayBill>(_onPayBill);
     on<_CancelBill>(_onCancelBill);
@@ -74,6 +75,46 @@ class OpenBillBloc extends Bloc<OpenBillEvent, OpenBillState> {
         emit(OpenBillState.loaded(selectedOrder: updatedOrder));
       },
     );
+  }
+
+  Future<void> _onAddItemsToBill(
+    _AddItemsToBill event,
+    Emitter<OpenBillState> emit,
+  ) async {
+    emit(const OpenBillState.loading());
+    OrderModel? lastUpdatedOrder;
+    bool hasError = false;
+
+    // Lakukan looping untuk menyimpan item dari keranjang satu per satu ke backend
+    for (var item in event.items) {
+      final result = await _repository.addItemToOrder(event.orderId, item);
+      result.fold(
+        (failure) {
+          hasError = true;
+          emit(
+            OpenBillState.error(
+              failure.message ?? 'Gagal menambah beberapa pesanan',
+            ),
+          );
+        },
+        (updatedOrder) {
+          lastUpdatedOrder = updatedOrder;
+        },
+      );
+      if (hasError) break; // Hentikan jika ada error jaringan
+    }
+
+    if (!hasError) {
+      emit(
+        const OpenBillState.success(
+          'Pesanan tambahan berhasil disimpan ke tagihan!',
+        ),
+      );
+      add(const OpenBillEvent.fetchOpenBills()); // Refresh list meja
+      if (lastUpdatedOrder != null) {
+        emit(OpenBillState.loaded(selectedOrder: lastUpdatedOrder));
+      }
+    }
   }
 
   // --- HANDLER BARU: Menghapus Item dari Open Bill ---

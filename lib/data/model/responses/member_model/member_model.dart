@@ -11,6 +11,20 @@ Object? _readTotalSpend(Map<dynamic, dynamic> json, String key) {
   return json['total_spend'] ?? json['totalSpend'];
 }
 
+Object? _readLastVisit(Map<dynamic, dynamic> json, String key) {
+  if (json['insight'] != null && json['insight']['last_visit'] != null) {
+    return json['insight']['last_visit'];
+  }
+  return json['last_visit'] ?? json['lastVisit'];
+}
+
+Object? _readFavoriteProduct(Map<dynamic, dynamic> json, String key) {
+  if (json['insight'] != null && json['insight']['favorite_product'] != null) {
+    return json['insight']['favorite_product'];
+  }
+  return json['favorite_product'] ?? json['favoriteProduct'];
+}
+
 @freezed
 class MemberModel with _$MemberModel {
   const factory MemberModel({
@@ -25,8 +39,11 @@ class MemberModel with _$MemberModel {
     @Default([]) List<MemberVoucherModel> vouchers,
 
     // Insight CRM
-    @JsonKey(name: 'last_visit') String? lastVisit,
-    @JsonKey(name: 'favorite_product') String? favoriteProduct,
+    @JsonKey(name: 'last_visit', readValue: _readLastVisit) String? lastVisit,
+
+    @JsonKey(name: 'favorite_product', readValue: _readFavoriteProduct)
+    String? favoriteProduct,
+
     @JsonKey(name: 'total_spend', readValue: _readTotalSpend)
     double? totalSpend,
   }) = _MemberModel;

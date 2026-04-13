@@ -23,9 +23,9 @@ TableModel _$TableModelFromJson(Map<String, dynamic> json) {
 mixin _$TableModel {
   int get id => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
-  @JsonKey(name: 'x_position')
+  @JsonKey(name: 'x')
   double get x => throw _privateConstructorUsedError;
-  @JsonKey(name: 'y_position')
+  @JsonKey(name: 'y')
   double get y => throw _privateConstructorUsedError;
   String get status =>
       throw _privateConstructorUsedError; // 'available', 'occupied'
@@ -51,8 +51,8 @@ abstract class $TableModelCopyWith<$Res> {
   $Res call({
     int id,
     String code,
-    @JsonKey(name: 'x_position') double x,
-    @JsonKey(name: 'y_position') double y,
+    @JsonKey(name: 'x') double x,
+    @JsonKey(name: 'y') double y,
     String status,
     int? capacity,
   });
@@ -124,8 +124,8 @@ abstract class _$$TableModelImplCopyWith<$Res>
   $Res call({
     int id,
     String code,
-    @JsonKey(name: 'x_position') double x,
-    @JsonKey(name: 'y_position') double y,
+    @JsonKey(name: 'x') double x,
+    @JsonKey(name: 'y') double y,
     String status,
     int? capacity,
   });
@@ -189,8 +189,8 @@ class _$TableModelImpl implements _TableModel {
   const _$TableModelImpl({
     required this.id,
     required this.code,
-    @JsonKey(name: 'x_position') this.x = 0.0,
-    @JsonKey(name: 'y_position') this.y = 0.0,
+    @JsonKey(name: 'x') this.x = 0.0,
+    @JsonKey(name: 'y') this.y = 0.0,
     this.status = 'available',
     this.capacity,
   });
@@ -203,10 +203,10 @@ class _$TableModelImpl implements _TableModel {
   @override
   final String code;
   @override
-  @JsonKey(name: 'x_position')
+  @JsonKey(name: 'x')
   final double x;
   @override
-  @JsonKey(name: 'y_position')
+  @JsonKey(name: 'y')
   final double y;
   @override
   @JsonKey()
@@ -257,8 +257,8 @@ abstract class _TableModel implements TableModel {
   const factory _TableModel({
     required final int id,
     required final String code,
-    @JsonKey(name: 'x_position') final double x,
-    @JsonKey(name: 'y_position') final double y,
+    @JsonKey(name: 'x') final double x,
+    @JsonKey(name: 'y') final double y,
     final String status,
     final int? capacity,
   }) = _$TableModelImpl;
@@ -271,10 +271,10 @@ abstract class _TableModel implements TableModel {
   @override
   String get code;
   @override
-  @JsonKey(name: 'x_position')
+  @JsonKey(name: 'x')
   double get x;
   @override
-  @JsonKey(name: 'y_position')
+  @JsonKey(name: 'y')
   double get y;
   @override
   String get status; // 'available', 'occupied'

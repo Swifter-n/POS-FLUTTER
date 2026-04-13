@@ -1,3 +1,4 @@
+import 'package:avis_pos/data/model/responses/member_model/member_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../order_item_model/order_item_model.dart';
 
@@ -69,6 +70,7 @@ class OrderModel with _$OrderModel {
     int guestCount,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @Default([]) List<OrderItemModel> items,
+    MemberModel? member,
   }) = _OrderModel;
 
   factory OrderModel.fromJson(Map<String, dynamic> json) =>

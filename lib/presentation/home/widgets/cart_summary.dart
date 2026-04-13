@@ -28,269 +28,305 @@ class CartSummary extends StatelessWidget {
         builder: (context, state) {
           return state.maybeWhen(
             loading: () => const Center(child: CircularProgressIndicator()),
-            // ✅ FIX: Parameter ke-6 ditambahkan (ignoredRules)
-            loaded: (items, subtotal, discount, tax, appliedPromos, ignoredRules) {
-              double grandTotal = subtotal - discount + tax;
-              if (grandTotal < 0) grandTotal = 0;
-              final bool isEmpty = items.isEmpty;
+            loaded:
+                (
+                  items,
+                  subtotal,
+                  discount,
+                  tax,
+                  appliedPromos,
+                  ignoredRules,
+                  tableNumber,
+                  activeOrder,
+                ) {
+                  double grandTotal = subtotal - discount + tax;
+                  if (grandTotal < 0) grandTotal = 0;
+                  final bool isEmpty = items.isEmpty;
 
-              return Column(
-                children: [
-                  // --- HEADER KERANJANG ---
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Pesanan Saat Ini',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (!isEmpty)
-                          InkWell(
-                            onTap: () => context.read<CartBloc>().add(
-                              const CartEvent.clearCart(),
-                            ),
-                            child: Text(
-                              'Kosongkan',
+                  return Column(
+                    children: [
+                      // --- HEADER KERANJANG ---
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Pesanan Saat Ini',
                               style: TextStyle(
-                                color: Colors.red.shade500,
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 13,
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-                  ),
-
-                  // --- LIST ITEM KERANJANG ---
-                  Expanded(
-                    child: isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.shopping_cart_outlined,
-                                  size: 64,
-                                  color: Colors.grey.shade300,
+                            if (!isEmpty)
+                              InkWell(
+                                onTap: () => context.read<CartBloc>().add(
+                                  const CartEvent.clearCart(),
                                 ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Keranjang masih kosong',
+                                child: Text(
+                                  'Kosongkan',
                                   style: TextStyle(
-                                    color: Colors.grey.shade500,
-                                    fontWeight: FontWeight.w500,
+                                    color: Colors.red.shade500,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
                                   ),
                                 ),
-                              ],
-                            ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            itemCount: items.length,
-                            itemBuilder: (context, index) {
-                              final item = items[index];
-                              return CartItemCard(
-                                item: item,
-                                onIncrease: () => context.read<CartBloc>().add(
-                                  CartEvent.updateQuantity(
-                                    item.productId,
-                                    item.uom ?? 'PCS',
-                                    item.quantity + 1,
-                                  ),
-                                ),
-                                onDecrease: () {
-                                  if (item.quantity > 1) {
-                                    context.read<CartBloc>().add(
-                                      CartEvent.updateQuantity(
-                                        item.productId,
-                                        item.uom ?? 'PCS',
-                                        item.quantity - 1,
-                                      ),
-                                    );
-                                  } else {
-                                    context.read<CartBloc>().add(
-                                      CartEvent.removeItem(
-                                        item.productId,
-                                        item.uom ?? 'PCS',
-                                      ),
-                                    );
-                                  }
-                                },
-                                onRemove: () => context.read<CartBloc>().add(
-                                  CartEvent.removeItem(
-                                    item.productId,
-                                    item.uom ?? 'PCS',
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                  ),
-
-                  // --- BAGIAN SUMMARY & TOMBOL BAYAR ---
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 15,
-                          offset: const Offset(0, -4),
+                              ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // ✅ BADGE PROMO INTERAKTIF
-                        if (appliedPromos.isNotEmpty)
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.green.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.green.shade200),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                      ),
+
+                      // --- LIST ITEM KERANJANG ---
+                      Expanded(
+                        child: isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
-                                      Icons.check_circle,
-                                      size: 16,
-                                      color: Colors.green.shade700,
+                                      Icons.shopping_cart_outlined,
+                                      size: 64,
+                                      color: Colors.grey.shade300,
                                     ),
-                                    const SizedBox(width: 6),
+                                    const SizedBox(height: 16),
                                     Text(
-                                      'Promo Diterapkan:',
+                                      'Keranjang masih kosong',
                                       style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.green.shade800,
+                                        color: Colors.grey.shade500,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: appliedPromos
-                                      .map(
-                                        (promoName) => InputChip(
-                                          label: Text(
-                                            promoName.toUpperCase().replaceAll(
-                                              '_',
-                                              ' ',
-                                            ),
-                                            style: const TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          backgroundColor:
-                                              Colors.green.shade600,
-                                          deleteIconColor: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              6,
-                                            ),
-                                            side: BorderSide(
-                                              color: Colors.green.shade700,
-                                            ),
-                                          ),
-                                          onDeleted: () {
-                                            // Silang promo dari sini
-                                            context.read<CartBloc>().add(
-                                              CartEvent.ignorePromo(promoName),
-                                            );
-                                          },
-                                        ),
-                                      )
-                                      .toList(),
+                              )
+                            : ListView.builder(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
                                 ),
-                              ],
-                            ),
-                          ),
+                                itemCount: items.length,
+                                itemBuilder: (context, index) {
+                                  final item = items[index];
+                                  return CartItemCard(
+                                    item: item,
+                                    onIncrease: () =>
+                                        context.read<CartBloc>().add(
+                                          CartEvent.updateQuantity(
+                                            item.productId,
+                                            item.uom ?? 'PCS',
+                                            item.quantity + 1,
+                                          ),
+                                        ),
+                                    onDecrease: () {
+                                      if (item.quantity > 1) {
+                                        context.read<CartBloc>().add(
+                                          CartEvent.updateQuantity(
+                                            item.productId,
+                                            item.uom ?? 'PCS',
+                                            item.quantity - 1,
+                                          ),
+                                        );
+                                      } else {
+                                        context.read<CartBloc>().add(
+                                          CartEvent.removeItem(
+                                            item.productId,
+                                            item.uom ?? 'PCS',
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    onRemove: () =>
+                                        context.read<CartBloc>().add(
+                                          CartEvent.removeItem(
+                                            item.productId,
+                                            item.uom ?? 'PCS',
+                                          ),
+                                        ),
+                                  );
+                                },
+                              ),
+                      ),
 
-                        _buildPriceRow(
-                          'Subtotal',
-                          currencyFormatter.format(subtotal),
-                        ),
-                        if (discount > 0)
-                          _buildPriceRow(
-                            'Diskon',
-                            '- ${currencyFormatter.format(discount)}',
-                            isDiscount: true,
-                          ),
-                        _buildPriceRow(
-                          'Pajak (PB1)',
-                          currencyFormatter.format(tax),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          child: Divider(),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Total Bayar',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            Text(
-                              currencyFormatter.format(grandTotal),
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w900,
-                                color: AppColors.primary,
-                              ),
+                      // --- BAGIAN SUMMARY & TOMBOL BAYAR ---
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 15,
+                              offset: const Offset(0, -4),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
-                        AppButton(
-                          label: 'Bayar Sekarang',
-                          color: isEmpty
-                              ? Colors.grey.shade400
-                              : AppColors.primary,
-                          onPressed: isEmpty
-                              ? () {}
-                              : () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) => PaymentModal(
-                                      subtotal: subtotal,
-                                      tax: tax,
-                                      discount: discount,
-                                      cartItems: items,
-                                      appliedPromos:
-                                          appliedPromos, // Bawa promo ke modal
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // ✅ BADGE PROMO INTERAKTIF
+                            if (appliedPromos.isNotEmpty)
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade50,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Colors.green.shade200,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.check_circle,
+                                          size: 16,
+                                          color: Colors.green.shade700,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          'Promo Diterapkan:',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.green.shade800,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: appliedPromos
+                                          .map(
+                                            (promoName) => InputChip(
+                                              label: Text(
+                                                promoName
+                                                    .toUpperCase()
+                                                    .replaceAll('_', ' '),
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              backgroundColor:
+                                                  Colors.green.shade600,
+                                              deleteIconColor: Colors.white,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                                side: BorderSide(
+                                                  color: Colors.green.shade700,
+                                                ),
+                                              ),
+                                              onDeleted: () {
+                                                // Silang promo dari sini
+                                                context.read<CartBloc>().add(
+                                                  CartEvent.ignorePromo(
+                                                    promoName,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          )
+                                          .toList(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                            _buildPriceRow(
+                              'Subtotal',
+                              currencyFormatter.format(subtotal),
+                            ),
+                            if (discount > 0)
+                              _buildPriceRow(
+                                'Diskon',
+                                '- ${currencyFormatter.format(discount)}',
+                                isDiscount: true,
+                              ),
+                            _buildPriceRow(
+                              'Pajak (PB1)',
+                              currencyFormatter.format(tax),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Divider(),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Total Bayar',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                Text(
+                                  currencyFormatter.format(grandTotal),
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w900,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            AppButton(
+                              // ✅ MODIFIKASI LABEL TOMBOL
+                              label: state.maybeWhen(
+                                loaded:
+                                    (
+                                      _,
+                                      __,
+                                      ___,
+                                      ____,
+                                      _____,
+                                      ______,
+                                      tableNumber,
+                                      activeOrder,
+                                    ) {
+                                      if (activeOrder != null)
+                                        return 'SIMPAN TAMBAHAN';
+                                      if (tableNumber != null)
+                                        return 'LANJUTKAN PESANAN';
+                                      return 'PROSES PEMBAYARAN';
+                                    },
+                                orElse: () => 'PROSES PEMBAYARAN',
+                              ),
+                              onPressed: () {
+                                if (items.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Keranjang masih kosong!'),
                                     ),
                                   );
-                                },
+                                  return;
+                                }
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => PaymentModal(
+                                    subtotal: subtotal,
+                                    tax: tax,
+                                    discount: discount,
+                                    cartItems: items,
+                                    appliedPromos: appliedPromos,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
+                      ),
+                    ],
+                  );
+                },
             orElse: () => const SizedBox(),
           );
         },

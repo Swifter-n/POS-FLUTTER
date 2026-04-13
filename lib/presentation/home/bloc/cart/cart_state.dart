@@ -11,6 +11,8 @@ class CartState with _$CartState {
     @Default(0) double tax,
     @Default([]) List<String> appliedPromos,
     @Default([]) List<String> ignoredRules,
+    String? tableNumber,
+    OrderModel? activeOrder,
   }) = _Loaded;
   const factory CartState.checkoutSuccess(OrderModel order) = _CheckoutSuccess;
 

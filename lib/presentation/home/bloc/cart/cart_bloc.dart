@@ -20,17 +20,24 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<_ClearCart>(_onClearCart);
     on<_Checkout>(_onCheckout);
     on<_IgnorePromo>(_onIgnorePromo);
+
+    // ✅ DAFTARKAN EVENT SET CONTEXT
+    on<_SetContext>(_onSetContext);
   }
 
   void _onStarted(_Started event, Emitter<CartState> emit) {
+    emit(const CartState.loaded());
+  }
+
+  // ✅ LOGIKA SET CONTEXT
+  void _onSetContext(_SetContext event, Emitter<CartState> emit) {
+    // Saat kasir mengklik "Tambah Pesanan" dari Denah Meja,
+    // keranjang dikosongkan (agar tidak kecampur belanjaan orang lain)
+    // dan konteks meja disematkan.
     emit(
-      const CartState.loaded(
-        items: [],
-        subtotal: 0,
-        discount: 0,
-        tax: 0,
-        appliedPromos: [],
-        ignoredRules: [],
+      CartState.loaded(
+        tableNumber: event.tableNumber,
+        activeOrder: event.activeOrder,
       ),
     );
   }
@@ -38,29 +45,43 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   Future<void> _onAddItem(_AddItem event, Emitter<CartState> emit) async {
     List<CartItemPayload> updatedItems = [];
     List<String> currentIgnored = [];
+    String? currentTable;
+    OrderModel? currentOrder;
 
     state.maybeWhen(
-      // ✅ FIX: 6 Parameter sesuai State
-      loaded: (items, subtotal, discount, tax, appliedPromos, ignoredRules) {
-        currentIgnored = ignoredRules;
-        updatedItems = List.from(items);
-        final existingIndex = updatedItems.indexWhere(
-          (item) =>
-              item.productId == event.item.productId &&
-              item.uom == event.item.uom &&
-              _isSameAddons(item.addons ?? [], event.item.addons ?? []) &&
-              item.note == event.item.note,
-        );
+      loaded:
+          (
+            items,
+            subtotal,
+            discount,
+            tax,
+            appliedPromos,
+            ignoredRules,
+            tableNumber,
+            activeOrder,
+          ) {
+            currentIgnored = ignoredRules;
+            currentTable = tableNumber;
+            currentOrder = activeOrder;
 
-        if (existingIndex >= 0) {
-          final existingItem = updatedItems[existingIndex];
-          updatedItems[existingIndex] = existingItem.copyWith(
-            quantity: existingItem.quantity + event.item.quantity,
-          );
-        } else {
-          updatedItems.add(event.item);
-        }
-      },
+            updatedItems = List.from(items);
+            final existingIndex = updatedItems.indexWhere(
+              (item) =>
+                  item.productId == event.item.productId &&
+                  item.uom == event.item.uom &&
+                  _isSameAddons(item.addons ?? [], event.item.addons ?? []) &&
+                  item.note == event.item.note,
+            );
+
+            if (existingIndex >= 0) {
+              final existingItem = updatedItems[existingIndex];
+              updatedItems[existingIndex] = existingItem.copyWith(
+                quantity: existingItem.quantity + event.item.quantity,
+              );
+            } else {
+              updatedItems.add(event.item);
+            }
+          },
       orElse: () {
         updatedItems.add(event.item);
       },
@@ -69,6 +90,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     final newState = await _calculateCartState(
       updatedItems,
       ignoredRules: currentIgnored,
+      tableNumber: currentTable,
+      activeOrder: currentOrder,
     );
 
     if (!emit.isDone) emit(newState);
@@ -77,23 +100,41 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   Future<void> _onRemoveItem(_RemoveItem event, Emitter<CartState> emit) async {
     List<CartItemPayload> updatedItems = [];
     List<String> currentIgnored = [];
+    String? currentTable;
+    OrderModel? currentOrder;
 
     state.maybeWhen(
-      loaded: (items, subtotal, discount, tax, appliedPromos, ignoredRules) {
-        currentIgnored = ignoredRules;
-        updatedItems = items
-            .where(
-              (item) =>
-                  !(item.productId == event.productId && item.uom == event.uom),
-            )
-            .toList();
-      },
+      loaded:
+          (
+            items,
+            subtotal,
+            discount,
+            tax,
+            appliedPromos,
+            ignoredRules,
+            tableNumber,
+            activeOrder,
+          ) {
+            currentIgnored = ignoredRules;
+            currentTable = tableNumber;
+            currentOrder = activeOrder;
+
+            updatedItems = items
+                .where(
+                  (item) =>
+                      !(item.productId == event.productId &&
+                          item.uom == event.uom),
+                )
+                .toList();
+          },
       orElse: () {},
     );
 
     final newState = await _calculateCartState(
       updatedItems,
       ignoredRules: currentIgnored,
+      tableNumber: currentTable,
+      activeOrder: currentOrder,
     );
     if (!emit.isDone) emit(newState);
   }
@@ -104,41 +145,50 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   ) async {
     List<CartItemPayload> updatedItems = [];
     List<String> currentIgnored = [];
+    String? currentTable;
+    OrderModel? currentOrder;
 
     state.maybeWhen(
-      loaded: (items, subtotal, discount, tax, appliedPromos, ignoredRules) {
-        currentIgnored = ignoredRules;
-        for (var item in items) {
-          if (item.productId == event.productId && item.uom == event.uom) {
-            if (event.quantity > 0) {
-              updatedItems.add(item.copyWith(quantity: event.quantity));
+      loaded:
+          (
+            items,
+            subtotal,
+            discount,
+            tax,
+            appliedPromos,
+            ignoredRules,
+            tableNumber,
+            activeOrder,
+          ) {
+            currentIgnored = ignoredRules;
+            currentTable = tableNumber;
+            currentOrder = activeOrder;
+
+            for (var item in items) {
+              if (item.productId == event.productId && item.uom == event.uom) {
+                if (event.quantity > 0) {
+                  updatedItems.add(item.copyWith(quantity: event.quantity));
+                }
+              } else {
+                updatedItems.add(item);
+              }
             }
-          } else {
-            updatedItems.add(item);
-          }
-        }
-      },
+          },
       orElse: () {},
     );
 
     final newState = await _calculateCartState(
       updatedItems,
       ignoredRules: currentIgnored,
+      tableNumber: currentTable,
+      activeOrder: currentOrder,
     );
     if (!emit.isDone) emit(newState);
   }
 
   void _onClearCart(_ClearCart event, Emitter<CartState> emit) {
-    emit(
-      const CartState.loaded(
-        items: [],
-        subtotal: 0,
-        discount: 0,
-        tax: 0,
-        appliedPromos: [],
-        ignoredRules: [],
-      ),
-    );
+    // Reset seluruh state ke kondisi default yang suci (tanpa konteks)
+    emit(const CartState.loaded());
   }
 
   Future<void> _onCheckout(_Checkout event, Emitter<CartState> emit) async {
@@ -153,22 +203,12 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           emit(
             CartState.error(failure.message ?? 'Gagal memproses pembayaran'),
           );
-          if (currentState is _Loaded) {
-            emit(currentState);
-          }
+          if (currentState is _Loaded) emit(currentState);
         },
         (order) {
           emit(CartState.checkoutSuccess(order));
-          emit(
-            const CartState.loaded(
-              items: [],
-              subtotal: 0,
-              discount: 0,
-              tax: 0,
-              appliedPromos: [],
-              ignoredRules: [],
-            ),
-          );
+          // Reset cart setelah sukses bayar
+          emit(const CartState.loaded());
         },
       );
     }
@@ -180,7 +220,16 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   ) async {
     await state.maybeWhen(
       loaded:
-          (items, subtotal, discount, tax, appliedPromos, ignoredRules) async {
+          (
+            items,
+            subtotal,
+            discount,
+            tax,
+            appliedPromos,
+            ignoredRules,
+            tableNumber,
+            activeOrder,
+          ) async {
             final newList = List<String>.from(ignoredRules);
             if (newList.contains(event.ruleName)) {
               newList.remove(event.ruleName);
@@ -191,6 +240,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             final newState = await _calculateCartState(
               items,
               ignoredRules: newList,
+              tableNumber: tableNumber,
+              activeOrder: activeOrder,
             );
             if (!emit.isDone) emit(newState);
           },
@@ -198,9 +249,12 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     );
   }
 
+  // ✅ HELPER: Membawa tableNumber dan activeOrder setiap kali di-kalkulasi
   Future<CartState> _calculateCartState(
     List<CartItemPayload> items, {
     List<String> ignoredRules = const [],
+    String? tableNumber,
+    OrderModel? activeOrder,
   }) async {
     double subtotal = 0;
 
@@ -225,8 +279,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           'promo_code_input': null,
           'member_id': null,
           'use_points': false,
-          'ignored_rules':
-              ignoredRules, // ✅ API LARAVEL SEKARANG TAHU PROMO APA YG HARUS DIABAIKAN
+          'ignored_rules': ignoredRules,
         };
 
         final result = await _repository.checkPromo(payload);
@@ -240,11 +293,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           if (responseMap['applied_rules'] != null) {
             final rulesList = responseMap['applied_rules'] as List;
             appliedRules = rulesList.map((rule) {
-              if (rule is Map) {
+              if (rule is Map)
                 return rule['name']?.toString() ??
                     rule['type']?.toString() ??
                     'PROMO';
-              }
               return rule.toString();
             }).toList();
           }
@@ -262,7 +314,9 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       discount: discount,
       tax: tax,
       appliedPromos: appliedRules,
-      ignoredRules: ignoredRules, // Simpan state ini ke layar UI
+      ignoredRules: ignoredRules,
+      tableNumber: tableNumber, // ✅ Konteks tetap hidup
+      activeOrder: activeOrder, // ✅ Konteks tetap hidup
     );
   }
 

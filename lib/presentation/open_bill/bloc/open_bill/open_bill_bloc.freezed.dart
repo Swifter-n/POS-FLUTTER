@@ -22,6 +22,8 @@ mixin _$OpenBillEvent {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -36,6 +38,7 @@ mixin _$OpenBillEvent {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -49,6 +52,7 @@ mixin _$OpenBillEvent {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -63,6 +67,7 @@ mixin _$OpenBillEvent {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -76,6 +81,7 @@ mixin _$OpenBillEvent {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -89,6 +95,7 @@ mixin _$OpenBillEvent {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,
@@ -168,6 +175,8 @@ class _$FetchOpenBillsImpl implements _FetchOpenBills {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -186,6 +195,7 @@ class _$FetchOpenBillsImpl implements _FetchOpenBills {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -203,6 +213,7 @@ class _$FetchOpenBillsImpl implements _FetchOpenBills {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -224,6 +235,7 @@ class _$FetchOpenBillsImpl implements _FetchOpenBills {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -241,6 +253,7 @@ class _$FetchOpenBillsImpl implements _FetchOpenBills {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -258,6 +271,7 @@ class _$FetchOpenBillsImpl implements _FetchOpenBills {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,
@@ -366,6 +380,8 @@ class _$CreateOpenBillImpl implements _CreateOpenBill {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -384,6 +400,7 @@ class _$CreateOpenBillImpl implements _CreateOpenBill {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -401,6 +418,7 @@ class _$CreateOpenBillImpl implements _CreateOpenBill {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -422,6 +440,7 @@ class _$CreateOpenBillImpl implements _CreateOpenBill {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -439,6 +458,7 @@ class _$CreateOpenBillImpl implements _CreateOpenBill {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -456,6 +476,7 @@ class _$CreateOpenBillImpl implements _CreateOpenBill {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,
@@ -577,6 +598,8 @@ class _$AddItemToBillImpl implements _AddItemToBill {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -595,6 +618,7 @@ class _$AddItemToBillImpl implements _AddItemToBill {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -612,6 +636,7 @@ class _$AddItemToBillImpl implements _AddItemToBill {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -633,6 +658,7 @@ class _$AddItemToBillImpl implements _AddItemToBill {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -650,6 +676,7 @@ class _$AddItemToBillImpl implements _AddItemToBill {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -667,6 +694,7 @@ class _$AddItemToBillImpl implements _AddItemToBill {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,
@@ -694,6 +722,228 @@ abstract class _AddItemToBill implements OpenBillEvent {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AddItemToBillImplCopyWith<_$AddItemToBillImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$AddItemsToBillImplCopyWith<$Res> {
+  factory _$$AddItemsToBillImplCopyWith(
+    _$AddItemsToBillImpl value,
+    $Res Function(_$AddItemsToBillImpl) then,
+  ) = __$$AddItemsToBillImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int orderId, List<CartItemPayload> items});
+}
+
+/// @nodoc
+class __$$AddItemsToBillImplCopyWithImpl<$Res>
+    extends _$OpenBillEventCopyWithImpl<$Res, _$AddItemsToBillImpl>
+    implements _$$AddItemsToBillImplCopyWith<$Res> {
+  __$$AddItemsToBillImplCopyWithImpl(
+    _$AddItemsToBillImpl _value,
+    $Res Function(_$AddItemsToBillImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of OpenBillEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? orderId = null, Object? items = null}) {
+    return _then(
+      _$AddItemsToBillImpl(
+        null == orderId
+            ? _value.orderId
+            : orderId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        null == items
+            ? _value._items
+            : items // ignore: cast_nullable_to_non_nullable
+                  as List<CartItemPayload>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$AddItemsToBillImpl implements _AddItemsToBill {
+  const _$AddItemsToBillImpl(this.orderId, final List<CartItemPayload> items)
+    : _items = items;
+
+  @override
+  final int orderId;
+  final List<CartItemPayload> _items;
+  @override
+  List<CartItemPayload> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_items);
+  }
+
+  @override
+  String toString() {
+    return 'OpenBillEvent.addItemsToBill(orderId: $orderId, items: $items)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AddItemsToBillImpl &&
+            (identical(other.orderId, orderId) || other.orderId == orderId) &&
+            const DeepCollectionEquality().equals(other._items, _items));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    orderId,
+    const DeepCollectionEquality().hash(_items),
+  );
+
+  /// Create a copy of OpenBillEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AddItemsToBillImplCopyWith<_$AddItemsToBillImpl> get copyWith =>
+      __$$AddItemsToBillImplCopyWithImpl<_$AddItemsToBillImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() fetchOpenBills,
+    required TResult Function(OpenBillPayload payload) createOpenBill,
+    required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
+    required TResult Function(int orderId, int itemId) removeItemFromBill,
+    required TResult Function(int orderId, Map<String, dynamic> paymentData)
+    payBill,
+    required TResult Function(int orderId) cancelBill,
+    required TResult Function(OrderModel bill) selectBill,
+    required TResult Function(String ruleName) ignorePromo,
+    required TResult Function() resetIgnored,
+    required TResult Function(bool use) toggleUsePoints,
+  }) {
+    return addItemsToBill(orderId, items);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? fetchOpenBills,
+    TResult? Function(OpenBillPayload payload)? createOpenBill,
+    TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
+    TResult? Function(int orderId, int itemId)? removeItemFromBill,
+    TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
+    TResult? Function(int orderId)? cancelBill,
+    TResult? Function(OrderModel bill)? selectBill,
+    TResult? Function(String ruleName)? ignorePromo,
+    TResult? Function()? resetIgnored,
+    TResult? Function(bool use)? toggleUsePoints,
+  }) {
+    return addItemsToBill?.call(orderId, items);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? fetchOpenBills,
+    TResult Function(OpenBillPayload payload)? createOpenBill,
+    TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
+    TResult Function(int orderId, int itemId)? removeItemFromBill,
+    TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
+    TResult Function(int orderId)? cancelBill,
+    TResult Function(OrderModel bill)? selectBill,
+    TResult Function(String ruleName)? ignorePromo,
+    TResult Function()? resetIgnored,
+    TResult Function(bool use)? toggleUsePoints,
+    required TResult orElse(),
+  }) {
+    if (addItemsToBill != null) {
+      return addItemsToBill(orderId, items);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_FetchOpenBills value) fetchOpenBills,
+    required TResult Function(_CreateOpenBill value) createOpenBill,
+    required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
+    required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
+    required TResult Function(_PayBill value) payBill,
+    required TResult Function(_CancelBill value) cancelBill,
+    required TResult Function(_SelectBill value) selectBill,
+    required TResult Function(_IgnorePromo value) ignorePromo,
+    required TResult Function(_ResetIgnored value) resetIgnored,
+    required TResult Function(_ToggleUsePoints value) toggleUsePoints,
+  }) {
+    return addItemsToBill(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_FetchOpenBills value)? fetchOpenBills,
+    TResult? Function(_CreateOpenBill value)? createOpenBill,
+    TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
+    TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
+    TResult? Function(_PayBill value)? payBill,
+    TResult? Function(_CancelBill value)? cancelBill,
+    TResult? Function(_SelectBill value)? selectBill,
+    TResult? Function(_IgnorePromo value)? ignorePromo,
+    TResult? Function(_ResetIgnored value)? resetIgnored,
+    TResult? Function(_ToggleUsePoints value)? toggleUsePoints,
+  }) {
+    return addItemsToBill?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_FetchOpenBills value)? fetchOpenBills,
+    TResult Function(_CreateOpenBill value)? createOpenBill,
+    TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
+    TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
+    TResult Function(_PayBill value)? payBill,
+    TResult Function(_CancelBill value)? cancelBill,
+    TResult Function(_SelectBill value)? selectBill,
+    TResult Function(_IgnorePromo value)? ignorePromo,
+    TResult Function(_ResetIgnored value)? resetIgnored,
+    TResult Function(_ToggleUsePoints value)? toggleUsePoints,
+    required TResult orElse(),
+  }) {
+    if (addItemsToBill != null) {
+      return addItemsToBill(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _AddItemsToBill implements OpenBillEvent {
+  const factory _AddItemsToBill(
+    final int orderId,
+    final List<CartItemPayload> items,
+  ) = _$AddItemsToBillImpl;
+
+  int get orderId;
+  List<CartItemPayload> get items;
+
+  /// Create a copy of OpenBillEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AddItemsToBillImplCopyWith<_$AddItemsToBillImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -780,6 +1030,8 @@ class _$RemoveItemFromBillImpl implements _RemoveItemFromBill {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -798,6 +1050,7 @@ class _$RemoveItemFromBillImpl implements _RemoveItemFromBill {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -815,6 +1068,7 @@ class _$RemoveItemFromBillImpl implements _RemoveItemFromBill {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -836,6 +1090,7 @@ class _$RemoveItemFromBillImpl implements _RemoveItemFromBill {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -853,6 +1108,7 @@ class _$RemoveItemFromBillImpl implements _RemoveItemFromBill {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -870,6 +1126,7 @@ class _$RemoveItemFromBillImpl implements _RemoveItemFromBill {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,
@@ -993,6 +1250,8 @@ class _$PayBillImpl implements _PayBill {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -1011,6 +1270,7 @@ class _$PayBillImpl implements _PayBill {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -1028,6 +1288,7 @@ class _$PayBillImpl implements _PayBill {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -1049,6 +1310,7 @@ class _$PayBillImpl implements _PayBill {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -1066,6 +1328,7 @@ class _$PayBillImpl implements _PayBill {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -1083,6 +1346,7 @@ class _$PayBillImpl implements _PayBill {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,
@@ -1188,6 +1452,8 @@ class _$CancelBillImpl implements _CancelBill {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -1206,6 +1472,7 @@ class _$CancelBillImpl implements _CancelBill {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -1223,6 +1490,7 @@ class _$CancelBillImpl implements _CancelBill {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -1244,6 +1512,7 @@ class _$CancelBillImpl implements _CancelBill {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -1261,6 +1530,7 @@ class _$CancelBillImpl implements _CancelBill {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -1278,6 +1548,7 @@ class _$CancelBillImpl implements _CancelBill {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,
@@ -1391,6 +1662,8 @@ class _$SelectBillImpl implements _SelectBill {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -1409,6 +1682,7 @@ class _$SelectBillImpl implements _SelectBill {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -1426,6 +1700,7 @@ class _$SelectBillImpl implements _SelectBill {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -1447,6 +1722,7 @@ class _$SelectBillImpl implements _SelectBill {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -1464,6 +1740,7 @@ class _$SelectBillImpl implements _SelectBill {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -1481,6 +1758,7 @@ class _$SelectBillImpl implements _SelectBill {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,
@@ -1583,6 +1861,8 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -1601,6 +1881,7 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -1618,6 +1899,7 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -1639,6 +1921,7 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -1656,6 +1939,7 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -1673,6 +1957,7 @@ class _$IgnorePromoImpl implements _IgnorePromo {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,
@@ -1747,6 +2032,8 @@ class _$ResetIgnoredImpl implements _ResetIgnored {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -1765,6 +2052,7 @@ class _$ResetIgnoredImpl implements _ResetIgnored {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -1782,6 +2070,7 @@ class _$ResetIgnoredImpl implements _ResetIgnored {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -1803,6 +2092,7 @@ class _$ResetIgnoredImpl implements _ResetIgnored {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -1820,6 +2110,7 @@ class _$ResetIgnoredImpl implements _ResetIgnored {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -1837,6 +2128,7 @@ class _$ResetIgnoredImpl implements _ResetIgnored {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,
@@ -1933,6 +2225,8 @@ class _$ToggleUsePointsImpl implements _ToggleUsePoints {
     required TResult Function() fetchOpenBills,
     required TResult Function(OpenBillPayload payload) createOpenBill,
     required TResult Function(int orderId, CartItemPayload item) addItemToBill,
+    required TResult Function(int orderId, List<CartItemPayload> items)
+    addItemsToBill,
     required TResult Function(int orderId, int itemId) removeItemFromBill,
     required TResult Function(int orderId, Map<String, dynamic> paymentData)
     payBill,
@@ -1951,6 +2245,7 @@ class _$ToggleUsePointsImpl implements _ToggleUsePoints {
     TResult? Function()? fetchOpenBills,
     TResult? Function(OpenBillPayload payload)? createOpenBill,
     TResult? Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult? Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult? Function(int orderId, int itemId)? removeItemFromBill,
     TResult? Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult? Function(int orderId)? cancelBill,
@@ -1968,6 +2263,7 @@ class _$ToggleUsePointsImpl implements _ToggleUsePoints {
     TResult Function()? fetchOpenBills,
     TResult Function(OpenBillPayload payload)? createOpenBill,
     TResult Function(int orderId, CartItemPayload item)? addItemToBill,
+    TResult Function(int orderId, List<CartItemPayload> items)? addItemsToBill,
     TResult Function(int orderId, int itemId)? removeItemFromBill,
     TResult Function(int orderId, Map<String, dynamic> paymentData)? payBill,
     TResult Function(int orderId)? cancelBill,
@@ -1989,6 +2285,7 @@ class _$ToggleUsePointsImpl implements _ToggleUsePoints {
     required TResult Function(_FetchOpenBills value) fetchOpenBills,
     required TResult Function(_CreateOpenBill value) createOpenBill,
     required TResult Function(_AddItemToBill value) addItemToBill,
+    required TResult Function(_AddItemsToBill value) addItemsToBill,
     required TResult Function(_RemoveItemFromBill value) removeItemFromBill,
     required TResult Function(_PayBill value) payBill,
     required TResult Function(_CancelBill value) cancelBill,
@@ -2006,6 +2303,7 @@ class _$ToggleUsePointsImpl implements _ToggleUsePoints {
     TResult? Function(_FetchOpenBills value)? fetchOpenBills,
     TResult? Function(_CreateOpenBill value)? createOpenBill,
     TResult? Function(_AddItemToBill value)? addItemToBill,
+    TResult? Function(_AddItemsToBill value)? addItemsToBill,
     TResult? Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult? Function(_PayBill value)? payBill,
     TResult? Function(_CancelBill value)? cancelBill,
@@ -2023,6 +2321,7 @@ class _$ToggleUsePointsImpl implements _ToggleUsePoints {
     TResult Function(_FetchOpenBills value)? fetchOpenBills,
     TResult Function(_CreateOpenBill value)? createOpenBill,
     TResult Function(_AddItemToBill value)? addItemToBill,
+    TResult Function(_AddItemsToBill value)? addItemsToBill,
     TResult Function(_RemoveItemFromBill value)? removeItemFromBill,
     TResult Function(_PayBill value)? payBill,
     TResult Function(_CancelBill value)? cancelBill,

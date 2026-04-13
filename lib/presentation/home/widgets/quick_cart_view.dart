@@ -49,12 +49,60 @@ class QuickCartView extends StatelessWidget {
                       taxAmount,
                       appliedPromos,
                       ignoredRules,
+                      tableNumber,
+                      activeOrder,
                     ) {
                       double grandTotal = subTotal + taxAmount - discountAmount;
                       if (grandTotal < 0) grandTotal = 0;
 
                       return Column(
                         children: [
+                          if (tableNumber != null)
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 16,
+                              ),
+                              color: Colors.blue.shade50,
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.table_restaurant,
+                                    size: 16,
+                                    color: Colors.blue,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Melayani Meja: ',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.blue.shade900,
+                                    ),
+                                  ),
+                                  Text(
+                                    tableNumber,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue.shade900,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  // Tombol untuk reset konteks jika salah pilih
+                                  InkWell(
+                                    onTap: () => context.read<CartBloc>().add(
+                                      const CartEvent.clearCart(),
+                                    ),
+                                    child: Icon(
+                                      Icons.cancel,
+                                      size: 16,
+                                      color: Colors.red.shade300,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           Container(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             child: Column(

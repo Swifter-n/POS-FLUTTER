@@ -31,6 +31,7 @@ mixin _$OpenBillPayload {
   int? get guestCount => throw _privateConstructorUsedError;
   @JsonKey(name: 'member_id')
   int? get memberId => throw _privateConstructorUsedError;
+  List<CartItemPayload>? get items => throw _privateConstructorUsedError;
 
   /// Serializes this OpenBillPayload to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -55,6 +56,7 @@ abstract class $OpenBillPayloadCopyWith<$Res> {
     @JsonKey(name: 'customer_name') String? customerName,
     @JsonKey(name: 'guest_count') int? guestCount,
     @JsonKey(name: 'member_id') int? memberId,
+    List<CartItemPayload>? items,
   });
 }
 
@@ -78,6 +80,7 @@ class _$OpenBillPayloadCopyWithImpl<$Res, $Val extends OpenBillPayload>
     Object? customerName = freezed,
     Object? guestCount = freezed,
     Object? memberId = freezed,
+    Object? items = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -101,6 +104,10 @@ class _$OpenBillPayloadCopyWithImpl<$Res, $Val extends OpenBillPayload>
                 ? _value.memberId
                 : memberId // ignore: cast_nullable_to_non_nullable
                       as int?,
+            items: freezed == items
+                ? _value.items
+                : items // ignore: cast_nullable_to_non_nullable
+                      as List<CartItemPayload>?,
           )
           as $Val,
     );
@@ -122,6 +129,7 @@ abstract class _$$OpenBillPayloadImplCopyWith<$Res>
     @JsonKey(name: 'customer_name') String? customerName,
     @JsonKey(name: 'guest_count') int? guestCount,
     @JsonKey(name: 'member_id') int? memberId,
+    List<CartItemPayload>? items,
   });
 }
 
@@ -144,6 +152,7 @@ class __$$OpenBillPayloadImplCopyWithImpl<$Res>
     Object? customerName = freezed,
     Object? guestCount = freezed,
     Object? memberId = freezed,
+    Object? items = freezed,
   }) {
     return _then(
       _$OpenBillPayloadImpl(
@@ -167,6 +176,10 @@ class __$$OpenBillPayloadImplCopyWithImpl<$Res>
             ? _value.memberId
             : memberId // ignore: cast_nullable_to_non_nullable
                   as int?,
+        items: freezed == items
+            ? _value._items
+            : items // ignore: cast_nullable_to_non_nullable
+                  as List<CartItemPayload>?,
       ),
     );
   }
@@ -182,7 +195,8 @@ class _$OpenBillPayloadImpl implements _OpenBillPayload {
     @JsonKey(name: 'customer_name') this.customerName,
     @JsonKey(name: 'guest_count') this.guestCount,
     @JsonKey(name: 'member_id') this.memberId,
-  });
+    final List<CartItemPayload>? items,
+  }) : _items = items;
 
   factory _$OpenBillPayloadImpl.fromJson(Map<String, dynamic> json) =>
       _$$OpenBillPayloadImplFromJson(json);
@@ -202,10 +216,19 @@ class _$OpenBillPayloadImpl implements _OpenBillPayload {
   @override
   @JsonKey(name: 'member_id')
   final int? memberId;
+  final List<CartItemPayload>? _items;
+  @override
+  List<CartItemPayload>? get items {
+    final value = _items;
+    if (value == null) return null;
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'OpenBillPayload(typeOrder: $typeOrder, tableNumber: $tableNumber, customerName: $customerName, guestCount: $guestCount, memberId: $memberId)';
+    return 'OpenBillPayload(typeOrder: $typeOrder, tableNumber: $tableNumber, customerName: $customerName, guestCount: $guestCount, memberId: $memberId, items: $items)';
   }
 
   @override
@@ -222,7 +245,8 @@ class _$OpenBillPayloadImpl implements _OpenBillPayload {
             (identical(other.guestCount, guestCount) ||
                 other.guestCount == guestCount) &&
             (identical(other.memberId, memberId) ||
-                other.memberId == memberId));
+                other.memberId == memberId) &&
+            const DeepCollectionEquality().equals(other._items, _items));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -234,6 +258,7 @@ class _$OpenBillPayloadImpl implements _OpenBillPayload {
     customerName,
     guestCount,
     memberId,
+    const DeepCollectionEquality().hash(_items),
   );
 
   /// Create a copy of OpenBillPayload
@@ -260,6 +285,7 @@ abstract class _OpenBillPayload implements OpenBillPayload {
     @JsonKey(name: 'customer_name') final String? customerName,
     @JsonKey(name: 'guest_count') final int? guestCount,
     @JsonKey(name: 'member_id') final int? memberId,
+    final List<CartItemPayload>? items,
   }) = _$OpenBillPayloadImpl;
 
   factory _OpenBillPayload.fromJson(Map<String, dynamic> json) =
@@ -280,6 +306,8 @@ abstract class _OpenBillPayload implements OpenBillPayload {
   @override
   @JsonKey(name: 'member_id')
   int? get memberId;
+  @override
+  List<CartItemPayload>? get items;
 
   /// Create a copy of OpenBillPayload
   /// with the given fields replaced by the non-null parameter values.

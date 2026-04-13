@@ -20,7 +20,6 @@ class CheckoutBarMobile extends StatelessWidget {
     return BlocBuilder<CartBloc, CartState>(
       builder: (context, state) {
         return state.maybeWhen(
-          // ✅ FIX: Parameter ke-6 (ignoredRules)
           loaded:
               (
                 items,
@@ -29,6 +28,8 @@ class CheckoutBarMobile extends StatelessWidget {
                 taxAmount,
                 appliedPromos,
                 ignoredRules,
+                tableNumber,
+                activeOrder,
               ) {
                 if (items.isEmpty) return const SizedBox.shrink();
 
@@ -38,6 +39,14 @@ class CheckoutBarMobile extends StatelessWidget {
                 );
                 double grandTotal = subTotal + taxAmount - discountAmount;
                 if (grandTotal < 0) grandTotal = 0;
+
+                // ✅ LOGIKA LABEL TOMBOL DINAMIS
+                String buttonLabel = 'Bayar';
+                if (activeOrder != null) {
+                  buttonLabel = 'SIMPAN TAMBAHAN';
+                } else if (tableNumber != null) {
+                  buttonLabel = 'LANJUT PESANAN';
+                }
 
                 return Container(
                   padding: const EdgeInsets.symmetric(
@@ -109,9 +118,11 @@ class CheckoutBarMobile extends StatelessWidget {
                           ),
                         ),
                         SizedBox(
-                          width: 140,
+                          width: activeOrder != null || tableNumber != null
+                              ? 170
+                              : 140, // Lebarkan sedikit jika label panjang
                           child: AppButton(
-                            label: 'Bayar',
+                            label: buttonLabel,
                             onPressed: () {
                               showDialog(
                                 context: context,

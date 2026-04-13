@@ -13,4 +13,8 @@ class CartEvent with _$CartEvent {
   const factory CartEvent.clearCart() = _ClearCart;
   const factory CartEvent.checkout(QuickCheckoutPayload payload) = _Checkout;
   const factory CartEvent.ignorePromo(String ruleName) = _IgnorePromo;
+  const factory CartEvent.setContext({
+    String? tableNumber,
+    OrderModel? activeOrder,
+  }) = _SetContext;
 }

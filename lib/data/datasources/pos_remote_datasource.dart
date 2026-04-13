@@ -18,6 +18,7 @@ import 'package:avis_pos/data/model/responses/table_model/table_model.dart';
 import 'package:avis_pos/data/model/responses/settings_model/settings_model.dart';
 import 'package:avis_pos/data/model/responses/printer_settings_model/printer_settings_model.dart';
 import 'package:avis_pos/data/model/responses/user_model.dart';
+import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -531,17 +532,37 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
   }
 
   @override
-  Future<void> saveTablePositions(List<Map<String, dynamic>> payload) async {
+  Future<Unit> saveTablePositions(List<Map<String, dynamic>> payload) async {
     final url = Uri.parse(
       '${Variables.baseUrl}${Variables.apiVersion}pos/tables/positions',
     );
+
+    // ✅ FIX: Konversi paksa nilai koordinat menjadi double agar seragam.
+    // Kita hapus "formattedPayload" dan langsung encode object Map murni.
+    final Map<String, dynamic> bodyData = {
+      "positions": payload
+          .map(
+            (e) => {
+              "id": e['id'],
+              // Ubah nilainya jadi string float "123.45" atau num
+              "x": (e['x'] as num).toDouble(),
+              "y": (e['y'] as num).toDouble(),
+            },
+          )
+          .toList(),
+    };
+
     final response = await client.post(
       url,
       headers: await _getHeaders(),
-      body: json.encode({'positions': payload}),
+      body: jsonEncode(bodyData), // Gunakan jsonEncode bawaan dart:convert
     );
-    if (response.statusCode != 200)
-      throw Exception('Gagal menyimpan posisi meja');
+
+    if (response.statusCode == 200) {
+      return unit;
+    }
+
+    throw Exception('Gagal menyimpan posisi: ${response.body}');
   }
 
   @override

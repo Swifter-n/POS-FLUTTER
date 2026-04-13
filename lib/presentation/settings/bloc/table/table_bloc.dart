@@ -64,17 +64,13 @@ class TableBloc extends Bloc<TableEvent, TableState> {
   ) async {
     await state.maybeWhen(
       loaded: (tables, _) async {
-        // Ubah state jadi saving agar tombol simpan bisa disable/loading
         emit(TableState.loaded(tables: tables, isSavingLayout: true));
 
-        // Buat payload dari meja-meja yang sudah tergeser di memori
         final payload = tables
-            .map((t) => {'id': t.id, 'x_position': t.x, 'y_position': t.y})
+            .map((t) => {'id': t.id, 'x': t.x, 'y': t.y})
             .toList();
 
-        final result = await _repository.saveTablePositions(
-          payload,
-        ); // Pastikan repository punya fungsi ini
+        final result = await _repository.saveTablePositions(payload);
 
         result.fold(
           (failure) {
@@ -83,7 +79,7 @@ class TableBloc extends Bloc<TableEvent, TableState> {
           },
           (_) {
             emit(const TableState.success('Layout denah berhasil disimpan!'));
-            add(const TableEvent.fetch()); // Refresh data murni dari server
+            add(const TableEvent.fetch());
           },
         );
       },

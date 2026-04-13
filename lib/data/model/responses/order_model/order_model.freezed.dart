@@ -56,6 +56,7 @@ mixin _$OrderModel {
   @JsonKey(name: 'created_at')
   DateTime? get createdAt => throw _privateConstructorUsedError;
   List<OrderItemModel> get items => throw _privateConstructorUsedError;
+  MemberModel? get member => throw _privateConstructorUsedError;
 
   /// Serializes this OrderModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -95,7 +96,10 @@ abstract class $OrderModelCopyWith<$Res> {
     @JsonKey(name: 'guest_count', readValue: _parseInt) int guestCount,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     List<OrderItemModel> items,
+    MemberModel? member,
   });
+
+  $MemberModelCopyWith<$Res>? get member;
 }
 
 /// @nodoc
@@ -132,6 +136,7 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
     Object? guestCount = null,
     Object? createdAt = freezed,
     Object? items = null,
+    Object? member = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -211,9 +216,27 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
                 ? _value.items
                 : items // ignore: cast_nullable_to_non_nullable
                       as List<OrderItemModel>,
+            member: freezed == member
+                ? _value.member
+                : member // ignore: cast_nullable_to_non_nullable
+                      as MemberModel?,
           )
           as $Val,
     );
+  }
+
+  /// Create a copy of OrderModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $MemberModelCopyWith<$Res>? get member {
+    if (_value.member == null) {
+      return null;
+    }
+
+    return $MemberModelCopyWith<$Res>(_value.member!, (value) {
+      return _then(_value.copyWith(member: value) as $Val);
+    });
   }
 }
 
@@ -247,7 +270,11 @@ abstract class _$$OrderModelImplCopyWith<$Res>
     @JsonKey(name: 'guest_count', readValue: _parseInt) int guestCount,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     List<OrderItemModel> items,
+    MemberModel? member,
   });
+
+  @override
+  $MemberModelCopyWith<$Res>? get member;
 }
 
 /// @nodoc
@@ -283,6 +310,7 @@ class __$$OrderModelImplCopyWithImpl<$Res>
     Object? guestCount = null,
     Object? createdAt = freezed,
     Object? items = null,
+    Object? member = freezed,
   }) {
     return _then(
       _$OrderModelImpl(
@@ -362,6 +390,10 @@ class __$$OrderModelImplCopyWithImpl<$Res>
             ? _value._items
             : items // ignore: cast_nullable_to_non_nullable
                   as List<OrderItemModel>,
+        member: freezed == member
+            ? _value.member
+            : member // ignore: cast_nullable_to_non_nullable
+                  as MemberModel?,
       ),
     );
   }
@@ -393,6 +425,7 @@ class _$OrderModelImpl implements _OrderModel {
     @JsonKey(name: 'guest_count', readValue: _parseInt) this.guestCount = 1,
     @JsonKey(name: 'created_at') this.createdAt,
     final List<OrderItemModel> items = const [],
+    this.member,
   }) : _appliedRules = appliedRules,
        _items = items;
 
@@ -468,8 +501,11 @@ class _$OrderModelImpl implements _OrderModel {
   }
 
   @override
+  final MemberModel? member;
+
+  @override
   String toString() {
-    return 'OrderModel(id: $id, orderNumber: $orderNumber, customerName: $customerName, tableNumber: $tableNumber, typeOrder: $typeOrder, totalPrice: $totalPrice, subTotal: $subTotal, tax: $tax, discount: $discount, status: $status, memberId: $memberId, pointsEarned: $pointsEarned, pointsRedeemed: $pointsRedeemed, appliedRules: $appliedRules, proof: $proof, paymentMethod: $paymentMethod, guestCount: $guestCount, createdAt: $createdAt, items: $items)';
+    return 'OrderModel(id: $id, orderNumber: $orderNumber, customerName: $customerName, tableNumber: $tableNumber, typeOrder: $typeOrder, totalPrice: $totalPrice, subTotal: $subTotal, tax: $tax, discount: $discount, status: $status, memberId: $memberId, pointsEarned: $pointsEarned, pointsRedeemed: $pointsRedeemed, appliedRules: $appliedRules, proof: $proof, paymentMethod: $paymentMethod, guestCount: $guestCount, createdAt: $createdAt, items: $items, member: $member)';
   }
 
   @override
@@ -511,7 +547,8 @@ class _$OrderModelImpl implements _OrderModel {
                 other.guestCount == guestCount) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
-            const DeepCollectionEquality().equals(other._items, _items));
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.member, member) || other.member == member));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -537,6 +574,7 @@ class _$OrderModelImpl implements _OrderModel {
     guestCount,
     createdAt,
     const DeepCollectionEquality().hash(_items),
+    member,
   ]);
 
   /// Create a copy of OrderModel
@@ -578,6 +616,7 @@ abstract class _OrderModel implements OrderModel {
     @JsonKey(name: 'guest_count', readValue: _parseInt) final int guestCount,
     @JsonKey(name: 'created_at') final DateTime? createdAt,
     final List<OrderItemModel> items,
+    final MemberModel? member,
   }) = _$OrderModelImpl;
 
   factory _OrderModel.fromJson(Map<String, dynamic> json) =
@@ -637,6 +676,8 @@ abstract class _OrderModel implements OrderModel {
   DateTime? get createdAt;
   @override
   List<OrderItemModel> get items;
+  @override
+  MemberModel? get member;
 
   /// Create a copy of OrderModel
   /// with the given fields replaced by the non-null parameter values.
