@@ -14,6 +14,8 @@ _$TableModelImpl _$$TableModelImplFromJson(Map<String, dynamic> json) =>
       y: (json['y'] as num?)?.toDouble() ?? 0.0,
       status: json['status'] as String? ?? 'available',
       capacity: (json['capacity'] as num?)?.toInt(),
+      activeOrderId: (json['active_order_id'] as num?)?.toInt(),
+      isOccupied: json['is_occupied'] as bool?,
     );
 
 Map<String, dynamic> _$$TableModelImplToJson(_$TableModelImpl instance) =>
@@ -24,4 +26,6 @@ Map<String, dynamic> _$$TableModelImplToJson(_$TableModelImpl instance) =>
       'y': instance.y,
       'status': instance.status,
       'capacity': instance.capacity,
+      'active_order_id': instance.activeOrderId,
+      'is_occupied': instance.isOccupied,
     };

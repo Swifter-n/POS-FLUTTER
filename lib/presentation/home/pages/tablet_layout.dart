@@ -3,7 +3,10 @@ import 'package:avis_pos/presentation/home/widgets/active_promo_slider.dart';
 import 'package:avis_pos/presentation/home/widgets/cart_summary.dart';
 import 'package:avis_pos/presentation/home/widgets/category_horizontal_list.dart';
 import 'package:avis_pos/presentation/home/widgets/product_grid_view.dart';
+import 'package:avis_pos/presentation/inventory/pages/inventory_page.dart';
+import 'package:avis_pos/presentation/member/pages/member_list_page.dart';
 import 'package:avis_pos/presentation/open_bill/pages/open_bill_page.dart';
+import 'package:avis_pos/presentation/reservation/pages/reservation_list_page.dart';
 import 'package:avis_pos/presentation/settings/pages/table_management_page.dart';
 import 'package:avis_pos/presentation/stock_count/pages/stock_count_list_page.dart';
 import 'package:avis_pos/presentation/settings/pages/printer_settings_page.dart';
@@ -107,11 +110,13 @@ class TabletLayout extends StatelessWidget {
           // Menu Kasir Cepat (Sedang Aktif)
           _buildNavItem(Icons.shopping_bag, 'Kasir', true, () {}),
 
-          // Menu Open Bill (Navigasi)
-          _buildNavItem(Icons.receipt_long, 'Dine-in', false, () {
+          // Menu Reservation (Navigasi)
+          _buildNavItem(Icons.receipt_long, 'Reservation', false, () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const OpenBillPage()),
+              MaterialPageRoute(
+                builder: (context) => const ReservationListPage(),
+              ),
             );
           }),
 
@@ -130,7 +135,14 @@ class TabletLayout extends StatelessWidget {
           ),
 
           // Menu Lainnya
-          _buildNavItem(Icons.inventory_2_outlined, 'Stok', false, () {
+          _buildNavItem(Icons.inventory_2_outlined, 'Inventories', false, () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const InventoryPage()),
+            );
+          }),
+
+          _buildNavItem(Icons.inventory_2_outlined, 'Stock Count', false, () {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -139,10 +151,10 @@ class TabletLayout extends StatelessWidget {
             );
           }),
 
-          _buildNavItem(Icons.schedule, 'Shift', false, () {
+          _buildNavItem(Icons.people_outline_outlined, 'Member', false, () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const OpenShiftPage()),
+              MaterialPageRoute(builder: (context) => const MemberListPage()),
             );
           }),
 

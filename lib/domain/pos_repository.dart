@@ -64,6 +64,10 @@ abstract class IPosRepository {
     Map<String, dynamic> paymentData,
   );
   Future<Either<Failure, Unit>> cancelOrder(int orderId);
+  Future<Either<Failure, Unit>> cancelOrderWithReason(
+    int orderId,
+    String? reason,
+  );
 
   Future<Either<Failure, MemberModel>> checkMember(String code);
   Future<Either<Failure, MemberModel>> registerMember(
@@ -99,6 +103,10 @@ abstract class IPosRepository {
   );
   Future<Either<Failure, Unit>> deleteTable(int id);
   Future<Either<Failure, Unit>> clearTable(int tableId);
+  Future<Either<Failure, Unit>> transferTable(
+    int orderId,
+    String targetTableCode,
+  );
 
   Future<Either<Failure, List<ReservationModel>>> getReservations();
   Future<Either<Failure, ReservationModel>> storeReservation(

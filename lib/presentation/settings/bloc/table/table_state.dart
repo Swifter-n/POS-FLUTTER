@@ -11,6 +11,11 @@ class TableState with _$TableState {
     @Default(false) bool isSavingLayout,
   }) = _Loaded;
 
+  const factory TableState.successTransferTable(String message) =
+      _SuccessTransferTable;
+
+  const factory TableState.successVoidOrder(String message) = _SuccessVoidOrder;
+
   const factory TableState.success(String message) = _Success;
   const factory TableState.error(String message) = _Error;
 }

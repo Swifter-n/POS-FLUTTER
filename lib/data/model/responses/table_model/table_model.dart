@@ -12,6 +12,8 @@ class TableModel with _$TableModel {
     @JsonKey(name: 'y') @Default(0.0) double y,
     @Default('available') String status, // 'available', 'occupied'
     int? capacity,
+    @JsonKey(name: 'active_order_id') int? activeOrderId,
+    @JsonKey(name: 'is_occupied') bool? isOccupied,
   }) = _TableModel;
 
   factory TableModel.fromJson(Map<String, dynamic> json) =>

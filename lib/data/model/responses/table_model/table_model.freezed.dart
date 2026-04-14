@@ -30,6 +30,10 @@ mixin _$TableModel {
   String get status =>
       throw _privateConstructorUsedError; // 'available', 'occupied'
   int? get capacity => throw _privateConstructorUsedError;
+  @JsonKey(name: 'active_order_id')
+  int? get activeOrderId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_occupied')
+  bool? get isOccupied => throw _privateConstructorUsedError;
 
   /// Serializes this TableModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -55,6 +59,8 @@ abstract class $TableModelCopyWith<$Res> {
     @JsonKey(name: 'y') double y,
     String status,
     int? capacity,
+    @JsonKey(name: 'active_order_id') int? activeOrderId,
+    @JsonKey(name: 'is_occupied') bool? isOccupied,
   });
 }
 
@@ -79,6 +85,8 @@ class _$TableModelCopyWithImpl<$Res, $Val extends TableModel>
     Object? y = null,
     Object? status = null,
     Object? capacity = freezed,
+    Object? activeOrderId = freezed,
+    Object? isOccupied = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -106,6 +114,14 @@ class _$TableModelCopyWithImpl<$Res, $Val extends TableModel>
                 ? _value.capacity
                 : capacity // ignore: cast_nullable_to_non_nullable
                       as int?,
+            activeOrderId: freezed == activeOrderId
+                ? _value.activeOrderId
+                : activeOrderId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            isOccupied: freezed == isOccupied
+                ? _value.isOccupied
+                : isOccupied // ignore: cast_nullable_to_non_nullable
+                      as bool?,
           )
           as $Val,
     );
@@ -128,6 +144,8 @@ abstract class _$$TableModelImplCopyWith<$Res>
     @JsonKey(name: 'y') double y,
     String status,
     int? capacity,
+    @JsonKey(name: 'active_order_id') int? activeOrderId,
+    @JsonKey(name: 'is_occupied') bool? isOccupied,
   });
 }
 
@@ -151,6 +169,8 @@ class __$$TableModelImplCopyWithImpl<$Res>
     Object? y = null,
     Object? status = null,
     Object? capacity = freezed,
+    Object? activeOrderId = freezed,
+    Object? isOccupied = freezed,
   }) {
     return _then(
       _$TableModelImpl(
@@ -178,6 +198,14 @@ class __$$TableModelImplCopyWithImpl<$Res>
             ? _value.capacity
             : capacity // ignore: cast_nullable_to_non_nullable
                   as int?,
+        activeOrderId: freezed == activeOrderId
+            ? _value.activeOrderId
+            : activeOrderId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        isOccupied: freezed == isOccupied
+            ? _value.isOccupied
+            : isOccupied // ignore: cast_nullable_to_non_nullable
+                  as bool?,
       ),
     );
   }
@@ -193,6 +221,8 @@ class _$TableModelImpl implements _TableModel {
     @JsonKey(name: 'y') this.y = 0.0,
     this.status = 'available',
     this.capacity,
+    @JsonKey(name: 'active_order_id') this.activeOrderId,
+    @JsonKey(name: 'is_occupied') this.isOccupied,
   });
 
   factory _$TableModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -214,10 +244,16 @@ class _$TableModelImpl implements _TableModel {
   // 'available', 'occupied'
   @override
   final int? capacity;
+  @override
+  @JsonKey(name: 'active_order_id')
+  final int? activeOrderId;
+  @override
+  @JsonKey(name: 'is_occupied')
+  final bool? isOccupied;
 
   @override
   String toString() {
-    return 'TableModel(id: $id, code: $code, x: $x, y: $y, status: $status, capacity: $capacity)';
+    return 'TableModel(id: $id, code: $code, x: $x, y: $y, status: $status, capacity: $capacity, activeOrderId: $activeOrderId, isOccupied: $isOccupied)';
   }
 
   @override
@@ -231,13 +267,26 @@ class _$TableModelImpl implements _TableModel {
             (identical(other.y, y) || other.y == y) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.capacity, capacity) ||
-                other.capacity == capacity));
+                other.capacity == capacity) &&
+            (identical(other.activeOrderId, activeOrderId) ||
+                other.activeOrderId == activeOrderId) &&
+            (identical(other.isOccupied, isOccupied) ||
+                other.isOccupied == isOccupied));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, code, x, y, status, capacity);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    code,
+    x,
+    y,
+    status,
+    capacity,
+    activeOrderId,
+    isOccupied,
+  );
 
   /// Create a copy of TableModel
   /// with the given fields replaced by the non-null parameter values.
@@ -261,6 +310,8 @@ abstract class _TableModel implements TableModel {
     @JsonKey(name: 'y') final double y,
     final String status,
     final int? capacity,
+    @JsonKey(name: 'active_order_id') final int? activeOrderId,
+    @JsonKey(name: 'is_occupied') final bool? isOccupied,
   }) = _$TableModelImpl;
 
   factory _TableModel.fromJson(Map<String, dynamic> json) =
@@ -280,6 +331,12 @@ abstract class _TableModel implements TableModel {
   String get status; // 'available', 'occupied'
   @override
   int? get capacity;
+  @override
+  @JsonKey(name: 'active_order_id')
+  int? get activeOrderId;
+  @override
+  @JsonKey(name: 'is_occupied')
+  bool? get isOccupied;
 
   /// Create a copy of TableModel
   /// with the given fields replaced by the non-null parameter values.

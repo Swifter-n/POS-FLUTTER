@@ -1,7 +1,10 @@
 import 'package:avis_pos/core/constants/colors.dart';
 import 'package:avis_pos/presentation/auth/bloc/auth/auth_bloc.dart';
 import 'package:avis_pos/presentation/auth/pages/login_page.dart';
+import 'package:avis_pos/presentation/inventory/pages/inventory_page.dart';
+import 'package:avis_pos/presentation/member/pages/member_list_page.dart';
 import 'package:avis_pos/presentation/open_bill/pages/open_bill_page.dart';
+import 'package:avis_pos/presentation/reservation/pages/reservation_list_page.dart';
 import 'package:avis_pos/presentation/settings/pages/table_management_page.dart';
 import 'package:avis_pos/presentation/stock_count/pages/stock_count_list_page.dart';
 import 'package:avis_pos/presentation/settings/pages/printer_settings_page.dart';
@@ -113,12 +116,14 @@ class DrawerWidgetMobile extends StatelessWidget {
                 ),
                 _buildDrawerItem(
                   icon: Icons.receipt_long,
-                  title: 'Open Bill (Dine-in)',
+                  title: 'Reservation',
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const OpenBillPage()),
+                      MaterialPageRoute(
+                        builder: (_) => const ReservationListPage(),
+                      ),
                     );
                   },
                 ),
@@ -136,8 +141,21 @@ class DrawerWidgetMobile extends StatelessWidget {
                     );
                   },
                 ),
+
                 _buildDrawerItem(
-                  icon: Icons.inventory_2,
+                  icon: Icons.inventory_2_outlined,
+                  title: 'Inventories',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const InventoryPage()),
+                    );
+                  },
+                ),
+
+                _buildDrawerItem(
+                  icon: Icons.warehouse_outlined,
                   title: 'Stock Count',
                   onTap: () {
                     Navigator.pop(context);
@@ -146,6 +164,18 @@ class DrawerWidgetMobile extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (_) => const StockCountListPage(),
                       ),
+                    );
+                  },
+                ),
+
+                _buildDrawerItem(
+                  icon: Icons.card_membership_outlined,
+                  title: 'Member',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MemberListPage()),
                     );
                   },
                 ),

@@ -51,6 +51,10 @@ abstract class IPosRemoteDataSource {
 
   Future<OrderModel> payOrder(int orderId, Map<String, dynamic> paymentData);
   Future<void> cancelOrder(int orderId);
+  Future<Either<String, Unit>> cancelOrderWithReason(
+    int orderId,
+    String? reason,
+  );
 
   Future<MemberModel> checkMember(String code);
   Future<MemberModel> registerMember(Map<String, dynamic> data);
@@ -75,6 +79,7 @@ abstract class IPosRemoteDataSource {
   Future<TableModel> createTable(Map<String, dynamic> data);
   Future<TableModel> updateTable(int id, Map<String, dynamic> data);
   Future<void> deleteTable(int id);
+  Future<void> transferTable(int orderId, String targetTableCode);
 
   Future<List<ReservationModel>> getReservations();
   Future<ReservationModel> storeReservation(Map<String, dynamic> data);
@@ -602,6 +607,48 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
     );
     final response = await client.delete(url, headers: await _getHeaders());
     if (response.statusCode != 200) throw Exception('Gagal menghapus meja');
+  }
+
+  @override
+  Future<void> transferTable(int orderId, String targetTableCode) async {
+    final url = Uri.parse(
+      '${Variables.baseUrl}${Variables.apiVersion}pos/orders/$orderId/move-table',
+    );
+    final response = await client.post(
+      url,
+      headers: await _getHeaders(),
+      body: json.encode({'target_table_code': targetTableCode}),
+    );
+    if (response.statusCode != 200) {
+      final body = json.decode(response.body);
+      throw Exception(body['message'] ?? 'Gagal memindahkan meja');
+    }
+  }
+
+  @override
+  Future<Either<String, Unit>> cancelOrderWithReason(
+    int orderId,
+    String? reason,
+  ) async {
+    try {
+      final url = Uri.parse(
+        '${Variables.baseUrl}${Variables.apiVersion}pos/orders/$orderId/cancel',
+      );
+      final response = await client.post(
+        url,
+        headers: await _getHeaders(),
+        body: json.encode({'cancel_reason': reason}),
+      );
+
+      if (response.statusCode != 200) {
+        final body = json.decode(response.body);
+        return Left(body['message'] ?? 'Gagal membatalkan pesanan');
+      }
+
+      return Right(unit);
+    } catch (e) {
+      return Left('Terjadi kesalahan koneksi atau server.');
+    }
   }
 
   @override

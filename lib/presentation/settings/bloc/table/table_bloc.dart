@@ -13,6 +13,8 @@ class TableBloc extends Bloc<TableEvent, TableState> {
   TableBloc(this._repository) : super(const TableState.initial()) {
     on<_Fetch>(_onFetch);
     on<_MoveTable>(_onMoveTable);
+    on<_TransferTable>(_onTransferTable);
+    on<_VoidOrder>(_onVoidOrder);
     on<_SavePositions>(_onSavePositions);
     on<_AddTable>(_onAddTable);
     on<_UpdateTable>(_onUpdateTable);
@@ -57,6 +59,34 @@ class TableBloc extends Bloc<TableEvent, TableState> {
     );
   }
 
+  Future<void> _onVoidOrder(_VoidOrder event, Emitter<TableState> emit) async {
+    emit(const TableState.loading());
+
+    final result = await _repository.cancelOrderWithReason(
+      event.orderId,
+      event.reason,
+    );
+
+    await result.fold(
+      (failure) async => emit(
+        TableState.error(failure.message ?? 'Gagal membatalkan pesanan'),
+      ),
+      (_) async {
+        emit(const TableState.successVoidOrder('Pesanan berhasil dibatalkan!'));
+
+        // Langsung fetch & emit loaded dalam handler yang sama,
+        // agar data meja tidak hilang saat state transition.
+        final refreshResult = await _repository.getTables();
+        refreshResult.fold(
+          (failure) => emit(
+            TableState.error(failure.message ?? 'Gagal memuat data meja'),
+          ),
+          (tables) => emit(TableState.loaded(tables: tables)),
+        );
+      },
+    );
+  }
+
   // 3. Simpan perubahan posisi semua meja secara massal ke Backend
   Future<void> _onSavePositions(
     _SavePositions event,
@@ -84,6 +114,31 @@ class TableBloc extends Bloc<TableEvent, TableState> {
         );
       },
       orElse: () async {},
+    );
+  }
+
+  Future<void> _onTransferTable(
+    _TransferTable event,
+    Emitter<TableState> emit,
+  ) async {
+    emit(const TableState.loading());
+
+    final result = await _repository.transferTable(
+      event.orderId,
+      event.targetTableCode,
+    );
+
+    result.fold(
+      (failure) {
+        emit(
+          TableState.error(failure.message ?? 'Gagal memindahkan pelanggan.'),
+        );
+      },
+      (_) {
+        emit(const TableState.successTransferTable('Berhasil pindah meja!'));
+
+        add(const TableEvent.fetch());
+      },
     );
   }
 

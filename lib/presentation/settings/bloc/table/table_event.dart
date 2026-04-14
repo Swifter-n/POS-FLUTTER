@@ -20,4 +20,12 @@ class TableEvent with _$TableEvent {
   const factory TableEvent.deleteTable(int id) = _DeleteTable;
 
   const factory TableEvent.clear(int tableId) = _Clear;
+
+  const factory TableEvent.voidOrder({required int orderId, String? reason}) =
+      _VoidOrder;
+
+  const factory TableEvent.transferTable({
+    required int orderId,
+    required String targetTableCode,
+  }) = _TransferTable;
 }

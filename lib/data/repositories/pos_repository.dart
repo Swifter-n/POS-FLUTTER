@@ -435,6 +435,34 @@ class PosRepositoryImpl implements IPosRepository {
   }
 
   @override
+  Future<Either<Failure, Unit>> transferTable(
+    int orderId,
+    String targetTableCode,
+  ) async {
+    try {
+      await remoteDataSource.transferTable(orderId, targetTableCode);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.apiError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> cancelOrderWithReason(
+    int orderId,
+    String? reason,
+  ) async {
+    final result = await remoteDataSource.cancelOrderWithReason(
+      orderId,
+      reason,
+    );
+    return result.fold(
+      (error) => Left(Failure.apiError(message: error)),
+      (_) => const Right(unit),
+    );
+  }
+
+  @override
   Future<Either<Failure, List<ReservationModel>>> getReservations() async {
     try {
       final result = await remoteDataSource.getReservations();

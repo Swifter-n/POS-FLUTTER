@@ -113,6 +113,187 @@ class _TableManagementPageState extends State<TableManagementPage> {
     );
   }
 
+  void _showVoidOrderDialog(TableModel table, OrderModel? activeOrder) {
+    final int? orderId = activeOrder?.id ?? table.activeOrderId;
+    final reasonController = TextEditingController();
+
+    if (orderId == null) return;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Batalkan Pesanan (Void)'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Apakah Anda yakin ingin membatalkan seluruh pesanan di Meja ${table.code}?',
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: reasonController,
+                decoration: const InputDecoration(
+                  labelText: 'Alasan Pembatalan',
+                  hintText: 'Contoh: Pelanggan mendadak pergi',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                context.read<TableBloc>().add(
+                  TableEvent.voidOrder(
+                    orderId: orderId,
+                    reason: reasonController.text,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text(
+                'Ya, Batalkan',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showTransferTableDialog(
+    TableModel sourceTable,
+    OrderModel? activeOrder,
+  ) {
+    // Ambil ID pesanan dari parameter activeOrder atau dari relasi meja
+    final int? orderIdToMove = activeOrder?.id ?? sourceTable.activeOrderId;
+
+    if (orderIdToMove == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal: Tidak ada pesanan aktif di meja ini.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Pindah dari Meja ${sourceTable.code}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 350, // Membatasi tinggi dialog agar tidak kepanjangan
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Pilih meja kosong tujuan untuk pelanggan:',
+                  style: TextStyle(color: Colors.grey.shade600),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: BlocBuilder<TableBloc, TableState>(
+                    builder: (context, state) {
+                      return state.maybeWhen(
+                        loaded: (tables, _) {
+                          // 👇 Filter khusus: Hanya tampilkan meja yang TIDAK OCCUPIED
+                          final availableTables = tables.where((t) {
+                            final bool isOccupied = t.isOccupied ?? false;
+                            return !isOccupied && t.code != sourceTable.code;
+                          }).toList();
+
+                          if (availableTables.isEmpty) {
+                            return const Center(
+                              child: Text(
+                                'Maaf, tidak ada meja kosong saat ini.',
+                              ),
+                            );
+                          }
+
+                          return GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount:
+                                      3, // Tampilkan 3 Meja per baris
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                  childAspectRatio: 1.2,
+                                ),
+                            itemCount: availableTables.length,
+                            itemBuilder: (context, index) {
+                              final targetTable = availableTables[index];
+                              return InkWell(
+                                onTap: () {
+                                  // Tutup Dialog UI
+                                  Navigator.pop(dialogContext);
+
+                                  // Eksekusi Event Pindah Meja ke BLoC
+                                  context.read<TableBloc>().add(
+                                    TableEvent.transferTable(
+                                      orderId: orderIdToMove,
+                                      targetTableCode: targetTable.code ?? '',
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      targetTable.code ?? '',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        orElse: () =>
+                            const Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Batal', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // =========================================================================
   // LOGIKA MENU AKSI KASIR
   // =========================================================================
@@ -242,11 +423,10 @@ class _TableManagementPageState extends State<TableManagementPage> {
                 subtitle: 'Pindahkan pelanggan dan tagihan ke meja lain',
                 onTap: () {
                   Navigator.pop(bottomSheetContext);
+                  _showTransferTableDialog(table, activeOrder);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'Fitur Pindah Meja akan diaktifkan di Langkah 3! 🚀',
-                      ),
+                      content: Text('Move Table'),
                       backgroundColor: Colors.orange,
                     ),
                   );
@@ -260,11 +440,10 @@ class _TableManagementPageState extends State<TableManagementPage> {
                 subtitle: 'Batalkan seluruh pesanan di meja ini',
                 onTap: () {
                   Navigator.pop(bottomSheetContext);
+                  _showVoidOrderDialog(table, activeOrder);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'Fitur Void akan diaktifkan di Langkah 3! 🚀',
-                      ),
+                      content: Text('Cancel Orders'),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -492,6 +671,26 @@ class _TableManagementPageState extends State<TableManagementPage> {
         child: BlocConsumer<TableBloc, TableState>(
           listener: (context, state) {
             state.maybeWhen(
+              successVoidOrder: (message) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(message), backgroundColor: Colors.red),
+                );
+                context.read<OpenBillBloc>().add(
+                  const OpenBillEvent.fetchOpenBills(),
+                );
+              },
+              successTransferTable: (message) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Refresh data Open Bill agar sinkron dengan status meja terbaru
+                context.read<OpenBillBloc>().add(
+                  const OpenBillEvent.fetchOpenBills(),
+                );
+              },
               success: (message) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

@@ -46,14 +46,11 @@ class _ReservationListPageState extends State<ReservationListPage> {
         listener: (context, state) {
           state.maybeWhen(
             success: (msg) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(msg),
-                  backgroundColor: AppColors.primary,
-                ),
-              );
-
               context.read<TableBloc>().add(const TableEvent.fetch());
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(msg), backgroundColor: Colors.green),
+              );
             },
             error: (msg) => ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(msg), backgroundColor: Colors.red),
