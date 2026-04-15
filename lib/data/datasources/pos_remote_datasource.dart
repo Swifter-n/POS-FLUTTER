@@ -632,12 +632,12 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
   ) async {
     try {
       final url = Uri.parse(
-        '${Variables.baseUrl}${Variables.apiVersion}pos/orders/$orderId/cancel',
+        '${Variables.baseUrl}${Variables.apiVersion}pos/orders/$orderId/cancel-order',
       );
       final response = await client.post(
         url,
         headers: await _getHeaders(),
-        body: json.encode({'cancel_reason': reason}),
+        body: json.encode({'remarks': reason}),
       );
 
       if (response.statusCode != 200) {

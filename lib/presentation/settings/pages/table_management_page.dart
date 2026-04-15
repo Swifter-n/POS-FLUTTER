@@ -305,7 +305,10 @@ class _TableManagementPageState extends State<TableManagementPage> {
       return;
     }
 
-    if (table.status == 'available') {
+    // 👇 Gunakan isOccupied bawaan dari backend
+    final bool isOccupied = table.isOccupied ?? false;
+
+    if (!isOccupied) {
       showDialog(
         context: context,
         builder: (context) => NewBillModal(initialTableCode: table.code),
@@ -760,7 +763,8 @@ class _TableManagementPageState extends State<TableManagementPage> {
                         children: tables.asMap().entries.map((entry) {
                           final index = entry.key;
                           final table = entry.value;
-                          final isAvailable = table.status == 'available';
+                          final bool isOccupied = table.isOccupied ?? false;
+                          final isAvailable = !isOccupied;
 
                           // ✅ FIX 2: Logika "Anti-Tumpuk"
                           // Jika x dan y masih 0, kita beri posisi otomatis (index * 120) agar tidak tumpang tindih

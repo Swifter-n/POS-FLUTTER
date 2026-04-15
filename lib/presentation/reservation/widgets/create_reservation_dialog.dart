@@ -27,7 +27,6 @@ class _CreateReservationDialogState extends State<CreateReservationDialog> {
   @override
   void initState() {
     super.initState();
-    // Tarik data meja untuk mengisi Dropdown Pilihan Meja
     context.read<TableBloc>().add(const TableEvent.fetch());
   }
 
@@ -171,7 +170,7 @@ class _CreateReservationDialogState extends State<CreateReservationDialog> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Jumlah Tamu *',
+                                'Jumlah Tamu',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
@@ -226,7 +225,7 @@ class _CreateReservationDialogState extends State<CreateReservationDialog> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Waktu Datang *',
+                                'Waktu Datang',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
@@ -281,52 +280,111 @@ class _CreateReservationDialogState extends State<CreateReservationDialog> {
                     const SizedBox(height: 24),
 
                     // --- PILIH MEJA (TERINTEGRASI DGN TABLE BLOC) ---
-                    const Text(
-                      'Alokasi Meja (Opsional)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    BlocBuilder<TableBloc, TableState>(
-                      builder: (context, state) {
-                        return state.maybeWhen(
-                          loading: () => const LinearProgressIndicator(),
-                          loaded: (tables, _) {
-                            final availableTables = tables
-                                .where((t) => t.status == 'available')
-                                .toList();
-                            return DropdownButtonFormField<int>(
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Alokasi Meja',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          height: 120, // Tampilan horizontal atau grid kecil
+                          child: BlocBuilder<TableBloc, TableState>(
+                            builder: (context, state) {
+                              return state.maybeWhen(
+                                loaded: (tables, _) {
+                                  return ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: tables.length,
+                                    itemBuilder: (context, index) {
+                                      final table = tables[index];
+                                      // 👇 Logika status meja dari Backend
+                                      final bool isBooked =
+                                          table.isOccupied ?? false;
+                                      final bool isSelected =
+                                          _selectedTableId == table.id;
+
+                                      return InkWell(
+                                        onTap: isBooked
+                                            ? null
+                                            : () {
+                                                // Jika sudah booked, tidak bisa diklik
+                                                setState(() {
+                                                  _selectedTableId = table.id;
+                                                });
+                                              },
+                                        child: Container(
+                                          width: 80,
+                                          margin: const EdgeInsets.only(
+                                            right: 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            // Oranye jika terisi (Booked/Active), Putih jika kosong
+                                            color: isBooked
+                                                ? Colors.orange.shade100
+                                                : (isSelected
+                                                      ? Colors.blue.shade50
+                                                      : Colors.white),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: isSelected
+                                                  ? Colors.blue
+                                                  : (isBooked
+                                                        ? Colors.orange.shade300
+                                                        : Colors.grey.shade300),
+                                              width: isSelected ? 2 : 1,
+                                            ),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                isBooked
+                                                    ? Icons.block
+                                                    : Icons.table_bar,
+                                                color: isBooked
+                                                    ? Colors.orange
+                                                    : Colors.grey,
+                                              ),
+                                              Text(
+                                                table.code ?? '',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: isBooked
+                                                      ? Colors.orange.shade900
+                                                      : Colors.black87,
+                                                ),
+                                              ),
+                                              Text(
+                                                isBooked
+                                                    ? 'Terisi'
+                                                    : 'Tersedia',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: isBooked
+                                                      ? Colors.orange
+                                                      : Colors.green,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                orElse: () => const Center(
+                                  child: CircularProgressIndicator(),
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 14,
-                                ),
-                              ),
-                              hint: const Text('Pilih meja yang tersedia'),
-                              value: _selectedTableId,
-                              items: availableTables.map((table) {
-                                return DropdownMenuItem(
-                                  value: table.id,
-                                  child: Text(
-                                    '${table.code} (Kap: ${table.capacity ?? '-'})',
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (val) =>
-                                  setState(() => _selectedTableId = val),
-                            );
-                          },
-                          orElse: () => const Text(
-                            'Gagal memuat meja',
-                            style: TextStyle(color: Colors.red),
+                              );
+                            },
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
 
