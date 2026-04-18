@@ -10,7 +10,6 @@ import 'package:avis_pos/data/model/responses/member_voucher_model/member_vouche
 import 'package:avis_pos/data/model/responses/order_model/order_model.dart';
 import 'package:avis_pos/presentation/home/bloc/cart/cart_bloc.dart';
 import 'package:avis_pos/presentation/home/pages/payment_camera_page.dart';
-import 'package:avis_pos/presentation/home/widgets/table_map_picker.dart';
 import 'package:avis_pos/presentation/member/bloc/member/member_bloc.dart';
 import 'package:avis_pos/presentation/open_bill/bloc/open_bill/open_bill_bloc.dart';
 import 'package:avis_pos/presentation/settings/bloc/printer/printer_bloc.dart';
@@ -68,12 +67,17 @@ class PaymentModal extends StatefulWidget {
 class _PaymentModalState extends State<PaymentModal> {
   final TextEditingController _amountPaidController = TextEditingController();
   final TextEditingController _guestNameController = TextEditingController();
+  final TextEditingController _guestCountController = TextEditingController(
+    text: '1',
+  ); // TAMBAHAN: Untuk kapasitas pax
 
   String _orderType = 'Takeaway';
   String _paymentMethod = 'cash';
 
   int? _selectedTableId;
   String? _selectedTableCode;
+  int?
+  _selectedTableCapacity; // TAMBAHAN: Menyimpan kapasitas meja yang dipilih
   bool _isContextLocked = false;
 
   File? _proofImage;
@@ -124,25 +128,25 @@ class _PaymentModalState extends State<PaymentModal> {
             cartOrderType,
             cartCustomerName,
           ) {
-            // 1. Set Table
             if (tableNumber != null) {
               _selectedTableCode = tableNumber;
               _isContextLocked = true;
 
-              // ✅ FIX: Cari tableId yang sesuai dari TableBloc state
               final tableState = context.read<TableBloc>().state;
               tableState.maybeWhen(
                 loaded: (tables, _) {
                   try {
-                    _selectedTableId =
-                        tables.firstWhere((t) => t.code == tableNumber).id;
+                    final t = tables.firstWhere(
+                      (tbl) => tbl.code == tableNumber,
+                    );
+                    _selectedTableId = t.id;
+                    _selectedTableCapacity = t.capacity;
                   } catch (_) {}
                 },
                 orElse: () {},
               );
             }
 
-            // 2. Handle State jika ada activeOrder (Tagihan Aktif / Open Bill)
             if (activeOrder != null) {
               String dbType = activeOrder.typeOrder ?? 'Open Bill';
               _orderType =
@@ -158,6 +162,8 @@ class _PaymentModalState extends State<PaymentModal> {
 
               _selectedMemberName = activeOrder.customerName ?? 'Guest';
               _guestNameController.text = activeOrder.customerName ?? '';
+              _guestCountController.text = (activeOrder.guestCount ?? 1)
+                  .toString();
 
               if (activeOrder.member != null) {
                 _selectedMemberName =
@@ -182,12 +188,7 @@ class _PaymentModalState extends State<PaymentModal> {
                 _guestNameController.text = cName;
               }
             } else {
-              // 3. Pesanan Baru (Belum ada activeOrder)
               _selectedMemberId = null;
-
-              // 🔥 BACA MURNI DARI CART STATE, Tanpa lagi menebak status fisik meja!
-              // Jika kasir mengklik "Tambah Pesanan", isinya PASTI "Dine In"
-              // Jika kasir mengklik "Isi Pesanan Reservasi", isinya PASTI "Reservasi"
               _orderType = cartOrderType ?? 'Dine In';
               _guestNameController.text = cartCustomerName ?? '';
             }
@@ -200,7 +201,197 @@ class _PaymentModalState extends State<PaymentModal> {
   void dispose() {
     _amountPaidController.dispose();
     _guestNameController.dispose();
+    _guestCountController.dispose();
     super.dispose();
+  }
+
+  // =========================================================================
+  // MODAL CINEMA SEAT PICKER
+  // =========================================================================
+  void _showCinemaTablePicker(BuildContext context) {
+    final int currentGuestCount = int.tryParse(_guestCountController.text) ?? 1;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.75,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Pilih Meja (Cinema Seat)",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(modalContext),
+                  ),
+                ],
+              ),
+              const Divider(),
+              const SizedBox(height: 16),
+              Expanded(
+                child: BlocBuilder<TableBloc, TableState>(
+                  builder: (context, state) {
+                    return state.maybeWhen(
+                      loaded: (tables, _) {
+                        return GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4,
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                childAspectRatio: 1.0,
+                              ),
+                          itemCount: tables.length,
+                          itemBuilder: (context, index) {
+                            final table = tables[index];
+
+                            // Visual State Logic (Synced with 4-State Logic)
+                            final bool isOccupiedFisik =
+                                table.isOccupied ?? false;
+                            final String resStatus =
+                                table.reservationStatus?.toLowerCase() ?? '';
+                            final bool isReserved =
+                                resStatus == 'booked' || resStatus == 'seated';
+                            final bool hasActiveOrder =
+                                (table.activeOrderId != null &&
+                                table.activeOrderId! > 0);
+
+                            Color cardColor = Colors.white;
+                            Color borderColor = Colors.green.shade300;
+                            Color textColor = Colors.green.shade700;
+                            String badgeText = 'AVAIL';
+
+                            if (hasActiveOrder) {
+                              cardColor = Colors.red.shade50;
+                              borderColor = Colors.red.shade300;
+                              badgeText = 'OPEN';
+                              textColor = Colors.red.shade700;
+                            } else if (isOccupiedFisik && !isReserved) {
+                              cardColor = Colors.blue.shade50;
+                              borderColor = Colors.blue.shade300;
+                              badgeText = 'LUNAS';
+                              textColor = Colors.blue.shade700;
+                            } else if (isReserved) {
+                              cardColor = Colors.orange.shade50;
+                              borderColor = Colors.orange.shade300;
+                              badgeText = 'RSVD';
+                              textColor = Colors.orange.shade700;
+                            }
+
+                            final bool isSelected =
+                                _selectedTableCode == table.code;
+
+                            return InkWell(
+                              onTap: () {
+                                // --- VALIDASI KAPASITAS ---
+                                if (table.capacity != null &&
+                                    currentGuestCount > table.capacity!) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Meja ${table.code} kapasitasnya hanya ${table.capacity} pax!',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                // --- VALIDASI MEJA TERSEDIA ---
+                                if (badgeText != 'AVAIL' && !isSelected) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Meja ${table.code} sedang berstatus $badgeText.',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                setState(() {
+                                  _selectedTableCode = table.code;
+                                  _selectedTableId = table.id;
+                                  _selectedTableCapacity = table.capacity;
+                                });
+                                Navigator.pop(modalContext);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : cardColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? AppColors.primaryDark
+                                        : borderColor,
+                                    width: isSelected ? 3 : 1,
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      table.code,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                    Text(
+                                      "${table.capacity ?? 0} Pax",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: isSelected
+                                            ? Colors.white70
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      badgeText,
+                                      style: TextStyle(
+                                        fontSize: 8,
+                                        fontWeight: FontWeight.bold,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : textColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      orElse: () =>
+                          const Center(child: CircularProgressIndicator()),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   double _calculateTotalDiscount(double baseDiscount, double currentSubtotal) {
@@ -241,6 +432,24 @@ class _PaymentModalState extends State<PaymentModal> {
     List<dynamic> currentCartItems,
     List<String> currentIgnoredRules,
   ) {
+    final int currentGuestCount = int.tryParse(_guestCountController.text) ?? 1;
+
+    // VALIDASI KAPASITAS AKHIR SEBELUM SUBMIT
+    if (['Dine In', 'Reservasi', 'Open Bill'].contains(_orderType)) {
+      if (_selectedTableCapacity != null &&
+          currentGuestCount > _selectedTableCapacity!) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal! Jumlah tamu ($currentGuestCount) melebihi kapasitas Meja $_selectedTableCode ($_selectedTableCapacity pax).',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+
     double amountPaid = grandTotal;
 
     if (_paymentMethod == 'cash') {
@@ -260,10 +469,16 @@ class _PaymentModalState extends State<PaymentModal> {
       }
     }
 
-    if (_paymentMethod == 'qris' && _proofImage == null) {
+    if (['qris', 'card', 'transfer'].contains(_paymentMethod) &&
+        _proofImage == null) {
+      String label = 'pembayaran';
+      if (_paymentMethod == 'qris') label = 'QRIS';
+      if (_paymentMethod == 'card') label = 'Kartu (EDC)';
+      if (_paymentMethod == 'transfer') label = 'Transfer';
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Wajib melampirkan foto bukti pembayaran QRIS!'),
+        SnackBar(
+          content: Text('Wajib melampirkan foto bukti $label!'),
           backgroundColor: Colors.red,
         ),
       );
@@ -280,14 +495,12 @@ class _PaymentModalState extends State<PaymentModal> {
 
     final payload = QuickCheckoutPayload(
       typeOrder: _orderType,
-      tableId:
-          ['Dine In', 'Reservasi', 'Open Bill'].contains(_orderType)
-              ? _selectedTableId
-              : null,
-      tableNumber:
-          ['Dine In', 'Reservasi', 'Open Bill'].contains(_orderType)
-              ? _selectedTableCode
-              : null,
+      tableId: ['Dine In', 'Reservasi', 'Open Bill'].contains(_orderType)
+          ? _selectedTableId
+          : null,
+      tableNumber: ['Dine In', 'Reservasi', 'Open Bill'].contains(_orderType)
+          ? _selectedTableCode
+          : null,
       paymentMethod: _paymentMethod,
       amountPaid: amountPaid,
       items: currentCartItems.cast(),
@@ -319,7 +532,22 @@ class _PaymentModalState extends State<PaymentModal> {
       return;
     }
 
-    // Ambil context meja yang sedang aktif
+    final int currentGuestCount = int.tryParse(_guestCountController.text) ?? 1;
+
+    // VALIDASI KAPASITAS AKHIR SEBELUM SUBMIT
+    if (_selectedTableCapacity != null &&
+        currentGuestCount > _selectedTableCapacity!) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Gagal! Jumlah tamu ($currentGuestCount) melebihi kapasitas Meja $_selectedTableCode ($_selectedTableCapacity pax).',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final cartState = context.read<CartBloc>().state;
     OrderModel? activeOrder;
     cartState.maybeWhen(
@@ -355,6 +583,7 @@ class _PaymentModalState extends State<PaymentModal> {
                   ? _guestNameController.text
                   : 'Guest'),
         memberId: _selectedMemberId,
+        guestCount: currentGuestCount, // TAMBAHAN: Menyertakan guest count
         items: itemsPayload,
       );
       context.read<OpenBillBloc>().add(OpenBillEvent.createOpenBill(payload));
@@ -370,44 +599,6 @@ class _PaymentModalState extends State<PaymentModal> {
       ),
     );
   }
-  // void _submitOpenBill(
-  //   List<dynamic> currentCartItems,
-  //   List<String> currentIgnoredRules,
-  // ) {
-  //   if (_selectedTableCode == null) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Pilih meja terlebih dahulu untuk Open Bill!'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //     return;
-  //   }
-
-  //   final payload = OpenBillPayload(
-  //     typeOrder: _orderType,
-  //     tableNumber: _selectedTableCode,
-  //     customerName: _selectedMemberId != null
-  //         ? _selectedMemberName
-  //         : (_guestNameController.text.isNotEmpty
-  //               ? _guestNameController.text
-  //               : 'Guest'),
-  //     memberId: _selectedMemberId,
-  //     items: currentCartItems.whereType<CartItemPayload>().toList(),
-  //   );
-
-  //   context.read<OpenBillBloc>().add(OpenBillEvent.createOpenBill(payload));
-  //   context.read<TableBloc>().add(const TableEvent.fetch());
-  //   context.read<CartBloc>().add(const CartEvent.clearCart());
-  //   Navigator.pop(context);
-
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(
-  //       content: Text('Open Bill berhasil disimpan / diperbarui!'),
-  //       backgroundColor: Colors.green,
-  //     ),
-  //   );
-  // }
 
   Future<void> _executePrint(OrderModel order, double amountPaid) async {
     try {
@@ -489,7 +680,6 @@ class _PaymentModalState extends State<PaymentModal> {
                           context.read<MemberBloc>().add(
                             MemberEvent.checkMember(code),
                           );
-                          // Hanya pop jika dialogContext masih valid dan ini bukan aksi yang membatalkan segalanya
                           if (Navigator.canPop(dialogContext)) {
                             Navigator.pop(dialogContext);
                           }
@@ -515,7 +705,6 @@ class _PaymentModalState extends State<PaymentModal> {
                   context.read<MemberBloc>().add(
                     MemberEvent.checkMember(searchInput),
                   );
-                  // Tutup dialog agar dihandle listener utama
                   if (Navigator.canPop(dialogContext)) {
                     Navigator.pop(dialogContext);
                   }
@@ -534,7 +723,6 @@ class _PaymentModalState extends State<PaymentModal> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ FIX 3: MultiBlocListener Pindah ke Level Teratas agar Silent Fetch berjalan sempurna!
     return MultiBlocListener(
       listeners: [
         BlocListener<CartBloc, CartState>(
@@ -560,7 +748,6 @@ class _PaymentModalState extends State<PaymentModal> {
             );
           },
         ),
-        // ✅ Listener MemberBloc mendengarkan dari Background (Silent Fetch)
         BlocListener<MemberBloc, MemberState>(
           listener: (context, state) {
             state.maybeWhen(
@@ -606,7 +793,6 @@ class _PaymentModalState extends State<PaymentModal> {
             );
           },
         ),
-        // ✅ Listener TableBloc: Sinkronkan ID meja jika baru saja termuat
         BlocListener<TableBloc, TableState>(
           listener: (context, state) {
             state.maybeWhen(
@@ -614,9 +800,11 @@ class _PaymentModalState extends State<PaymentModal> {
                 if (_selectedTableCode != null && _selectedTableId == null) {
                   setState(() {
                     try {
-                      _selectedTableId = tables
-                          .firstWhere((t) => t.code == _selectedTableCode)
-                          .id;
+                      final t = tables.firstWhere(
+                        (tbl) => tbl.code == _selectedTableCode,
+                      );
+                      _selectedTableId = t.id;
+                      _selectedTableCapacity = t.capacity;
                     } catch (_) {}
                   });
                 }
@@ -689,738 +877,756 @@ class _PaymentModalState extends State<PaymentModal> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
-            child: SingleChildScrollView(
-              child: Container(
-                width: 850,
-                padding: const EdgeInsets.all(32),
-                child: Stack(
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Selesaikan Pembayaran',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 850,
+                maxHeight: MediaQuery.of(context).size.height * 0.9,
+              ),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Stack(
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Selesaikan Pembayaran',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.grey),
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                          ],
-                        ),
-                        const Divider(height: 32),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Tipe Pesanan',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-
-                                  Row(
-                                    children: [
-                                      _orderTypeChip('Takeaway'),
-                                      const SizedBox(width: 8),
-                                      _orderTypeChip('Dine In'),
-                                      const SizedBox(width: 8),
-                                      _orderTypeChip('Open Bill'),
-                                      const SizedBox(width: 8),
-                                      _orderTypeChip('Reservasi'),
-                                    ],
-                                  ),
-
-                                  if (_orderType == 'Dine In' ||
-                                      _orderType == 'Open Bill') ...[
-                                    const SizedBox(height: 16),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                          const Divider(height: 32),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
                                     const Text(
-                                      'Pilih Meja',
+                                      'Tipe Pesanan',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     const SizedBox(height: 8),
 
-                                    const SizedBox(height: 16),
-                                    const Text(
-                                      'Pemilihan Meja',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    // --- FIX 1: Menggunakan Wrap agar tidak Overflow di layar kecil ---
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: [
+                                        _orderTypeChip('Takeaway'),
+                                        _orderTypeChip('Dine In'),
+                                        _orderTypeChip('Open Bill'),
+                                        _orderTypeChip('Reservasi'),
+                                      ],
                                     ),
-                                    const SizedBox(height: 8),
 
-                                    BlocBuilder<TableBloc, TableState>(
-                                      builder: (context, tableState) {
-                                        return tableState.maybeWhen(
-                                          loaded: (tables, _) {
-                                            // Fallback pencocokan ID
-                                            if (_selectedTableId == null &&
-                                                _selectedTableCode != null) {
-                                              try {
-                                                _selectedTableId = tables
-                                                    .firstWhere(
-                                                      (t) =>
-                                                          t.code ==
-                                                          _selectedTableCode,
-                                                    )
-                                                    .id;
-                                              } catch (_) {}
-                                            }
-
-                                            return InkWell(
-                                              onTap: _isContextLocked
-                                                  ? null
-                                                  : () {
-                                                      // --- BUKA MODAL CINEMA SEAT ---
-                                                      showDialog(
-                                                        barrierDismissible:
-                                                            false,
-                                                        context: context,
-                                                        builder: (dialogContext) => AlertDialog(
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  24,
-                                                                ),
-                                                          ),
-                                                          title: const Text(
-                                                            'Pilih Meja Pelanggan',
-                                                          ),
-                                                          content: TableMapPicker(
-                                                            tables: tables,
-                                                            selectedTableId:
-                                                                _selectedTableId,
-                                                            onTableSelected: (table) {
-                                                              if (table !=
-                                                                  null) {
-                                                                // Jika meja sedang terisi, beri peringatan atau tetap izinkan (tergantung kebutuhan bisnis)
-                                                                if (table.isOccupied ==
-                                                                        true &&
-                                                                    table.id !=
-                                                                        _selectedTableId) {
-                                                                  ScaffoldMessenger.of(
-                                                                    context,
-                                                                  ).showSnackBar(
-                                                                    const SnackBar(
-                                                                      content: Text(
-                                                                        'Perhatian: Meja ini sedang terisi!',
-                                                                      ),
-                                                                    ),
-                                                                  );
-                                                                }
-
-                                                                setState(() {
-                                                                  _selectedTableId =
-                                                                      table.id;
-                                                                  _selectedTableCode =
-                                                                      table
-                                                                          .code;
-                                                                });
-                                                                Navigator.pop(
-                                                                  dialogContext,
-                                                                ); // Tutup modal setelah pilih
-                                                              }
-                                                            },
-                                                          ),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  _selectedTableId =
-                                                                      null;
-                                                                  _selectedTableCode =
-                                                                      null;
-                                                                });
-                                                                Navigator.pop(
-                                                                  dialogContext,
-                                                                );
-                                                              },
-                                                              child: const Text(
-                                                                'Hapus Pilihan (Tanpa Meja)',
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .red,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.pop(
-                                                                    dialogContext,
-                                                                  ),
-                                                              child: const Text(
-                                                                'Tutup',
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      );
-                                                    },
-                                              child: Container(
-                                                padding: const EdgeInsets.all(
-                                                  16,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                    color: AppColors.stroke,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                  color: _isContextLocked
-                                                      ? Colors.grey.shade100
-                                                      : Colors.white,
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.grid_view_rounded,
-                                                      color:
-                                                          _selectedTableCode !=
-                                                              null
-                                                          ? AppColors.primary
-                                                          : Colors.grey,
-                                                    ),
-                                                    const SizedBox(width: 12),
-                                                    Expanded(
-                                                      child: Text(
-                                                        _selectedTableCode !=
-                                                                null
-                                                            ? 'Meja: $_selectedTableCode'
-                                                            : 'Ketuk untuk Pilih Meja (Opsional)',
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              _selectedTableCode !=
-                                                                  null
-                                                              ? FontWeight.bold
-                                                              : FontWeight
-                                                                    .normal,
-                                                          color:
-                                                              _selectedTableCode !=
-                                                                  null
-                                                              ? Colors.black87
-                                                              : Colors.grey,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    if (!_isContextLocked)
-                                                      const Icon(
-                                                        Icons.chevron_right,
-                                                        color: Colors.grey,
-                                                      ),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          orElse: () =>
-                                              const LinearProgressIndicator(),
-                                        );
-                                      },
-                                    ),
-                                  ],
-
-                                  const SizedBox(height: 24),
-                                  const Text(
-                                    'Pelanggan & Promo',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  _selectedMemberId != null
-                                      ? Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 12,
-                                            horizontal: 16,
-                                          ),
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: AppColors.primary,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                            color: Colors.white,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              const Icon(
-                                                Icons.account_circle,
-                                                color: AppColors.primary,
-                                                size: 28,
-                                              ),
-                                              const SizedBox(width: 12),
-                                              // ✅ FIX 4: Hapus operator "!" yang berbahaya. Pakai fallback ??
-                                              Expanded(
-                                                child: Text(
-                                                  _selectedMemberName ??
-                                                      'Member',
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16,
-                                                    color:
-                                                        AppColors.primaryDark,
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                              InkWell(
-                                                onTap: () => setState(() {
-                                                  _selectedMemberId = null;
-                                                  _selectedMemberName = null;
-                                                  _appliedVoucher = null;
-                                                  _memberPoints = 0;
-                                                  _memberLastVisit = null;
-                                                  _memberFavorite = null;
-                                                  _memberTotalSpend = 0.0;
-                                                  _ignoredVoucherName = null;
-                                                  _usePoints = false;
-                                                }),
-                                                child: Icon(
-                                                  Icons.cancel,
-                                                  size: 24,
-                                                  color: Colors.red.shade400,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      : SizedBox(
-                                          width: double.infinity,
-                                          child: OutlinedButton.icon(
-                                            icon: const Icon(
-                                              Icons.person_add_alt_1,
-                                              color: Colors.black87,
-                                              size: 20,
-                                            ),
-                                            label: const Text(
-                                              'Pilih Member',
-                                              style: TextStyle(
-                                                color: Colors.black87,
-                                              ),
-                                            ),
-                                            style: OutlinedButton.styleFrom(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 14,
-                                                  ),
-                                              side: const BorderSide(
-                                                color: AppColors.stroke,
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                            ),
-                                            onPressed: _showMemberSearchDialog,
-                                          ),
-                                        ),
-
-                                  if (_selectedMemberId != null)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 12.0),
-                                      child: Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
+                                    // --- FIX 2: Layout Cinema Seat & Input Kapasitas Pax ---
+                                    if (_orderType == 'Dine In' ||
+                                        _orderType == 'Open Bill') ...[
+                                      const SizedBox(height: 16),
+                                      Row(
                                         children: [
-                                          _buildCrmBadge(
-                                            Icons.workspace_premium,
-                                            'Tier: $_memberTier',
-                                            Colors.orange,
+                                          Expanded(
+                                            flex: 1,
+                                            child: AppTextField(
+                                              label: 'Jumlah Orang',
+                                              controller: _guestCountController,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              hint: 'Cth: 2',
+                                              readOnly: _isContextLocked,
+                                              onChanged: (value) => setState(() {
+                                                final int newCount =
+                                                    int.tryParse(value) ?? 1;
+                                                // --- FIX 3: Auto-Reset Jika Tamu melebihi Meja ---
+                                                if (_selectedTableCapacity !=
+                                                        null &&
+                                                    newCount >
+                                                        _selectedTableCapacity!) {
+                                                  _selectedTableCode = null;
+                                                  _selectedTableId = null;
+                                                  _selectedTableCapacity = null;
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        'Pilihan meja dibatalkan otomatis karena melebihi kapasitas.',
+                                                      ),
+                                                      backgroundColor:
+                                                          Colors.orange,
+                                                    ),
+                                                  );
+                                                }
+                                              }),
+                                            ),
                                           ),
-                                          _buildCrmBadge(
-                                            Icons.favorite,
-                                            'Fav: ${_memberFavorite ?? '-'}',
-                                            Colors.pink,
-                                          ),
-                                          _buildCrmBadge(
-                                            Icons.history,
-                                            'Visit: ${_memberLastVisit ?? '-'}',
-                                            Colors.blue,
-                                          ),
-                                          _buildCrmBadge(
-                                            Icons.monetization_on,
-                                            'Spend: ${currencyFormatter.format(_memberTotalSpend)}',
-                                            Colors.green,
+                                          const SizedBox(width: 16),
+                                          Expanded(
+                                            flex: 2,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Text(
+                                                  'Alokasi Meja',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                BlocBuilder<
+                                                  TableBloc,
+                                                  TableState
+                                                >(
+                                                  builder: (context, tableState) {
+                                                    return tableState.maybeWhen(
+                                                      loaded: (tables, _) {
+                                                        if (_selectedTableId ==
+                                                                null &&
+                                                            _selectedTableCode !=
+                                                                null) {
+                                                          try {
+                                                            final t = tables
+                                                                .firstWhere(
+                                                                  (tbl) =>
+                                                                      tbl.code ==
+                                                                      _selectedTableCode,
+                                                                );
+                                                            _selectedTableId =
+                                                                t.id;
+                                                            _selectedTableCapacity =
+                                                                t.capacity;
+                                                          } catch (_) {}
+                                                        }
+
+                                                        return InkWell(
+                                                          onTap:
+                                                              _isContextLocked
+                                                              ? null
+                                                              : () =>
+                                                                    _showCinemaTablePicker(
+                                                                      context,
+                                                                    ),
+                                                          child: Container(
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                  vertical: 14,
+                                                                  horizontal:
+                                                                      12,
+                                                                ),
+                                                            decoration: BoxDecoration(
+                                                              border: Border.all(
+                                                                color:
+                                                                    _selectedTableCode !=
+                                                                        null
+                                                                    ? AppColors
+                                                                          .primary
+                                                                    : AppColors
+                                                                          .stroke,
+                                                              ),
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    8,
+                                                                  ),
+                                                              color:
+                                                                  _isContextLocked
+                                                                  ? Colors
+                                                                        .grey
+                                                                        .shade100
+                                                                  : (_selectedTableCode !=
+                                                                            null
+                                                                        ? Colors
+                                                                              .blue
+                                                                              .shade50
+                                                                        : Colors
+                                                                              .white),
+                                                            ),
+                                                            child: Row(
+                                                              children: [
+                                                                Icon(
+                                                                  Icons
+                                                                      .table_restaurant,
+                                                                  size: 18,
+                                                                  color:
+                                                                      _selectedTableCode !=
+                                                                          null
+                                                                      ? AppColors
+                                                                            .primary
+                                                                      : Colors
+                                                                            .grey,
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 8,
+                                                                ),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    _selectedTableCode !=
+                                                                            null
+                                                                        ? 'Meja: $_selectedTableCode'
+                                                                        : 'Ketuk Pilih Meja',
+                                                                    style: TextStyle(
+                                                                      fontWeight:
+                                                                          _selectedTableCode !=
+                                                                              null
+                                                                          ? FontWeight.bold
+                                                                          : FontWeight.normal,
+                                                                      color:
+                                                                          _selectedTableCode !=
+                                                                              null
+                                                                          ? AppColors.primaryDark
+                                                                          : Colors.grey,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                if (!_isContextLocked)
+                                                                  const Icon(
+                                                                    Icons
+                                                                        .chevron_right,
+                                                                    size: 18,
+                                                                    color: Colors
+                                                                        .grey,
+                                                                  ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                      orElse: () =>
+                                                          const LinearProgressIndicator(),
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
-                                    ),
+                                    ],
 
-                                  if (_selectedMemberId == null) ...[
-                                    const SizedBox(height: 12),
-                                    AppTextField(
-                                      label: 'Nama Customer',
-                                      hint: 'Ketik nama customer...',
-                                      controller: _guestNameController,
-                                      prefixIcon: const Icon(
-                                        Icons.person_outline,
+                                    const SizedBox(height: 24),
+                                    const Text(
+                                      'Pelanggan & Promo',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      // 👇 Kunci field jika sedang Tambah Pesanan (Open Bill aktif)
-                                      readOnly:
-                                          _isContextLocked &&
-                                          context
-                                              .read<CartBloc>()
-                                              .state
-                                              .maybeWhen(
-                                                loaded:
-                                                    (
-                                                      _,
-                                                      __,
-                                                      ___,
-                                                      ____,
-                                                      _____,
-                                                      ______,
-                                                      _______,
-                                                      activeOrder,
-                                                      ________,
-                                                      _________,
-                                                    ) => activeOrder != null,
-                                                orElse: () => false,
-                                              ),
                                     ),
-                                  ],
-
-                                  if (_selectedMemberId != null &&
-                                      _memberPoints > 0)
-                                    Container(
-                                      margin: const EdgeInsets.only(top: 16),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue.shade50,
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: Colors.blue.shade200,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.stars,
-                                                color: Colors.blue.shade700,
-                                                size: 28,
+                                    const SizedBox(height: 8),
+                                    _selectedMemberId != null
+                                        ? Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                              horizontal: 16,
+                                            ),
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: AppColors.primary,
                                               ),
-                                              const SizedBox(width: 12),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Tukarkan Poin',
-                                                    style: TextStyle(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              color: Colors.white,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.account_circle,
+                                                  color: AppColors.primary,
+                                                  size: 28,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: Text(
+                                                    _selectedMemberName ??
+                                                        'Member',
+                                                    style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
+                                                      fontSize: 16,
                                                       color:
-                                                          Colors.blue.shade900,
+                                                          AppColors.primaryDark,
                                                     ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
-                                                  Text(
-                                                    'Saldo: ${currencyFormatter.format(_memberPoints)} pts',
-                                                    style: TextStyle(
-                                                      fontSize: 11,
-                                                      color:
-                                                          Colors.blue.shade800,
-                                                    ),
+                                                ),
+                                                InkWell(
+                                                  onTap: () => setState(() {
+                                                    _selectedMemberId = null;
+                                                    _selectedMemberName = null;
+                                                    _appliedVoucher = null;
+                                                    _memberPoints = 0;
+                                                    _memberLastVisit = null;
+                                                    _memberFavorite = null;
+                                                    _memberTotalSpend = 0.0;
+                                                    _ignoredVoucherName = null;
+                                                    _usePoints = false;
+                                                  }),
+                                                  child: Icon(
+                                                    Icons.cancel,
+                                                    size: 24,
+                                                    color: Colors.red.shade400,
                                                   ),
-                                                ],
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        : SizedBox(
+                                            width: double.infinity,
+                                            child: OutlinedButton.icon(
+                                              icon: const Icon(
+                                                Icons.person_add_alt_1,
+                                                color: Colors.black87,
+                                                size: 20,
                                               ),
-                                            ],
+                                              label: const Text(
+                                                'Pilih Member',
+                                                style: TextStyle(
+                                                  color: Colors.black87,
+                                                ),
+                                              ),
+                                              style: OutlinedButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 14,
+                                                    ),
+                                                side: const BorderSide(
+                                                  color: AppColors.stroke,
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                              ),
+                                              onPressed:
+                                                  _showMemberSearchDialog,
+                                            ),
                                           ),
-                                          Switch(
-                                            value: _usePoints,
-                                            activeColor: Colors.blue.shade700,
-                                            onChanged: (val) {
-                                              setState(() {
-                                                _usePoints = val;
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
 
-                                  if (currentAppliedPromos.isNotEmpty ||
-                                      _appliedVoucher != null)
+                                    if (_selectedMemberId != null)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 12.0,
+                                        ),
+                                        child: Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children: [
+                                            _buildCrmBadge(
+                                              Icons.workspace_premium,
+                                              'Tier: $_memberTier',
+                                              Colors.orange,
+                                            ),
+                                            _buildCrmBadge(
+                                              Icons.favorite,
+                                              'Fav: ${_memberFavorite ?? '-'}',
+                                              Colors.pink,
+                                            ),
+                                            _buildCrmBadge(
+                                              Icons.history,
+                                              'Visit: ${_memberLastVisit ?? '-'}',
+                                              Colors.blue,
+                                            ),
+                                            _buildCrmBadge(
+                                              Icons.monetization_on,
+                                              'Spend: ${currencyFormatter.format(_memberTotalSpend)}',
+                                              Colors.green,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                    if (_selectedMemberId == null) ...[
+                                      const SizedBox(height: 12),
+                                      AppTextField(
+                                        label: 'Nama Customer',
+                                        hint: 'Ketik nama customer...',
+                                        controller: _guestNameController,
+                                        prefixIcon: const Icon(
+                                          Icons.person_outline,
+                                        ),
+                                        readOnly:
+                                            _isContextLocked &&
+                                            context
+                                                .read<CartBloc>()
+                                                .state
+                                                .maybeWhen(
+                                                  loaded:
+                                                      (
+                                                        _,
+                                                        __,
+                                                        ___,
+                                                        ____,
+                                                        _____,
+                                                        ______,
+                                                        _______,
+                                                        activeOrder,
+                                                        ________,
+                                                        _________,
+                                                      ) => activeOrder != null,
+                                                  orElse: () => false,
+                                                ),
+                                      ),
+                                    ],
+
+                                    if (_selectedMemberId != null &&
+                                        _memberPoints > 0)
+                                      Container(
+                                        margin: const EdgeInsets.only(top: 16),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue.shade50,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.blue.shade200,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.stars,
+                                                  color: Colors.blue.shade700,
+                                                  size: 28,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Tukarkan Poin',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors
+                                                            .blue
+                                                            .shade900,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      'Saldo: ${currencyFormatter.format(_memberPoints)} pts',
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        color: Colors
+                                                            .blue
+                                                            .shade800,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            Switch(
+                                              value: _usePoints,
+                                              activeColor: Colors.blue.shade700,
+                                              onChanged: (val) {
+                                                setState(() {
+                                                  _usePoints = val;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                    if (currentAppliedPromos.isNotEmpty ||
+                                        _appliedVoucher != null)
+                                      Container(
+                                        margin: const EdgeInsets.only(top: 16),
+                                        padding: const EdgeInsets.all(12),
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.shade50,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.green.shade200,
+                                          ),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.check_circle,
+                                                  size: 16,
+                                                  color: Colors.green.shade700,
+                                                ),
+                                                const SizedBox(width: 6),
+                                                Text(
+                                                  'Promo Diterapkan:',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                    color:
+                                                        Colors.green.shade800,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 12),
+                                            Wrap(
+                                              spacing: 8,
+                                              runSpacing: 8,
+                                              children: [
+                                                ...currentAppliedPromos
+                                                    .map(
+                                                      (promoName) => InputChip(
+                                                        label: Text(
+                                                          promoName
+                                                              .toUpperCase()
+                                                              .replaceAll(
+                                                                '_',
+                                                                ' ',
+                                                              ),
+                                                          style: TextStyle(
+                                                            fontSize: 11,
+                                                            color: Colors
+                                                                .green
+                                                                .shade900,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        backgroundColor: Colors
+                                                            .green
+                                                            .shade100,
+                                                        deleteIconColor: Colors
+                                                            .green
+                                                            .shade900,
+                                                        side: BorderSide(
+                                                          color: Colors
+                                                              .green
+                                                              .shade300,
+                                                        ),
+                                                        onDeleted: () {
+                                                          context
+                                                              .read<CartBloc>()
+                                                              .add(
+                                                                CartEvent.ignorePromo(
+                                                                  promoName,
+                                                                ),
+                                                              );
+                                                        },
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                                if (_appliedVoucher != null)
+                                                  InputChip(
+                                                    label: Text(
+                                                      _appliedVoucher!.name
+                                                          .toUpperCase(),
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        color: Colors
+                                                            .orange
+                                                            .shade900,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    backgroundColor:
+                                                        Colors.orange.shade100,
+                                                    deleteIconColor:
+                                                        Colors.orange.shade900,
+                                                    side: BorderSide(
+                                                      color: Colors
+                                                          .orange
+                                                          .shade300,
+                                                    ),
+                                                    onDeleted: () {
+                                                      setState(() {
+                                                        _ignoredVoucherName =
+                                                            _appliedVoucher!
+                                                                .name;
+                                                        _appliedVoucher = null;
+                                                      });
+                                                    },
+                                                  ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                    const SizedBox(height: 24),
                                     Container(
-                                      margin: const EdgeInsets.only(top: 16),
-                                      padding: const EdgeInsets.all(12),
-                                      width: double.infinity,
+                                      padding: const EdgeInsets.all(16),
                                       decoration: BoxDecoration(
-                                        color: Colors.green.shade50,
-                                        borderRadius: BorderRadius.circular(12),
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(16),
                                         border: Border.all(
-                                          color: Colors.green.shade200,
+                                          color: AppColors.stroke,
                                         ),
                                       ),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.check_circle,
-                                                size: 16,
-                                                color: Colors.green.shade700,
-                                              ),
-                                              const SizedBox(width: 6),
-                                              Text(
-                                                'Promo Diterapkan:',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.green.shade800,
-                                                ),
-                                              ),
-                                            ],
+                                          _summaryRow(
+                                            'Subtotal',
+                                            currentSubtotal,
                                           ),
-                                          const SizedBox(height: 12),
-                                          Wrap(
-                                            spacing: 8,
-                                            runSpacing: 8,
-                                            children: [
-                                              ...currentAppliedPromos
-                                                  .map(
-                                                    (promoName) => InputChip(
-                                                      label: Text(
-                                                        promoName
-                                                            .toUpperCase()
-                                                            .replaceAll(
-                                                              '_',
-                                                              ' ',
-                                                            ),
-                                                        style: TextStyle(
-                                                          fontSize: 11,
-                                                          color: Colors
-                                                              .green
-                                                              .shade900,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                      backgroundColor:
-                                                          Colors.green.shade100,
-                                                      deleteIconColor:
-                                                          Colors.green.shade900,
-                                                      side: BorderSide(
-                                                        color: Colors
-                                                            .green
-                                                            .shade300,
-                                                      ),
-                                                      onDeleted: () {
-                                                        context
-                                                            .read<CartBloc>()
-                                                            .add(
-                                                              CartEvent.ignorePromo(
-                                                                promoName,
-                                                              ),
-                                                            );
-                                                      },
-                                                    ),
-                                                  )
-                                                  .toList(),
-                                              if (_appliedVoucher != null)
-                                                InputChip(
-                                                  label: Text(
-                                                    _appliedVoucher!.name
-                                                        .toUpperCase(),
-                                                    style: TextStyle(
-                                                      fontSize: 11,
-                                                      color: Colors
-                                                          .orange
-                                                          .shade900,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  backgroundColor:
-                                                      Colors.orange.shade100,
-                                                  deleteIconColor:
-                                                      Colors.orange.shade900,
-                                                  side: BorderSide(
-                                                    color:
-                                                        Colors.orange.shade300,
-                                                  ),
-                                                  onDeleted: () {
-                                                    setState(() {
-                                                      _ignoredVoucherName =
-                                                          _appliedVoucher!.name;
-                                                      _appliedVoucher = null;
-                                                    });
-                                                  },
+                                          if (_appliedVoucher != null &&
+                                              currentSubtotal <
+                                                  (double.tryParse(
+                                                        _appliedVoucher!
+                                                            .minPurchase
+                                                            .toString(),
+                                                      ) ??
+                                                      0))
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                bottom: 4,
+                                              ),
+                                              child: Text(
+                                                'Minimal belanja ${_appliedVoucher!.minPurchase} untuk voucher ini!',
+                                                style: const TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 10,
+                                                  fontStyle: FontStyle.italic,
                                                 ),
-                                            ],
+                                              ),
+                                            ),
+                                          if (totalDiscount > 0)
+                                            _summaryRow(
+                                              'Diskon Tambahan',
+                                              -totalDiscount,
+                                              isRed: true,
+                                            ),
+                                          _summaryRow(
+                                            'Pajak (PB1)',
+                                            currentTax,
+                                          ),
+                                          if (pointsDiscount > 0)
+                                            _summaryRow(
+                                              'Tukar Poin',
+                                              -pointsDiscount,
+                                              isRed: true,
+                                              colorOverride:
+                                                  Colors.blue.shade700,
+                                            ),
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 8,
+                                            ),
+                                            child: Divider(),
+                                          ),
+                                          _summaryRow(
+                                            'GRAND TOTAL',
+                                            grandTotal,
+                                            isBold: true,
+                                            fontSize: 18,
                                           ),
                                         ],
                                       ),
                                     ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 32),
 
-                                  const SizedBox(height: 24),
-                                  Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(
-                                        color: AppColors.stroke,
+                              // --- PANEL KANAN ---
+                              Expanded(
+                                flex: 1,
+                                child:
+                                    (_orderType == 'Open Bill' ||
+                                        _orderType == 'Reservasi')
+                                    ? _buildOpenBillRightPanel(
+                                        currentCartItems,
+                                        currentIgnoredRules,
+                                        isLoading,
+                                      )
+                                    : _buildPaymentRightPanel(
+                                        grandTotal,
+                                        changeAmount,
+                                        currentCartItems,
+                                        currentIgnoredRules,
+                                        isLoading,
                                       ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      if (isLoading)
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.white.withOpacity(0.5),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        ),
+
+                      // Indikator Loading Background Fetch CRM
+                      BlocBuilder<MemberBloc, MemberState>(
+                        builder: (context, memberState) {
+                          final isMemberLoading = memberState.maybeWhen(
+                            loading: () => true,
+                            orElse: () => false,
+                          );
+                          if (isMemberLoading) {
+                            return Positioned(
+                              top: 16,
+                              right: 16,
+                              child: Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        _summaryRow(
-                                          'Subtotal',
-                                          currentSubtotal,
-                                        ),
-                                        if (_appliedVoucher != null &&
-                                            currentSubtotal <
-                                                (double.tryParse(
-                                                      _appliedVoucher!
-                                                          .minPurchase
-                                                          .toString(),
-                                                    ) ??
-                                                    0))
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              bottom: 4,
-                                            ),
-                                            child: Text(
-                                              'Minimal belanja ${_appliedVoucher!.minPurchase} untuk voucher ini!',
-                                              style: const TextStyle(
-                                                color: Colors.red,
-                                                fontSize: 10,
-                                                fontStyle: FontStyle.italic,
-                                              ),
-                                            ),
-                                          ),
-                                        if (totalDiscount > 0)
-                                          _summaryRow(
-                                            'Diskon Tambahan',
-                                            -totalDiscount,
-                                            isRed: true,
-                                          ),
-                                        _summaryRow('Pajak (PB1)', currentTax),
-                                        if (pointsDiscount > 0)
-                                          _summaryRow(
-                                            'Tukar Poin',
-                                            -pointsDiscount,
-                                            isRed: true,
-                                            colorOverride: Colors.blue.shade700,
-                                          ),
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                          child: Divider(),
-                                        ),
-                                        _summaryRow(
-                                          'GRAND TOTAL',
-                                          grandTotal,
-                                          isBold: true,
-                                          fontSize: 18,
-                                        ),
-                                      ],
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Memuat CRM...',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey.shade600,
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            const SizedBox(width: 32),
-
-                            // --- PANEL KANAN ---
-                            Expanded(
-                              flex: 1,
-                              child:
-                                  (_orderType == 'Open Bill' ||
-                                      _orderType == 'Reservasi')
-                                  ? _buildOpenBillRightPanel(
-                                      currentCartItems,
-                                      currentIgnoredRules,
-                                      isLoading,
-                                    )
-                                  : _buildPaymentRightPanel(
-                                      grandTotal,
-                                      changeAmount,
-                                      currentCartItems,
-                                      currentIgnoredRules,
-                                      isLoading,
-                                    ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    if (isLoading)
-                      Positioned.fill(
-                        child: Container(
-                          color: Colors.white.withOpacity(0.5),
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
                       ),
-
-                    // Indikator Loading Background Fetch CRM
-                    BlocBuilder<MemberBloc, MemberState>(
-                      builder: (context, memberState) {
-                        final isMemberLoading = memberState.maybeWhen(
-                          loading: () => true,
-                          orElse: () => false,
-                        );
-                        if (isMemberLoading) {
-                          return Positioned(
-                            top: 16,
-                            right: 16,
-                            child: Row(
-                              children: [
-                                const SizedBox(
-                                  width: 12,
-                                  height: 12,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Memuat CRM...',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -1810,37 +2016,80 @@ class _PaymentModalState extends State<PaymentModal> {
           ),
         ],
       );
-    } else if (_paymentMethod == 'qris') {
+    } else if (['qris', 'card', 'transfer'].contains(_paymentMethod)) {
+      String proofLabel = 'Bukti Pembayaran QRIS';
+      String hintLabel = 'Ambil Foto Bukti Transfer';
+
+      if (_paymentMethod == 'card') {
+        proofLabel = 'Bukti Pembayaran Kartu (EDC)';
+        hintLabel = 'Ambil Foto Struk EDC';
+      } else if (_paymentMethod == 'transfer') {
+        proofLabel = 'Bukti Transfer Bank';
+        hintLabel = 'Ambil Foto Bukti Transfer';
+      }
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-            child: Container(
+          if (_paymentMethod == 'qris')
+            Center(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.stroke, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.qr_code_2,
+                  size: 80,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          if (_paymentMethod == 'card' || _paymentMethod == 'transfer')
+            Container(
               padding: const EdgeInsets.all(16),
               margin: const EdgeInsets.only(bottom: 16),
+              width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.orange.shade50,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.stroke, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+                border: Border.all(color: Colors.orange.shade200),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    _paymentMethod == 'card'
+                        ? Icons.credit_card
+                        : Icons.account_balance,
+                    color: Colors.orange.shade700,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _paymentMethod == 'card'
+                          ? 'Gunakan Mesin EDC untuk pembayaran kartu.'
+                          : 'Pastikan dana sudah masuk ke rekening bank.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.orange.shade900,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.qr_code_2,
-                size: 100,
-                color: Colors.black87,
-              ),
             ),
-          ),
-          const Text(
-            'Bukti Pembayaran QRIS',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          Text(proofLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           InkWell(
             onTap: _takePicture,
@@ -1873,7 +2122,7 @@ class _PaymentModalState extends State<PaymentModal> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Ambil Foto Bukti Transfer',
+                          hintLabel,
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
                       ],
@@ -1893,38 +2142,7 @@ class _PaymentModalState extends State<PaymentModal> {
         ],
       );
     } else {
-      return Container(
-        padding: const EdgeInsets.all(24),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.orange.shade50,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.orange.shade200),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              _paymentMethod == 'card'
-                  ? Icons.credit_card
-                  : Icons.account_balance,
-              size: 40,
-              color: Colors.orange,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Pembayaran via ${_paymentMethod == 'card' ? 'Mesin EDC' : 'Transfer Bank'}',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Pastikan pelanggan telah membayar sejumlah\n${currencyFormatter.format(grandTotal)}',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade700),
-            ),
-          ],
-        ),
-      );
+      return const SizedBox.shrink();
     }
   }
 
@@ -1932,8 +2150,6 @@ class _PaymentModalState extends State<PaymentModal> {
     return ChoiceChip(
       label: Text(type),
       selected: _orderType == type,
-      // 🔥 KUNCI PERBAIKAN: Hapus pembatasan _isContextLocked.
-      // Biarkan kasir BEBAS memilih tipe "Dine In" atau "Reservasi" kapan saja!
       onSelected: (val) {
         setState(() {
           _orderType = type;
@@ -1946,28 +2162,28 @@ class _PaymentModalState extends State<PaymentModal> {
     );
   }
 
-  // Widget _orderTypeChip(String type) {
-  //   return ChoiceChip(
-  //     label: Text(type),
-  //     selected: _orderType == type,
-  //     onSelected: _isContextLocked
-  //         ? null
-  //         : (val) => setState(() => _orderType = type),
-  //     selectedColor: AppColors.primary,
-  //     labelStyle: TextStyle(
-  //       color: _orderType == type
-  //           ? Colors.white
-  //           : (_isContextLocked ? Colors.grey : Colors.black),
-  //     ),
-  //   );
-  // }
-
   Widget _paymentMethodCard(String value, String title, IconData icon) {
     final isSelected = _paymentMethod == value;
     return InkWell(
       onTap: () => setState(() {
+        final double oldPaid =
+            double.tryParse(
+              _amountPaidController.text.replaceAll(RegExp(r'[^0-9]'), ''),
+            ) ??
+            0;
+
         _paymentMethod = value;
-        if (value != 'qris') _proofImage = null;
+
+        // Reset proof image hanya jika pindah ke cash.
+        // Jika pindah antar QRIS/Card/Transfer, biarkan proof image (memudahkan jika salah pilih method)
+        if (value == 'cash') {
+          _proofImage = null;
+        }
+
+        // Auto-fill amount paid jika bukan cash
+        if (value != 'cash') {
+          // Trigger build untuk update amount paid sesuai grandTotal
+        }
       }),
       borderRadius: BorderRadius.circular(12),
       child: Container(

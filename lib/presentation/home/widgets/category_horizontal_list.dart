@@ -1,4 +1,5 @@
 import 'package:avis_pos/core/constants/colors.dart';
+import 'package:avis_pos/core/constants/variables.dart';
 import 'package:avis_pos/presentation/home/bloc/category/category_bloc.dart';
 import 'package:avis_pos/presentation/home/bloc/product/product_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -124,7 +125,9 @@ class _CategoryHorizontalListState extends State<CategoryHorizontalList> {
           children: [
             if (iconUrl != null && iconUrl.isNotEmpty) ...[
               CachedNetworkImage(
-                imageUrl: iconUrl,
+                imageUrl: iconUrl!.startsWith('http')
+                    ? iconUrl
+                    : '${Variables.imageBaseUrl}$iconUrl',
                 width: 24,
                 height: 24,
                 color: isSelected ? Colors.white : AppColors.primary,

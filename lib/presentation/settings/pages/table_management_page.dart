@@ -993,9 +993,12 @@ class _TableManagementPageState extends State<TableManagementPage> {
 
                           final bool isOccupiedFisik =
                               table.isOccupied ?? false;
-                          final String? resStatus = table.reservationStatus;
+                          final String resStatus =
+                              table.reservationStatus?.toLowerCase() ?? '';
                           final bool isBooked = (resStatus == 'booked');
                           final bool isSeated = (resStatus == 'seated');
+                          final bool isReserved = isBooked || isSeated;
+                          final bool hasActiveOrder = activeOrder != null;
 
                           Color cardColor = Colors.white;
                           Color borderColor = _isEditMode
@@ -1003,32 +1006,24 @@ class _TableManagementPageState extends State<TableManagementPage> {
                               : Colors.grey.shade300;
                           Color mainColor = Colors.green.shade600;
                           String badgeText = 'AVAILABLE';
-                          Color badgeBg = Colors.green.shade100;
+                          Color badgeBg = Colors.green.shade50;
                           IconData tableIcon = Icons.table_restaurant;
 
                           String orderTypeLabel = "";
-                          String customerNameLabel = "";
 
-                          if (activeOrder != null) {
-                            // 🥇 PRIORITAS 1: OPEN BILL (Sedang Makan)
-                            String typeFromDb =
-                                (activeOrder.typeOrder ?? "OPEN BILL")
-                                    .toUpperCase();
-                            orderTypeLabel = typeFromDb;
-                            customerNameLabel = activeOrder.customerName ?? "";
-
+                          // 1. OPEN BILL (RED) - Ada pesanan belum lunas
+                          if (hasActiveOrder) {
                             cardColor = Colors.red.shade50;
                             borderColor = _isEditMode
                                 ? Colors.blue
                                 : Colors.red.shade300;
                             mainColor = Colors.red.shade600;
 
-                            // ✅ SEPARASI: Tampilkan "RESERVASI" jika tipe ordernya reservasi,
-                            // selain itu tampilkan "OPEN BILL" (untuk Dine In/Walk-in)
-                            badgeText = (typeFromDb == 'RESERVASI')
-                                ? 'RESERVASI'
-                                : 'OPEN BILL';
-
+                            String typeFromDb =
+                                (activeOrder!.typeOrder ?? "OPEN BILL")
+                                    .toUpperCase();
+                            orderTypeLabel = typeFromDb;
+                            badgeText = 'OPEN BILL';
                             badgeBg = Colors.red.shade100;
                             tableIcon = Icons.receipt_long;
 
@@ -1037,7 +1032,7 @@ class _TableManagementPageState extends State<TableManagementPage> {
                               tableIcon = Icons.how_to_reg;
                             }
                           }
-                          // 🥈 PRIORITAS 2: JIKA SUDAH DATANG (SEATED RESERVASI)
+                          // 2. SEATED (ORANGE) - Sudah datang, belum input pesanan
                           else if (isSeated) {
                             cardColor = Colors.orange.shade50;
                             borderColor = _isEditMode
@@ -1048,12 +1043,9 @@ class _TableManagementPageState extends State<TableManagementPage> {
                             badgeBg = Colors.orange.shade100;
                             tableIcon = Icons.how_to_reg;
                             orderTypeLabel = "RESERVASI";
-                            customerNameLabel =
-                                table.reservedCustomerName ?? "";
                           }
-                          // 🥉 PRIORITAS 3: DINE IN LUNAS (Walk-in masih duduk / Meja kotor)
-                          // 🔥 Harus di atas BOOKED agar status fisik saat ini lebih terlihat daripada jadwal nanti
-                          else if (isOccupiedFisik) {
+                          // 3. DINE IN LUNAS (BLUE) - Fisik terisi, tidak ada tagihan nyangkut
+                          else if (isOccupiedFisik && !isReserved) {
                             cardColor = Colors.blue.shade50;
                             borderColor = _isEditMode
                                 ? Colors.blue
@@ -1062,10 +1054,9 @@ class _TableManagementPageState extends State<TableManagementPage> {
                             badgeText = 'DINE IN';
                             badgeBg = Colors.blue.shade100;
                             tableIcon = Icons.person_pin;
-                            orderTypeLabel = "DINE IN";
-                            customerNameLabel = table.customerName ?? "";
+                            orderTypeLabel = "LUNAS";
                           }
-                          // 🏅 PRIORITAS 4: JADWAL AKAN DATANG (BOOKED RESERVASI)
+                          // 4. BOOKED (ORANGE) - Belum datang
                           else if (isBooked) {
                             cardColor = Colors.orange.shade50;
                             borderColor = _isEditMode
@@ -1076,8 +1067,6 @@ class _TableManagementPageState extends State<TableManagementPage> {
                             badgeBg = Colors.orange.shade100;
                             tableIcon = Icons.event_seat;
                             orderTypeLabel = "RESERVASI";
-                            customerNameLabel =
-                                table.reservedCustomerName ?? "";
                           }
 
                           return Positioned(

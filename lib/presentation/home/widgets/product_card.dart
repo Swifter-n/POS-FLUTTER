@@ -1,4 +1,5 @@
 import 'package:avis_pos/core/constants/colors.dart';
+import 'package:avis_pos/core/constants/variables.dart';
 import 'package:avis_pos/data/model/responses/product/product_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -191,7 +192,9 @@ class ProductCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       child: product.thumbnail != null
                           ? CachedNetworkImage(
-                              imageUrl: product.thumbnail!,
+                              imageUrl: product.thumbnail!.startsWith('http')
+                                  ? product.thumbnail!
+                                  : '${Variables.imageBaseUrl}${product.thumbnail}',
                               fit: BoxFit.cover,
                               placeholder: (context, url) => const Center(
                                 child: SizedBox(
@@ -319,7 +322,7 @@ class ProductCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 6),

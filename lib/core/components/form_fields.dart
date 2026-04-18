@@ -4,22 +4,28 @@ import '../constants/text_styles.dart';
 
 class AppTextField extends StatelessWidget {
   final String label;
-  final String hint;
-  final TextEditingController controller;
+  final String? hint; // Changed to optional to support initialValue
+  final TextEditingController? controller; // Changed to optional
   final bool isPassword;
   final Widget? prefixIcon;
   final TextInputType? keyboardType;
   final bool readOnly;
+  final int? maxLines;
+  final String? initialValue;
+  final ValueChanged<String>? onChanged;
 
   const AppTextField({
     super.key,
     required this.label,
-    required this.hint,
-    required this.controller,
+    this.hint,
+    this.controller,
     this.isPassword = false,
     this.prefixIcon,
     this.keyboardType,
     this.readOnly = false,
+    this.maxLines = 1,
+    this.initialValue,
+    this.onChanged,
   });
 
   @override
@@ -27,22 +33,27 @@ class AppTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.label.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
+        if (label.isNotEmpty) ...[
+          Text(
+            label,
+            style: AppTextStyles.label.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+        ],
         TextFormField(
           controller: controller,
           obscureText: isPassword,
           keyboardType: keyboardType,
           readOnly: readOnly,
+          maxLines: maxLines,
+          initialValue: initialValue,
+          onChanged: onChanged,
           style: AppTextStyles.body,
           decoration: InputDecoration(
             hintText: hint,
             prefixIcon: prefixIcon,
             filled: true,
-            fillColor: AppColors.background, // Greyish background sesuai gambar
+            fillColor: AppColors.background,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none,
@@ -60,3 +71,4 @@ class AppTextField extends StatelessWidget {
     );
   }
 }
+

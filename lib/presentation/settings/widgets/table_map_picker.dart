@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:avis_pos/core/constants/colors.dart';
 import 'package:avis_pos/data/model/responses/table_model/table_model.dart';
+import 'package:flutter/material.dart';
 
 class TableMapPicker extends StatelessWidget {
   final List<TableModel> tables;
   final int? selectedTableId;
-  final ValueChanged<TableModel> onTableSelected;
+  final ValueChanged<TableModel?> onTableSelected;
 
   const TableMapPicker({
     super.key,
@@ -35,62 +35,73 @@ class TableMapPicker extends StatelessWidget {
             height: 1500,
             child: Stack(
               children: tables.asMap().entries.map((entry) {
+                final index = entry.key;
                 final table = entry.value;
                 final bool isSelected = table.id == selectedTableId;
 
                 // ==========================================
-                // LOGIKA 4 STATE MEJA
+                // 4-STATE VISUAL LOGIC
                 // ==========================================
                 final bool hasActiveOrder =
                     (table.activeOrderId != null && table.activeOrderId! > 0);
-                final bool isOccupied =
-                    table.isOccupied ?? (table.status == 'occupied');
+                final bool isOccupiedFisik = table.isOccupied ?? false;
                 final String resStatus =
                     table.reservationStatus?.toLowerCase() ?? '';
-                final bool isReserved =
-                    resStatus == 'booked' || resStatus == 'seated';
+                final bool isBooked = (resStatus == 'booked');
+                final bool isSeated = (resStatus == 'seated');
+                final bool isReserved = isBooked || isSeated;
 
-                Color tableColor;
+                Color cardColor;
                 Color borderColor;
-                String tableLabel;
+                Color mainColor;
+                String badgeText;
                 IconData tableIcon;
 
-                // 1. OPEN BILL (RED) - Sedang makan
+                // 1. OPEN BILL (RED) - Ada pesanan belum lunas
                 if (hasActiveOrder) {
-                  tableColor = Colors.red.shade500;
-                  borderColor = Colors.red.shade700;
-                  tableIcon = Icons.restaurant_menu;
-                  // Bedakan label jika berasal dari reservasi atau walk-in
-                  tableLabel = isReserved ? 'RESERVASI' : 'OPEN BILL';
+                  cardColor = Colors.red.shade50;
+                  borderColor = Colors.red.shade300;
+                  mainColor = Colors.red.shade600;
+                  badgeText = 'OPEN BILL';
+                  tableIcon = Icons.receipt_long;
                 }
-                // 2. DINE IN (BLUE) - Sudah lunas, tapi fisik masih duduk
-                else if (isOccupied && !hasActiveOrder && !isReserved) {
-                  tableColor = Colors.blue.shade500;
-                  borderColor = Colors.blue.shade700;
-                  tableIcon = Icons.check_circle;
-                  tableLabel = 'DINE IN\n(LUNAS)';
+                // 2. DINE IN LUNAS (BLUE) - Fisik duduk, tagihan 0
+                else if (isOccupiedFisik && !isReserved) {
+                  cardColor = Colors.blue.shade50;
+                  borderColor = Colors.blue.shade300;
+                  mainColor = Colors.blue.shade700;
+                  badgeText = 'DINE IN';
+                  tableIcon = Icons.person_pin;
                 }
-                // 3. RESERVASI (ORANGE) - Booked atau Seated tapi belum pesan
+                // 3. RESERVASI (ORANGE) - Booked / Seated tapi belum order
                 else if (isReserved) {
-                  tableColor = Colors.orange.shade500;
-                  borderColor = Colors.orange.shade700;
-                  tableIcon = Icons.event_seat;
-                  tableLabel = resStatus == 'seated' ? 'SEATED' : 'BOOKED';
+                  cardColor = Colors.orange.shade50;
+                  borderColor = Colors.orange.shade300;
+                  mainColor = Colors.orange.shade700;
+                  badgeText = isSeated ? 'SEATED' : 'BOOKED';
+                  tableIcon = isSeated ? Icons.how_to_reg : Icons.event_seat;
                 }
                 // 4. AVAILABLE (GREEN) - Kosong total
                 else {
-                  tableColor = Colors.green.shade500;
-                  borderColor = Colors.green.shade700;
+                  cardColor = Colors.white;
+                  borderColor = Colors.grey.shade300;
+                  mainColor = Colors.green.shade600;
+                  badgeText = 'AVAILABLE';
                   tableIcon = Icons.table_restaurant;
-                  tableLabel = 'AVAILABLE';
                 }
 
-                // Hitung posisi koordinat
+                // Tumpuk warna jika meja sedang diklik/dipilih
+                if (isSelected) {
+                  borderColor = AppColors.primaryDark;
+                  cardColor = AppColors.primary;
+                  mainColor = Colors.white;
+                }
+
                 double displayX = table.x;
                 double displayY = table.y;
                 if (displayX == 0 && displayY == 0) {
-                  displayX = 50.0 + (entry.key * 150 % 900);
-                  displayY = 50.0 + ((entry.key * 150 / 900).floor() * 150);
+                  displayX = 50.0 + (index * 150 % 900);
+                  displayY = 50.0 + ((index * 150 / 900).floor() * 150);
                 }
 
                 return Positioned(
@@ -103,15 +114,15 @@ class TableMapPicker extends StatelessWidget {
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: tableColor.withOpacity(isSelected ? 1.0 : 0.8),
+                        color: cardColor,
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(
-                          color: isSelected ? Colors.black : borderColor,
-                          width: isSelected ? 4 : 2,
+                          color: borderColor,
+                          width: isSelected ? 3 : 2,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withOpacity(0.05),
                             blurRadius: 5,
                             offset: const Offset(0, 2),
                           ),
@@ -120,23 +131,22 @@ class TableMapPicker extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(tableIcon, size: 24, color: Colors.white),
+                          Icon(tableIcon, size: 24, color: mainColor),
                           const SizedBox(height: 4),
                           Text(
                             table.code,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.white,
+                              fontSize: 14,
+                              color: isSelected ? Colors.white : Colors.black87,
                             ),
                           ),
                           Text(
-                            tableLabel,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 9,
+                            badgeText,
+                            style: TextStyle(
+                              fontSize: 8,
                               fontWeight: FontWeight.w700,
-                              color: Colors.white,
+                              color: isSelected ? Colors.white70 : mainColor,
                             ),
                           ),
                         ],
