@@ -34,6 +34,14 @@ mixin _$TableModel {
   int? get activeOrderId => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_occupied')
   bool? get isOccupied => throw _privateConstructorUsedError;
+  @JsonKey(name: 'customer_name')
+  String? get customerName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'upcoming_reservation')
+  String? get upcomingReservation => throw _privateConstructorUsedError;
+  @JsonKey(name: 'reserved_customer_name')
+  String? get reservedCustomerName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'reservation_status')
+  String? get reservationStatus => throw _privateConstructorUsedError;
 
   /// Serializes this TableModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -61,6 +69,10 @@ abstract class $TableModelCopyWith<$Res> {
     int? capacity,
     @JsonKey(name: 'active_order_id') int? activeOrderId,
     @JsonKey(name: 'is_occupied') bool? isOccupied,
+    @JsonKey(name: 'customer_name') String? customerName,
+    @JsonKey(name: 'upcoming_reservation') String? upcomingReservation,
+    @JsonKey(name: 'reserved_customer_name') String? reservedCustomerName,
+    @JsonKey(name: 'reservation_status') String? reservationStatus,
   });
 }
 
@@ -87,6 +99,10 @@ class _$TableModelCopyWithImpl<$Res, $Val extends TableModel>
     Object? capacity = freezed,
     Object? activeOrderId = freezed,
     Object? isOccupied = freezed,
+    Object? customerName = freezed,
+    Object? upcomingReservation = freezed,
+    Object? reservedCustomerName = freezed,
+    Object? reservationStatus = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -122,6 +138,22 @@ class _$TableModelCopyWithImpl<$Res, $Val extends TableModel>
                 ? _value.isOccupied
                 : isOccupied // ignore: cast_nullable_to_non_nullable
                       as bool?,
+            customerName: freezed == customerName
+                ? _value.customerName
+                : customerName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            upcomingReservation: freezed == upcomingReservation
+                ? _value.upcomingReservation
+                : upcomingReservation // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            reservedCustomerName: freezed == reservedCustomerName
+                ? _value.reservedCustomerName
+                : reservedCustomerName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            reservationStatus: freezed == reservationStatus
+                ? _value.reservationStatus
+                : reservationStatus // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -146,6 +178,10 @@ abstract class _$$TableModelImplCopyWith<$Res>
     int? capacity,
     @JsonKey(name: 'active_order_id') int? activeOrderId,
     @JsonKey(name: 'is_occupied') bool? isOccupied,
+    @JsonKey(name: 'customer_name') String? customerName,
+    @JsonKey(name: 'upcoming_reservation') String? upcomingReservation,
+    @JsonKey(name: 'reserved_customer_name') String? reservedCustomerName,
+    @JsonKey(name: 'reservation_status') String? reservationStatus,
   });
 }
 
@@ -171,6 +207,10 @@ class __$$TableModelImplCopyWithImpl<$Res>
     Object? capacity = freezed,
     Object? activeOrderId = freezed,
     Object? isOccupied = freezed,
+    Object? customerName = freezed,
+    Object? upcomingReservation = freezed,
+    Object? reservedCustomerName = freezed,
+    Object? reservationStatus = freezed,
   }) {
     return _then(
       _$TableModelImpl(
@@ -206,6 +246,22 @@ class __$$TableModelImplCopyWithImpl<$Res>
             ? _value.isOccupied
             : isOccupied // ignore: cast_nullable_to_non_nullable
                   as bool?,
+        customerName: freezed == customerName
+            ? _value.customerName
+            : customerName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        upcomingReservation: freezed == upcomingReservation
+            ? _value.upcomingReservation
+            : upcomingReservation // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        reservedCustomerName: freezed == reservedCustomerName
+            ? _value.reservedCustomerName
+            : reservedCustomerName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        reservationStatus: freezed == reservationStatus
+            ? _value.reservationStatus
+            : reservationStatus // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -223,6 +279,10 @@ class _$TableModelImpl implements _TableModel {
     this.capacity,
     @JsonKey(name: 'active_order_id') this.activeOrderId,
     @JsonKey(name: 'is_occupied') this.isOccupied,
+    @JsonKey(name: 'customer_name') this.customerName,
+    @JsonKey(name: 'upcoming_reservation') this.upcomingReservation,
+    @JsonKey(name: 'reserved_customer_name') this.reservedCustomerName,
+    @JsonKey(name: 'reservation_status') this.reservationStatus,
   });
 
   factory _$TableModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -250,10 +310,22 @@ class _$TableModelImpl implements _TableModel {
   @override
   @JsonKey(name: 'is_occupied')
   final bool? isOccupied;
+  @override
+  @JsonKey(name: 'customer_name')
+  final String? customerName;
+  @override
+  @JsonKey(name: 'upcoming_reservation')
+  final String? upcomingReservation;
+  @override
+  @JsonKey(name: 'reserved_customer_name')
+  final String? reservedCustomerName;
+  @override
+  @JsonKey(name: 'reservation_status')
+  final String? reservationStatus;
 
   @override
   String toString() {
-    return 'TableModel(id: $id, code: $code, x: $x, y: $y, status: $status, capacity: $capacity, activeOrderId: $activeOrderId, isOccupied: $isOccupied)';
+    return 'TableModel(id: $id, code: $code, x: $x, y: $y, status: $status, capacity: $capacity, activeOrderId: $activeOrderId, isOccupied: $isOccupied, customerName: $customerName, upcomingReservation: $upcomingReservation, reservedCustomerName: $reservedCustomerName, reservationStatus: $reservationStatus)';
   }
 
   @override
@@ -271,7 +343,15 @@ class _$TableModelImpl implements _TableModel {
             (identical(other.activeOrderId, activeOrderId) ||
                 other.activeOrderId == activeOrderId) &&
             (identical(other.isOccupied, isOccupied) ||
-                other.isOccupied == isOccupied));
+                other.isOccupied == isOccupied) &&
+            (identical(other.customerName, customerName) ||
+                other.customerName == customerName) &&
+            (identical(other.upcomingReservation, upcomingReservation) ||
+                other.upcomingReservation == upcomingReservation) &&
+            (identical(other.reservedCustomerName, reservedCustomerName) ||
+                other.reservedCustomerName == reservedCustomerName) &&
+            (identical(other.reservationStatus, reservationStatus) ||
+                other.reservationStatus == reservationStatus));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -286,6 +366,10 @@ class _$TableModelImpl implements _TableModel {
     capacity,
     activeOrderId,
     isOccupied,
+    customerName,
+    upcomingReservation,
+    reservedCustomerName,
+    reservationStatus,
   );
 
   /// Create a copy of TableModel
@@ -312,6 +396,10 @@ abstract class _TableModel implements TableModel {
     final int? capacity,
     @JsonKey(name: 'active_order_id') final int? activeOrderId,
     @JsonKey(name: 'is_occupied') final bool? isOccupied,
+    @JsonKey(name: 'customer_name') final String? customerName,
+    @JsonKey(name: 'upcoming_reservation') final String? upcomingReservation,
+    @JsonKey(name: 'reserved_customer_name') final String? reservedCustomerName,
+    @JsonKey(name: 'reservation_status') final String? reservationStatus,
   }) = _$TableModelImpl;
 
   factory _TableModel.fromJson(Map<String, dynamic> json) =
@@ -337,6 +425,18 @@ abstract class _TableModel implements TableModel {
   @override
   @JsonKey(name: 'is_occupied')
   bool? get isOccupied;
+  @override
+  @JsonKey(name: 'customer_name')
+  String? get customerName;
+  @override
+  @JsonKey(name: 'upcoming_reservation')
+  String? get upcomingReservation;
+  @override
+  @JsonKey(name: 'reserved_customer_name')
+  String? get reservedCustomerName;
+  @override
+  @JsonKey(name: 'reservation_status')
+  String? get reservationStatus;
 
   /// Create a copy of TableModel
   /// with the given fields replaced by the non-null parameter values.

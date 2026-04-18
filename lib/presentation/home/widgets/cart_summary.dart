@@ -38,6 +38,8 @@ class CartSummary extends StatelessWidget {
                   ignoredRules,
                   tableNumber,
                   activeOrder,
+                  orderType,
+                  customerName,
                 ) {
                   double grandTotal = subtotal - discount + tax;
                   if (grandTotal < 0) grandTotal = 0;
@@ -51,30 +53,107 @@ class CartSummary extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Pesanan Saat Ini',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            if (!isEmpty)
-                              InkWell(
-                                onTap: () => context.read<CartBloc>().add(
-                                  const CartEvent.clearCart(),
-                                ),
-                                child: Text(
-                                  'Kosongkan',
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Current Order',
                                   style: TextStyle(
-                                    color: Colors.red.shade500,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 13,
                                   ),
                                 ),
-                              ),
+                                // 👇 Tampilkan Nomor Meja jika sedang mode Tambah Pesanan 👇
+                                if (tableNumber != null)
+                                  Text(
+                                    'Menambah pesanan: Meja $tableNumber',
+                                    style: TextStyle(
+                                      color: Colors.orange.shade700,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                              ],
+                            ),
+
+                            // 👇 Tombol X (Batal Tambah Pesanan / Clear Cart) 👇
+                            Row(
+                              children: [
+                                if (tableNumber != null)
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.close,
+                                      color: Colors.red,
+                                    ),
+                                    tooltip: 'Batal Tambah Pesanan',
+                                    onPressed: () {
+                                      // Reset konteks meja dan kosongkan cart
+                                      context.read<CartBloc>().add(
+                                        const CartEvent.setContext(
+                                          tableNumber: null,
+                                          activeOrder: null,
+                                        ),
+                                      );
+                                      context.read<CartBloc>().add(
+                                        const CartEvent.clearCart(),
+                                      );
+
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Batal menambah pesanan.',
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                if (tableNumber ==
+                                    null) // Tampilkan tombol hapus biasa jika pesanan baru
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                    onPressed: () => context
+                                        .read<CartBloc>()
+                                        .add(const CartEvent.clearCart()),
+                                  ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(24),
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       const Text(
+                      //         'Pesanan Saat Ini',
+                      //         style: TextStyle(
+                      //           fontSize: 18,
+                      //           fontWeight: FontWeight.bold,
+                      //         ),
+                      //       ),
+                      //       if (!isEmpty)
+                      //         InkWell(
+                      //           onTap: () => context.read<CartBloc>().add(
+                      //             const CartEvent.clearCart(),
+                      //           ),
+                      //           child: Text(
+                      //             'Kosongkan',
+                      //             style: TextStyle(
+                      //               color: Colors.red.shade500,
+                      //               fontWeight: FontWeight.bold,
+                      //               fontSize: 13,
+                      //             ),
+                      //           ),
+                      //         ),
+                      //     ],
+                      //   ),
+                      // ),
 
                       // --- LIST ITEM KERANJANG ---
                       Expanded(
@@ -108,6 +187,16 @@ class CartSummary extends StatelessWidget {
                                   final item = items[index];
                                   return CartItemCard(
                                     item: item,
+                                    // 👇 TAMBAHKAN BARIS INI
+                                    onQuantityChanged: (newQty) =>
+                                        context.read<CartBloc>().add(
+                                          CartEvent.updateQuantity(
+                                            item.productId,
+                                            item.uom ?? 'PCS',
+                                            newQty,
+                                          ),
+                                        ),
+                                    // 👆 BATAS PENAMBAHAN
                                     onIncrease: () =>
                                         context.read<CartBloc>().add(
                                           CartEvent.updateQuantity(
@@ -291,6 +380,8 @@ class CartSummary extends StatelessWidget {
                                       ______,
                                       tableNumber,
                                       activeOrder,
+                                      orderType,
+                                      customerName,
                                     ) {
                                       if (activeOrder != null)
                                         return 'SIMPAN TAMBAHAN';

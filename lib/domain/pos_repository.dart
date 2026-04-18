@@ -107,7 +107,7 @@ abstract class IPosRepository {
     int orderId,
     String targetTableCode,
   );
-
+  Future<Either<Failure, Unit>> checkInTable(int tableId);
   Future<Either<Failure, List<ReservationModel>>> getReservations();
   Future<Either<Failure, ReservationModel>> storeReservation(
     Map<String, dynamic> data,

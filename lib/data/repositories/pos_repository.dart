@@ -463,6 +463,16 @@ class PosRepositoryImpl implements IPosRepository {
   }
 
   @override
+  Future<Either<Failure, Unit>> checkInTable(int tableId) async {
+    try {
+      await remoteDataSource.checkInTable(tableId);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.apiError(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<ReservationModel>>> getReservations() async {
     try {
       final result = await remoteDataSource.getReservations();

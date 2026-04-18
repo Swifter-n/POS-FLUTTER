@@ -1,4 +1,5 @@
 import 'package:avis_pos/core/constants/colors.dart';
+import 'package:avis_pos/presentation/home/bloc/cart/cart_bloc.dart';
 import 'package:avis_pos/presentation/home/widgets/active_promo_slider.dart';
 import 'package:avis_pos/presentation/home/widgets/cart_summary.dart';
 import 'package:avis_pos/presentation/home/widgets/category_horizontal_list.dart';
@@ -12,6 +13,7 @@ import 'package:avis_pos/presentation/stock_count/pages/stock_count_list_page.da
 import 'package:avis_pos/presentation/settings/pages/printer_settings_page.dart';
 import 'package:avis_pos/presentation/shift/pages/open_shift_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TabletLayout extends StatelessWidget {
   const TabletLayout({super.key});
@@ -78,7 +80,37 @@ class TabletLayout extends StatelessWidget {
           ),
 
           // 4. Keranjang / Cart Summary (Kanan - Lebar Tetap)
-          const CartSummary(),
+          BlocBuilder<CartBloc, CartState>(
+            builder: (context, state) {
+              final bool showCart = state.maybeWhen(
+                loaded:
+                    (
+                      items,
+                      _,
+                      __,
+                      ___,
+                      ____,
+                      _____,
+                      ______,
+                      _______,
+                      orderType,
+                      customerName,
+                    ) => items.isNotEmpty,
+                orElse: () => false, // Default sembunyi jika loading/initial
+              );
+
+              // Jika kosong, jangan render (hemat layar)
+              if (!showCart) {
+                return const SizedBox.shrink();
+              }
+
+              // Animasi sederhana saat muncul
+              return const AnimatedSize(
+                duration: Duration(milliseconds: 300),
+                child: CartSummary(),
+              );
+            },
+          ),
         ],
       ),
     );

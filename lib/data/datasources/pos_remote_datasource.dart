@@ -84,6 +84,7 @@ abstract class IPosRemoteDataSource {
   Future<List<ReservationModel>> getReservations();
   Future<ReservationModel> storeReservation(Map<String, dynamic> data);
   Future<void> updateReservationStatus(int id, String status);
+  Future<void> checkInTable(int tableId);
 
   Future<PrinterSettingsModel> getPrinterSettings();
 }
@@ -691,6 +692,17 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
     );
     if (response.statusCode != 200)
       throw Exception('Gagal update status reservasi');
+  }
+
+  @override
+  Future<void> checkInTable(int tableId) async {
+    final url = Uri.parse(
+      '${Variables.baseUrl}${Variables.apiVersion}pos/tables/$tableId/check-in',
+    );
+    final response = await client.post(url, headers: await _getHeaders());
+    if (response.statusCode != 200) {
+      throw Exception('Gagal melakukan check-in meja');
+    }
   }
 
   @override

@@ -28,4 +28,6 @@ class TableEvent with _$TableEvent {
     required int orderId,
     required String targetTableCode,
   }) = _TransferTable;
+
+  const factory TableEvent.checkIn(int tableId) = _CheckIn;
 }

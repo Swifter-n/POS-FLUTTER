@@ -1,6 +1,7 @@
 import 'package:avis_pos/core/constants/colors.dart';
 import 'package:avis_pos/data/model/payloads/cart_item_payload/cart_item_payload.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class CartItemCard extends StatelessWidget {
@@ -9,13 +10,76 @@ class CartItemCard extends StatelessWidget {
   final VoidCallback onDecrease;
   final VoidCallback onRemove;
 
+  // 👇 Tambahkan Callback Baru untuk Manual Input
+  final ValueChanged<double>? onQuantityChanged;
+
   const CartItemCard({
     super.key,
     required this.item,
     required this.onIncrease,
     required this.onDecrease,
     required this.onRemove,
+    this.onQuantityChanged,
   });
+
+  // 👇 Tambahkan Fungsi Dialog Input Manual
+  void _showEditQuantityDialog(BuildContext context) {
+    final TextEditingController qtyController = TextEditingController(
+      text: item.quantity.toInt().toString(),
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Ubah Jumlah Pesanan',
+            style: TextStyle(fontSize: 18),
+          ),
+          content: TextField(
+            controller: qtyController,
+            keyboardType: TextInputType.number,
+            autofocus: true,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ], // Pastikan hanya angka
+            decoration: const InputDecoration(
+              labelText: 'Jumlah',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.edit),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Batal', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+              ),
+              onPressed: () {
+                final double? newQty = double.tryParse(qtyController.text);
+                if (newQty != null && newQty > 0) {
+                  if (onQuantityChanged != null) {
+                    onQuantityChanged!(newQty);
+                  }
+                }
+                Navigator.pop(dialogContext);
+              },
+              child: const Text(
+                'Simpan',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,14 +144,29 @@ class CartItemCard extends StatelessWidget {
                   ),
                   onPressed: onIncrease,
                 ),
-                Text(
-                  '${item.quantity.toInt()}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: AppColors.primaryDark,
+
+                // 👇 Modifikasi Angka menjadi Tappable (Bisa Diketuk)
+                InkWell(
+                  onTap: onQuantityChanged != null
+                      ? () => _showEditQuantityDialog(context)
+                      : null,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      '${item.quantity.toInt()}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: AppColors.primaryDark,
+                      ),
+                    ),
                   ),
                 ),
+
                 IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(minHeight: 36),

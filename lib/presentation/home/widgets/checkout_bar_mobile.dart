@@ -30,6 +30,8 @@ class CheckoutBarMobile extends StatelessWidget {
                 ignoredRules,
                 tableNumber,
                 activeOrder,
+                orderType,
+                customerName,
               ) {
                 if (items.isEmpty) return const SizedBox.shrink();
 

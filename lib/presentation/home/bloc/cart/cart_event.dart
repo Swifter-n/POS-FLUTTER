@@ -16,5 +16,7 @@ class CartEvent with _$CartEvent {
   const factory CartEvent.setContext({
     String? tableNumber,
     OrderModel? activeOrder,
+    String? orderType,
+    String? customerName,
   }) = _SetContext;
 }

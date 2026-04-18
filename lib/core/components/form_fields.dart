@@ -9,6 +9,7 @@ class AppTextField extends StatelessWidget {
   final bool isPassword;
   final Widget? prefixIcon;
   final TextInputType? keyboardType;
+  final bool readOnly;
 
   const AppTextField({
     super.key,
@@ -18,6 +19,7 @@ class AppTextField extends StatelessWidget {
     this.isPassword = false,
     this.prefixIcon,
     this.keyboardType,
+    this.readOnly = false,
   });
 
   @override
@@ -34,6 +36,7 @@ class AppTextField extends StatelessWidget {
           controller: controller,
           obscureText: isPassword,
           keyboardType: keyboardType,
+          readOnly: readOnly,
           style: AppTextStyles.body,
           decoration: InputDecoration(
             hintText: hint,

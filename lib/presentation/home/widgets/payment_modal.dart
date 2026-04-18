@@ -10,6 +10,7 @@ import 'package:avis_pos/data/model/responses/member_voucher_model/member_vouche
 import 'package:avis_pos/data/model/responses/order_model/order_model.dart';
 import 'package:avis_pos/presentation/home/bloc/cart/cart_bloc.dart';
 import 'package:avis_pos/presentation/home/pages/payment_camera_page.dart';
+import 'package:avis_pos/presentation/home/widgets/table_map_picker.dart';
 import 'package:avis_pos/presentation/member/bloc/member/member_bloc.dart';
 import 'package:avis_pos/presentation/open_bill/bloc/open_bill/open_bill_bloc.dart';
 import 'package:avis_pos/presentation/settings/bloc/printer/printer_bloc.dart';
@@ -110,47 +111,111 @@ class _PaymentModalState extends State<PaymentModal> {
 
     final cartState = context.read<CartBloc>().state;
     cartState.maybeWhen(
-      loaded: (_, __, ___, ____, _____, ______, tableNumber, activeOrder) {
-        if (tableNumber != null) {
-          _selectedTableCode = tableNumber;
-          _isContextLocked = true;
-
-          if (activeOrder != null) {
-            _orderType = 'Open Bill';
-            _selectedMemberId = activeOrder.memberId;
-
-            // ✅ FIX 1: Fallback Aman. Jika member null dari API, pakai nama customer
-            _selectedMemberName = activeOrder.customerName ?? 'Member';
-
-            if (activeOrder.member != null) {
-              _selectedMemberName =
-                  activeOrder.member!.name ?? _selectedMemberName;
-              _memberPoints = activeOrder.member!.currentPoints ?? 0;
-              _memberTier = activeOrder.member!.tier ?? 'Basic';
-              _memberLastVisit = activeOrder.member!.lastVisit;
-              _memberFavorite = activeOrder.member!.favoriteProduct;
-              _memberTotalSpend = activeOrder.member!.totalSpend ?? 0.0;
+      loaded:
+          (
+            items,
+            subtotal,
+            discount,
+            tax,
+            promos,
+            ignored,
+            tableNumber,
+            activeOrder,
+            cartOrderType,
+            cartCustomerName,
+          ) {
+            // 1. Set Table & Default Order Type (Dine In)
+            if (tableNumber != null) {
+              _selectedTableCode = tableNumber;
+              _isContextLocked = true;
             }
 
-            // ✅ FIX 2: Silent Auto-Fetch!
-            // Jika ID member ada tapi CRM kosong (karena API), suruh MemberBloc cari data barunya di background
-            if (_selectedMemberId != null &&
-                activeOrder.customerName != null &&
-                activeOrder.customerName != 'Guest') {
-              context.read<MemberBloc>().add(
-                MemberEvent.checkMember(activeOrder.customerName!),
-              );
-            }
+            // 2. Handle State jika ada activeOrder (Berarti Open Bill)
+            if (activeOrder != null) {
+              String dbType = activeOrder.typeOrder ?? 'Open Bill';
+              _orderType =
+                  [
+                    'Takeaway',
+                    'Dine In',
+                    'Open Bill',
+                    'Reservasi',
+                  ].contains(dbType)
+                  ? dbType
+                  : 'Open Bill';
+              _selectedMemberId = activeOrder.memberId;
+              _selectedMemberName = activeOrder.customerName ?? 'Guest';
+              _guestNameController.text = activeOrder.customerName ?? '';
 
-            final cName = activeOrder.customerName ?? '';
-            if (cName != 'Guest' && cName != _selectedMemberName) {
-              _guestNameController.text = cName;
+              // Jika ada relasi member dari database backend
+              if (activeOrder.member != null) {
+                _selectedMemberName =
+                    activeOrder.member!.name ?? _selectedMemberName;
+                _memberPoints = activeOrder.member!.currentPoints ?? 0;
+                _memberTier = activeOrder.member!.tier ?? 'Basic';
+                _memberLastVisit = activeOrder.member!.lastVisit;
+                _memberFavorite = activeOrder.member!.favoriteProduct;
+                _memberTotalSpend = activeOrder.member!.totalSpend ?? 0.0;
+              }
+
+              // Silent Auto-Fetch! Memuat data CRM terbaru di background
+              if (_selectedMemberId != null &&
+                  activeOrder.customerName != null &&
+                  activeOrder.customerName != 'Guest') {
+                context.read<MemberBloc>().add(
+                  MemberEvent.checkMember(activeOrder.customerName!),
+                );
+              }
+
+              // Inisialisasi Guest Name Controller jika dia bukan member
+              final cName = activeOrder.customerName ?? '';
+              if (cName != 'Guest' && cName != _selectedMemberName) {
+                _guestNameController.text = cName;
+              }
+            } else {
+              // 3. Eksplisit: Jika pesanan baru (Dine In / Takeaway) tanpa activeOrder
+              // Pastikan state di-reset agar form input "Nama Customer" muncul
+              _selectedMemberId = null;
+              _orderType = cartOrderType ?? 'Dine In';
+              _guestNameController.text = cartCustomerName ?? '';
+
+              // 👇 Cek apakah meja ini adalah Dine In yang sedang berjalan (Lunas)
+              String prepopulatedName = '';
+              if (_selectedTableCode != null) {
+                final tableState = context.read<TableBloc>().state;
+                tableState.maybeWhen(
+                  loaded: (tables, _) {
+                    try {
+                      final matchingTable = tables.firstWhere(
+                        (t) => t.code == _selectedTableCode,
+                      );
+                      final resStatus = matchingTable.reservationStatus;
+                      final bool isOccupiedFisik =
+                          matchingTable.isOccupied ?? false;
+
+                      // 🔥 LOGIKA PRODUKSI: Deteksi Reservasi yang baru Check-In
+                      if ((resStatus == 'seated' || resStatus == 'booked') &&
+                          !isOccupiedFisik) {
+                        _guestNameController.text =
+                            matchingTable.reservedCustomerName ?? '';
+                        _orderType =
+                            'RESERVASI'; // Simpan tipe asli ke database
+                      } else {
+                        _orderType = 'Dine In'; // Default untuk tamu Walk-In
+                        if (matchingTable.customerName != null &&
+                            matchingTable.customerName != 'Guest') {
+                          _guestNameController.text =
+                              matchingTable.customerName!;
+                        }
+                      }
+                    } catch (_) {}
+                  },
+                  orElse: () {},
+                );
+              }
+
+              _guestNameController.text = prepopulatedName;
             }
-          } else {
-            _orderType = 'Dine In';
-          }
-        }
-      },
+          },
       orElse: () {},
     );
   }
@@ -276,7 +341,7 @@ class _PaymentModalState extends State<PaymentModal> {
     final cartState = context.read<CartBloc>().state;
     OrderModel? activeOrder;
     cartState.maybeWhen(
-      loaded: (_, __, ___, ____, _____, ______, _______, order) =>
+      loaded: (_, __, ___, ____, _____, ______, _______, order, ________, _________) =>
           activeOrder = order,
       orElse: () {},
     );
@@ -571,6 +636,8 @@ class _PaymentModalState extends State<PaymentModal> {
                   ignoredRules,
                   tableNumber,
                   activeOrder,
+                  _cartOrderType,
+                  _cartCustomerName,
                 ) {
                   currentSubtotal = subtotal;
                   currentTax = tax;
@@ -670,10 +737,20 @@ class _PaymentModalState extends State<PaymentModal> {
                                     ),
                                     const SizedBox(height: 8),
 
+                                    const SizedBox(height: 16),
+                                    const Text(
+                                      'Pemilihan Meja',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+
                                     BlocBuilder<TableBloc, TableState>(
                                       builder: (context, tableState) {
                                         return tableState.maybeWhen(
                                           loaded: (tables, _) {
+                                            // Fallback pencocokan ID
                                             if (_selectedTableId == null &&
                                                 _selectedTableCode != null) {
                                               try {
@@ -687,78 +764,146 @@ class _PaymentModalState extends State<PaymentModal> {
                                               } catch (_) {}
                                             }
 
-                                            final List<DropdownMenuItem<int?>>
-                                            dropdownItems = [
-                                              const DropdownMenuItem(
-                                                value: null,
-                                                child: Text(
-                                                  'Tanpa Meja (Opsional)',
-                                                  style: TextStyle(
-                                                    color: Colors.grey,
-                                                  ),
-                                                ),
-                                              ),
-                                            ];
-                                            dropdownItems.addAll(
-                                              tables.map((t) {
-                                                final isAvailable =
-                                                    t.status == 'available';
-                                                return DropdownMenuItem(
-                                                  value: t.id,
-                                                  child: Text(
-                                                    '${t.code} ${isAvailable ? "(Kosong)" : "(Terisi)"}',
-                                                    style: TextStyle(
-                                                      color: isAvailable
-                                                          ? Colors.black87
-                                                          : Colors.red.shade400,
-                                                    ),
-                                                  ),
-                                                );
-                                              }),
-                                            );
-
-                                            return DropdownButtonFormField<
-                                              int?
-                                            >(
-                                              value: _selectedTableId,
-                                              items: dropdownItems,
-                                              onChanged: _isContextLocked
+                                            return InkWell(
+                                              onTap: _isContextLocked
                                                   ? null
-                                                  : (val) {
-                                                      setState(() {
-                                                        _selectedTableId = val;
-                                                        if (val != null) {
-                                                          _selectedTableCode =
-                                                              tables
-                                                                  .firstWhere(
-                                                                    (t) =>
-                                                                        t.id ==
-                                                                        val,
-                                                                  )
-                                                                  .code;
-                                                        } else {
-                                                          _selectedTableCode =
-                                                              null;
-                                                        }
-                                                      });
+                                                  : () {
+                                                      // --- BUKA MODAL CINEMA SEAT ---
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (dialogContext) => AlertDialog(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  24,
+                                                                ),
+                                                          ),
+                                                          title: const Text(
+                                                            'Pilih Meja Pelanggan',
+                                                          ),
+                                                          content: TableMapPicker(
+                                                            tables: tables,
+                                                            selectedTableId:
+                                                                _selectedTableId,
+                                                            onTableSelected: (table) {
+                                                              if (table !=
+                                                                  null) {
+                                                                // Jika meja sedang terisi, beri peringatan atau tetap izinkan (tergantung kebutuhan bisnis)
+                                                                if (table.isOccupied ==
+                                                                        true &&
+                                                                    table.id !=
+                                                                        _selectedTableId) {
+                                                                  ScaffoldMessenger.of(
+                                                                    context,
+                                                                  ).showSnackBar(
+                                                                    const SnackBar(
+                                                                      content: Text(
+                                                                        'Perhatian: Meja ini sedang terisi!',
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                }
+
+                                                                setState(() {
+                                                                  _selectedTableId =
+                                                                      table.id;
+                                                                  _selectedTableCode =
+                                                                      table
+                                                                          .code;
+                                                                });
+                                                                Navigator.pop(
+                                                                  dialogContext,
+                                                                ); // Tutup modal setelah pilih
+                                                              }
+                                                            },
+                                                          ),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  _selectedTableId =
+                                                                      null;
+                                                                  _selectedTableCode =
+                                                                      null;
+                                                                });
+                                                                Navigator.pop(
+                                                                  dialogContext,
+                                                                );
+                                                              },
+                                                              child: const Text(
+                                                                'Hapus Pilihan (Tanpa Meja)',
+                                                                style: TextStyle(
+                                                                  color: Colors
+                                                                      .red,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () =>
+                                                                  Navigator.pop(
+                                                                    dialogContext,
+                                                                  ),
+                                                              child: const Text(
+                                                                'Tutup',
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
                                                     },
-                                              decoration: InputDecoration(
-                                                contentPadding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 16,
-                                                      vertical: 12,
-                                                    ),
-                                                border: OutlineInputBorder(
+                                              child: Container(
+                                                padding: const EdgeInsets.all(
+                                                  16,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: AppColors.stroke,
+                                                  ),
                                                   borderRadius:
                                                       BorderRadius.circular(12),
+                                                  color: _isContextLocked
+                                                      ? Colors.grey.shade100
+                                                      : Colors.white,
                                                 ),
-                                                fillColor: _isContextLocked
-                                                    ? Colors.grey.shade100
-                                                    : Colors.white,
-                                                filled: true,
-                                              ),
-                                              hint: const Text(
-                                                'Pilih Meja (Opsional)',
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.grid_view_rounded,
+                                                      color:
+                                                          _selectedTableCode !=
+                                                              null
+                                                          ? AppColors.primary
+                                                          : Colors.grey,
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    Expanded(
+                                                      child: Text(
+                                                        _selectedTableCode !=
+                                                                null
+                                                            ? 'Meja: $_selectedTableCode'
+                                                            : 'Ketuk untuk Pilih Meja (Opsional)',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              _selectedTableCode !=
+                                                                  null
+                                                              ? FontWeight.bold
+                                                              : FontWeight
+                                                                    .normal,
+                                                          color:
+                                                              _selectedTableCode !=
+                                                                  null
+                                                              ? Colors.black87
+                                                              : Colors.grey,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    if (!_isContextLocked)
+                                                      const Icon(
+                                                        Icons.chevron_right,
+                                                        color: Colors.grey,
+                                                      ),
+                                                  ],
+                                                ),
                                               ),
                                             );
                                           },
@@ -899,6 +1044,7 @@ class _PaymentModalState extends State<PaymentModal> {
                                         ],
                                       ),
                                     ),
+
                                   if (_selectedMemberId == null) ...[
                                     const SizedBox(height: 12),
                                     AppTextField(
@@ -908,6 +1054,28 @@ class _PaymentModalState extends State<PaymentModal> {
                                       prefixIcon: const Icon(
                                         Icons.person_outline,
                                       ),
+                                      // 👇 Kunci field jika sedang Tambah Pesanan (Open Bill aktif)
+                                      readOnly:
+                                          _isContextLocked &&
+                                          context
+                                              .read<CartBloc>()
+                                              .state
+                                              .maybeWhen(
+                                                loaded:
+                                                    (
+                                                      _,
+                                                      __,
+                                                      ___,
+                                                      ____,
+                                                      _____,
+                                                      ______,
+                                                      _______,
+                                                      activeOrder,
+                                                      ________,
+                                                      _________,
+                                                    ) => activeOrder != null,
+                                                orElse: () => false,
+                                              ),
                                     ),
                                   ],
 
@@ -1168,7 +1336,9 @@ class _PaymentModalState extends State<PaymentModal> {
                             // --- PANEL KANAN ---
                             Expanded(
                               flex: 1,
-                              child: _orderType == 'Open Bill'
+                              child:
+                                  (_orderType == 'Open Bill' ||
+                                      _orderType == 'Reservasi')
                                   ? _buildOpenBillRightPanel(
                                       currentCartItems,
                                       currentIgnoredRules,
@@ -1743,17 +1913,35 @@ class _PaymentModalState extends State<PaymentModal> {
     return ChoiceChip(
       label: Text(type),
       selected: _orderType == type,
-      onSelected: _isContextLocked
-          ? null
-          : (val) => setState(() => _orderType = type),
+      // 🔥 KUNCI PERBAIKAN: Hapus pembatasan _isContextLocked.
+      // Biarkan kasir BEBAS memilih tipe "Dine In" atau "Reservasi" kapan saja!
+      onSelected: (val) {
+        setState(() {
+          _orderType = type;
+        });
+      },
       selectedColor: AppColors.primary,
       labelStyle: TextStyle(
-        color: _orderType == type
-            ? Colors.white
-            : (_isContextLocked ? Colors.grey : Colors.black),
+        color: _orderType == type ? Colors.white : Colors.black,
       ),
     );
   }
+
+  // Widget _orderTypeChip(String type) {
+  //   return ChoiceChip(
+  //     label: Text(type),
+  //     selected: _orderType == type,
+  //     onSelected: _isContextLocked
+  //         ? null
+  //         : (val) => setState(() => _orderType = type),
+  //     selectedColor: AppColors.primary,
+  //     labelStyle: TextStyle(
+  //       color: _orderType == type
+  //           ? Colors.white
+  //           : (_isContextLocked ? Colors.grey : Colors.black),
+  //     ),
+  //   );
+  // }
 
   Widget _paymentMethodCard(String value, String title, IconData icon) {
     final isSelected = _paymentMethod == value;

@@ -1,3 +1,4 @@
+import 'package:avis_pos/core/components/buttons.dart';
 import 'package:avis_pos/core/constants/colors.dart';
 import 'package:avis_pos/data/model/responses/order_model/order_model.dart';
 import 'package:avis_pos/data/model/responses/table_model/table_model.dart';
@@ -294,6 +295,53 @@ class _TableManagementPageState extends State<TableManagementPage> {
     );
   }
 
+  void _showReservationCheckInMenu(TableModel table) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Reservasi Meja ${table.code}",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 8),
+            Text("Atas Nama: ${table.reservedCustomerName ?? '-'}"),
+            const SizedBox(height: 24),
+            AppButton(
+              label: "KONFIRMASI KEDATANGAN (CHECK-IN)",
+              onPressed: () {
+                // 1. 🔥 Panggil API Check-in ke Backend agar status berubah jadi 'seated'
+                context.read<TableBloc>().add(TableEvent.checkIn(table.id));
+
+                // 2. Set konteks meja di keranjang
+                context.read<CartBloc>().add(
+                  CartEvent.setContext(tableNumber: table.code),
+                );
+
+                Navigator.pop(context); // Tutup BottomSheet
+                Navigator.popUntil(
+                  context,
+                  (route) => route.isFirst,
+                ); // Ke Home
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Meja ${table.code} telah Check-in. Silakan input pesanan.',
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // =========================================================================
   // LOGIKA MENU AKSI KASIR
   // =========================================================================
@@ -305,21 +353,30 @@ class _TableManagementPageState extends State<TableManagementPage> {
       return;
     }
 
-    // 👇 Gunakan isOccupied bawaan dari backend
-    final bool isOccupied = table.isOccupied ?? false;
+    final String? resStatus = table.reservationStatus;
+    final bool isBooked = (resStatus == 'booked');
+    final bool isSeated = (resStatus == 'seated');
+    final bool isOccupiedFisik = table.isOccupied ?? false;
 
-    if (!isOccupied) {
+    if (isBooked) {
+      // JIKA MASIH BOOKED: Hanya tampilkan menu Check-in
+      _showReservationCheckInMenu(table);
+    } else if (isSeated || isOccupiedFisik) {
+      // JIKA SEATED ATAU WALK-IN: Tampilkan menu aksi (Lihat Tagihan/Tambah Pesanan)
+      _showTableActionMenu(table, activeOrder);
+    } else {
+      // JIKA KOSONG: Menu buka bill baru
       showDialog(
         context: context,
         builder: (context) => NewBillModal(initialTableCode: table.code),
       );
-    } else {
-      _showTableActionMenu(table, activeOrder);
     }
   }
 
   void _showTableActionMenu(TableModel table, OrderModel? activeOrder) {
-    bool isPaidDineIn = (activeOrder == null);
+    bool hasActiveOrder = (activeOrder != null);
+    bool isSeated = (table.reservationStatus == 'seated');
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -374,100 +431,99 @@ class _TableManagementPageState extends State<TableManagementPage> {
                 child: Divider(),
               ),
 
-              if (isPaidDineIn)
+              // ==============================================================
+              // KONDISI A: TIDAK ADA TAGIHAN AKTIF (Baru Check-in / Lunas)
+              // ==============================================================
+              if (!hasActiveOrder) ...[
+                // 🔥 1. JIKA MEJA INI RESERVASI BARU DATANG
+                if (isSeated)
+                  _buildMenuAction(
+                    icon: Icons.add_shopping_cart,
+                    color: Colors.deepOrange.shade700,
+                    title: 'Isi Pesanan Reservasi',
+                    subtitle: 'Input menu untuk ${table.reservedCustomerName}',
+                    onTap: () {
+                      Navigator.pop(bottomSheetContext);
+                      // 👉 Kunci: Kirim tipe pesanan secara EKPLISIT ke Keranjang
+                      context.read<CartBloc>().add(
+                        CartEvent.setContext(
+                          tableNumber: table.code,
+                          orderType: 'Reservasi',
+                          customerName: table.reservedCustomerName,
+                        ),
+                      );
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                    },
+                  ),
+
+                // 🔥 2. JIKA MEJA INI WALK-IN BIASA / DINE IN LUNAS
+                if (!isSeated)
+                  _buildMenuAction(
+                    icon: Icons.add_shopping_cart,
+                    color: Colors.blue.shade600,
+                    title: 'Tambah Pesanan',
+                    subtitle: 'Buat tagihan baru di meja ini',
+                    onTap: () {
+                      Navigator.pop(bottomSheetContext);
+                      // 👉 Kunci: Kirim tipe pesanan secara EKPLISIT ke Keranjang
+                      context.read<CartBloc>().add(
+                        CartEvent.setContext(
+                          tableNumber: table.code,
+                          orderType: 'Dine In',
+                        ),
+                      );
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                    },
+                  ),
+
+                // 🔥 3. KOSONGKAN MEJA
                 _buildMenuAction(
-                  icon: Icons.add_shopping_cart,
-                  color: Colors.blue.shade600,
-                  title: 'Tambah Pesanan',
-                  subtitle: isPaidDineIn
-                      ? 'Buat order baru di meja ini'
-                      : 'Tambah item ke bill yang ada',
+                  icon: Icons.cleaning_services,
+                  color: Colors.grey.shade700,
+                  title: 'Kosongkan Meja (Clear Table)',
+                  subtitle: 'Bersihkan meja jika pelanggan sudah pulang',
                   onTap: () {
                     Navigator.pop(bottomSheetContext);
-
-                    context.read<CartBloc>().add(
-                      CartEvent.setContext(
-                        tableNumber: table.code,
-                        activeOrder:
-                            activeOrder, // Jika null, berarti order baru
-                      ),
-                    );
-
-                    // Kembali ke layar utama (Kasir)
-                    Navigator.popUntil(context, (route) => route.isFirst);
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Mode: Menambah pesanan untuk Meja ${table.code}',
-                        ),
-                        backgroundColor: Colors.blue.shade700,
-                      ),
-                    );
+                    _confirmClearTable(table);
                   },
                 ),
+              ],
 
-              if (!isPaidDineIn)
+              // ==============================================================
+              // KONDISI B: ADA TAGIHAN AKTIF (SEDANG MAKAN)
+              // ==============================================================
+              if (hasActiveOrder) ...[
                 _buildMenuAction(
                   icon: Icons.receipt_long,
                   color: Colors.green.shade600,
                   title: 'Lihat / Bayar Tagihan',
-                  subtitle: 'Cek detail pesanan dan proses pelunasan',
+                  subtitle: 'Buka bill untuk tambah pesanan atau pelunasan',
                   onTap: () {
                     Navigator.pop(bottomSheetContext);
                     _processPayBill(table);
                   },
                 ),
-
-              _buildMenuAction(
-                icon: Icons.swap_horiz,
-                color: Colors.orange.shade600,
-                title: 'Pindah Meja',
-                subtitle: 'Pindahkan pelanggan dan tagihan ke meja lain',
-                onTap: () {
-                  Navigator.pop(bottomSheetContext);
-                  _showTransferTableDialog(table, activeOrder);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Move Table'),
-                      backgroundColor: Colors.orange,
-                    ),
-                  );
-                },
-              ),
-
-              _buildMenuAction(
-                icon: Icons.cancel_outlined,
-                color: Colors.red.shade600,
-                title: 'Batalkan Pesanan (Void)',
-                subtitle: 'Batalkan seluruh pesanan di meja ini',
-                onTap: () {
-                  Navigator.pop(bottomSheetContext);
-                  _showVoidOrderDialog(table, activeOrder);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Cancel Orders'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                },
-              ),
-
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Divider(),
-              ),
-
-              _buildMenuAction(
-                icon: Icons.cleaning_services,
-                color: Colors.grey.shade700,
-                title: 'Kosongkan Meja (Clear Table)',
-                subtitle: 'Hanya bersihkan meja (jika pelanggan sudah pulang)',
-                onTap: () {
-                  Navigator.pop(bottomSheetContext);
-                  _confirmClearTable(table);
-                },
-              ),
+                _buildMenuAction(
+                  icon: Icons.swap_horiz,
+                  color: Colors.orange.shade600,
+                  title: 'Pindah Meja',
+                  subtitle: 'Pindahkan pelanggan dan tagihan ke meja lain',
+                  onTap: () {
+                    Navigator.pop(bottomSheetContext);
+                    _showTransferTableDialog(table, activeOrder);
+                  },
+                ),
+                _buildMenuAction(
+                  icon: Icons.cancel_outlined,
+                  color: Colors.red.shade600,
+                  title: 'Batalkan Pesanan (Void)',
+                  subtitle: 'Batalkan seluruh pesanan di meja ini',
+                  onTap: () {
+                    Navigator.pop(bottomSheetContext);
+                    _showVoidOrderDialog(table, activeOrder);
+                  },
+                ),
+              ],
             ],
           ),
         );
@@ -763,8 +819,10 @@ class _TableManagementPageState extends State<TableManagementPage> {
                         children: tables.asMap().entries.map((entry) {
                           final index = entry.key;
                           final table = entry.value;
-                          final bool isOccupied = table.isOccupied ?? false;
-                          final isAvailable = !isOccupied;
+                          //final bool isOccupied = table.isOccupied ?? false;
+                          //final isAvailable = !isOccupied;
+                          final bool hasUpcoming =
+                              table.upcomingReservation != null;
 
                           // ✅ FIX 2: Logika "Anti-Tumpuk"
                           // Jika x dan y masih 0, kita beri posisi otomatis (index * 120) agar tidak tumpang tindih
@@ -789,12 +847,89 @@ class _TableManagementPageState extends State<TableManagementPage> {
                           }
 
                           // Tentukan label tipe order
+                          // String orderTypeLabel = "";
+                          // if (!isAvailable) {
+                          //   // Jika occupied tapi tidak ada di list Open Bill (Unpaid), berarti Dine In Lunas
+                          //   orderTypeLabel = (activeOrder != null)
+                          //       ? "OPEN BILL"
+                          //       : "DINE IN";
+                          // }
+
+                          final bool isOccupiedFisik =
+                              table.isOccupied ?? false;
+                          final String? resStatus = table.reservationStatus;
+                          final bool isBooked = (resStatus == 'booked');
+                          final bool isSeated = (resStatus == 'seated');
+
+                          Color cardColor = Colors.white;
+                          Color borderColor = _isEditMode
+                              ? Colors.blue
+                              : Colors.grey.shade300;
+                          Color mainColor = Colors.green.shade600;
+                          String badgeText = 'AVAILABLE';
+                          Color badgeBg = Colors.green.shade100;
+                          IconData tableIcon = Icons.table_restaurant;
+
                           String orderTypeLabel = "";
-                          if (!isAvailable) {
-                            // Jika occupied tapi tidak ada di list Open Bill (Unpaid), berarti Dine In Lunas
-                            orderTypeLabel = (activeOrder != null)
-                                ? "OPEN BILL"
-                                : "DINE IN";
+                          String customerNameLabel = "";
+
+                          if (activeOrder != null) {
+                            String typeFromDb =
+                                (activeOrder.typeOrder ?? "OPEN BILL")
+                                    .toUpperCase();
+                            orderTypeLabel =
+                                typeFromDb; // Pasti mencetak "DINE IN" atau "RESERVASI"
+                            customerNameLabel = activeOrder.customerName ?? "";
+
+                            if (typeFromDb == 'RESERVASI') {
+                              cardColor = Colors.deepOrange.shade50;
+                              borderColor = _isEditMode
+                                  ? Colors.blue
+                                  : Colors.deepOrange.shade300;
+                              mainColor = Colors.deepOrange.shade700;
+                              badgeText = 'SEATED';
+                              badgeBg = Colors.deepOrange.shade100;
+                              tableIcon = Icons.how_to_reg;
+                            } else {
+                              // Tipe DINE IN atau OPEN BILL Murni
+                              cardColor = Colors.red.shade50;
+                              borderColor = _isEditMode
+                                  ? Colors.blue
+                                  : Colors.red.shade300;
+                              mainColor = Colors.red.shade600;
+                              badgeText = 'OPEN BILL';
+                              badgeBg = Colors.red.shade100;
+                              tableIcon = Icons.receipt_long;
+                            }
+                          }
+                          // 🥈 PRIORITAS 2: JIKA BELUM ADA TAGIHAN, CEK STATUS RESERVASI
+                          else if (isSeated || isBooked) {
+                            cardColor = Colors.orange.shade50;
+                            borderColor = _isEditMode
+                                ? Colors.blue
+                                : Colors.orange.shade300;
+                            mainColor = Colors.orange.shade700;
+                            badgeText = isSeated ? 'SEATED' : 'BOOKED';
+                            badgeBg = Colors.orange.shade100;
+                            tableIcon = isSeated
+                                ? Icons.how_to_reg
+                                : Icons.event_seat;
+                            orderTypeLabel = "RESERVASI";
+                            customerNameLabel =
+                                table.reservedCustomerName ?? "";
+                          }
+                          // 🥉 PRIORITAS 3: DINE IN LUNAS (Orang masih duduk / Meja kotor)
+                          else if (isOccupiedFisik) {
+                            cardColor = Colors.blue.shade50;
+                            borderColor = _isEditMode
+                                ? Colors.blue
+                                : Colors.blue.shade300;
+                            mainColor = Colors.blue.shade700;
+                            badgeText = 'OCCUPIED';
+                            badgeBg = Colors.blue.shade100;
+                            tableIcon = Icons.person_pin;
+                            orderTypeLabel = "DINE IN";
+                            customerNameLabel = table.customerName ?? "";
                           }
 
                           return Positioned(
@@ -814,19 +949,14 @@ class _TableManagementPageState extends State<TableManagementPage> {
                                   : null,
                               onTap: () => _handleTableTap(table, activeOrder),
                               child: Container(
-                                width: 120, // Sedikit diperlebar
-                                height: 150,
+                                width: 120,
+                                height:
+                                    155, // Sedikit ditambah tingginya untuk slot Resv
                                 decoration: BoxDecoration(
-                                  color: isAvailable
-                                      ? Colors.white
-                                      : Colors.red.shade50,
+                                  color: cardColor,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: _isEditMode
-                                        ? Colors.blue
-                                        : (isAvailable
-                                              ? Colors.grey.shade300
-                                              : Colors.red.shade300),
+                                    color: borderColor,
                                     width: _isEditMode ? 3 : 2,
                                   ),
                                   boxShadow: [
@@ -840,18 +970,9 @@ class _TableManagementPageState extends State<TableManagementPage> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    // Ikon yang berubah sesuai status
-                                    Icon(
-                                      isAvailable
-                                          ? Icons.table_restaurant
-                                          : Icons.person_pin,
-                                      size: 36,
-                                      color: isAvailable
-                                          ? Colors.green.shade600
-                                          : Colors.red.shade600,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    if (!isAvailable)
+                                    Icon(tableIcon, size: 32, color: mainColor),
+
+                                    if (orderTypeLabel.isNotEmpty)
                                       Container(
                                         margin: const EdgeInsets.only(top: 4),
                                         padding: const EdgeInsets.symmetric(
@@ -860,7 +981,7 @@ class _TableManagementPageState extends State<TableManagementPage> {
                                         ),
                                         decoration: BoxDecoration(
                                           color: (activeOrder != null)
-                                              ? Colors.orange.shade100
+                                              ? Colors.deepOrange.shade100
                                               : Colors.blue.shade100,
                                           borderRadius: BorderRadius.circular(
                                             4,
@@ -872,14 +993,13 @@ class _TableManagementPageState extends State<TableManagementPage> {
                                             fontSize: 8,
                                             fontWeight: FontWeight.bold,
                                             color: (activeOrder != null)
-                                                ? Colors.orange.shade800
+                                                ? Colors.deepOrange.shade800
                                                 : Colors.blue.shade800,
                                           ),
                                         ),
                                       ),
 
                                     const SizedBox(height: 6),
-                                    // Kode Meja
                                     Text(
                                       table.code,
                                       style: const TextStyle(
@@ -887,8 +1007,7 @@ class _TableManagementPageState extends State<TableManagementPage> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    // ✅ INFORMASI TAMBAHAN: Kapasitas & Status
+
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -909,27 +1028,49 @@ class _TableManagementPageState extends State<TableManagementPage> {
                                       ],
                                     ),
 
+                                    // 👇 INDIKATOR JAM RESERVASI
+                                    if (hasUpcoming)
+                                      Container(
+                                        margin: const EdgeInsets.only(top: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue.shade50,
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.blue.shade200,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Resv: ${table.upcomingReservation}',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blue.shade800,
+                                          ),
+                                        ),
+                                      ),
+
                                     const SizedBox(height: 4),
-                                    // Badge Status
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 8,
                                         vertical: 2,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: isAvailable
-                                            ? Colors.green.shade100
-                                            : Colors.red.shade100,
+                                        color: badgeBg,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
-                                        isAvailable ? 'AVAILABLE' : 'OCCUPIED',
+                                        badgeText,
                                         style: TextStyle(
                                           fontSize: 9,
                                           fontWeight: FontWeight.bold,
-                                          color: isAvailable
-                                              ? Colors.green.shade800
-                                              : Colors.red.shade800,
+                                          color: mainColor,
                                         ),
                                       ),
                                     ),

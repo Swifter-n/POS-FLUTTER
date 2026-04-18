@@ -16,6 +16,10 @@ _$TableModelImpl _$$TableModelImplFromJson(Map<String, dynamic> json) =>
       capacity: (json['capacity'] as num?)?.toInt(),
       activeOrderId: (json['active_order_id'] as num?)?.toInt(),
       isOccupied: json['is_occupied'] as bool?,
+      customerName: json['customer_name'] as String?,
+      upcomingReservation: json['upcoming_reservation'] as String?,
+      reservedCustomerName: json['reserved_customer_name'] as String?,
+      reservationStatus: json['reservation_status'] as String?,
     );
 
 Map<String, dynamic> _$$TableModelImplToJson(_$TableModelImpl instance) =>
@@ -28,4 +32,8 @@ Map<String, dynamic> _$$TableModelImplToJson(_$TableModelImpl instance) =>
       'capacity': instance.capacity,
       'active_order_id': instance.activeOrderId,
       'is_occupied': instance.isOccupied,
+      'customer_name': instance.customerName,
+      'upcoming_reservation': instance.upcomingReservation,
+      'reserved_customer_name': instance.reservedCustomerName,
+      'reservation_status': instance.reservationStatus,
     };

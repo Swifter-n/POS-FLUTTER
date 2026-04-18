@@ -59,6 +59,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             ignoredRules,
             tableNumber,
             activeOrder,
+            orderType,
+            customerName,
           ) {
             currentIgnored = ignoredRules;
             currentTable = tableNumber;
@@ -114,6 +116,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             ignoredRules,
             tableNumber,
             activeOrder,
+            orderType,
+            customerName,
           ) {
             currentIgnored = ignoredRules;
             currentTable = tableNumber;
@@ -159,6 +163,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             ignoredRules,
             tableNumber,
             activeOrder,
+            orderType,
+            customerName,
           ) {
             currentIgnored = ignoredRules;
             currentTable = tableNumber;
@@ -229,6 +235,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             ignoredRules,
             tableNumber,
             activeOrder,
+            orderType,
+            customerName,
           ) async {
             final newList = List<String>.from(ignoredRules);
             if (newList.contains(event.ruleName)) {

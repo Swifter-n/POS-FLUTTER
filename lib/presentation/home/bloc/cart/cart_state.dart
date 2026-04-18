@@ -13,6 +13,8 @@ class CartState with _$CartState {
     @Default([]) List<String> ignoredRules,
     String? tableNumber,
     OrderModel? activeOrder,
+    String? orderType,
+    String? customerName,
   }) = _Loaded;
   const factory CartState.checkoutSuccess(OrderModel order) = _CheckoutSuccess;
 

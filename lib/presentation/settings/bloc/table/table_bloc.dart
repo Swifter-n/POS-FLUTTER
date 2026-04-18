@@ -20,6 +20,22 @@ class TableBloc extends Bloc<TableEvent, TableState> {
     on<_UpdateTable>(_onUpdateTable);
     on<_DeleteTable>(_onDeleteTable);
     on<_Clear>(_onClear);
+    on<_CheckIn>(_onCheckIn);
+  }
+
+  Future<void> _onCheckIn(_CheckIn event, Emitter<TableState> emit) async {
+    emit(const TableState.loading());
+    final result = await _repository.checkInTable(event.tableId);
+
+    result.fold(
+      (failure) =>
+          emit(TableState.error(failure.message ?? 'Gagal melakukan check-in')),
+      (_) {
+        emit(const TableState.success('Check-in berhasil'));
+        // Refresh data meja setelah berhasil check-in agar status dan nama terupdate
+        add(const TableEvent.fetch());
+      },
+    );
   }
 
   // 1. Ambil data semua meja

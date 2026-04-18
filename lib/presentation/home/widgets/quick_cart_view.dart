@@ -51,6 +51,8 @@ class QuickCartView extends StatelessWidget {
                       ignoredRules,
                       tableNumber,
                       activeOrder,
+                      orderType,
+                      customerName,
                     ) {
                       double grandTotal = subTotal + taxAmount - discountAmount;
                       if (grandTotal < 0) grandTotal = 0;
@@ -173,6 +175,15 @@ class QuickCartView extends StatelessWidget {
                                       final item = items[index];
                                       return CartItemCard(
                                         item: item,
+                                        onQuantityChanged: (newQty) {
+                                          context.read<CartBloc>().add(
+                                            CartEvent.updateQuantity(
+                                              item.productId,
+                                              item.uom ?? 'PCS',
+                                              newQty,
+                                            ),
+                                          );
+                                        },
                                         onIncrease: () =>
                                             context.read<CartBloc>().add(
                                               CartEvent.updateQuantity(

@@ -29,6 +29,7 @@ mixin _$TableEvent {
     required TResult Function(int orderId, String? reason) voidOrder,
     required TResult Function(int orderId, String targetTableCode)
     transferTable,
+    required TResult Function(int tableId) checkIn,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
@@ -41,6 +42,7 @@ mixin _$TableEvent {
     TResult? Function(int tableId)? clear,
     TResult? Function(int orderId, String? reason)? voidOrder,
     TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
@@ -53,6 +55,7 @@ mixin _$TableEvent {
     TResult Function(int tableId)? clear,
     TResult Function(int orderId, String? reason)? voidOrder,
     TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -66,6 +69,7 @@ mixin _$TableEvent {
     required TResult Function(_Clear value) clear,
     required TResult Function(_VoidOrder value) voidOrder,
     required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
@@ -78,6 +82,7 @@ mixin _$TableEvent {
     TResult? Function(_Clear value)? clear,
     TResult? Function(_VoidOrder value)? voidOrder,
     TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
@@ -90,6 +95,7 @@ mixin _$TableEvent {
     TResult Function(_Clear value)? clear,
     TResult Function(_VoidOrder value)? voidOrder,
     TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -169,6 +175,7 @@ class _$FetchImpl implements _Fetch {
     required TResult Function(int orderId, String? reason) voidOrder,
     required TResult Function(int orderId, String targetTableCode)
     transferTable,
+    required TResult Function(int tableId) checkIn,
   }) {
     return fetch();
   }
@@ -185,6 +192,7 @@ class _$FetchImpl implements _Fetch {
     TResult? Function(int tableId)? clear,
     TResult? Function(int orderId, String? reason)? voidOrder,
     TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
   }) {
     return fetch?.call();
   }
@@ -201,6 +209,7 @@ class _$FetchImpl implements _Fetch {
     TResult Function(int tableId)? clear,
     TResult Function(int orderId, String? reason)? voidOrder,
     TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
     required TResult orElse(),
   }) {
     if (fetch != null) {
@@ -221,6 +230,7 @@ class _$FetchImpl implements _Fetch {
     required TResult Function(_Clear value) clear,
     required TResult Function(_VoidOrder value) voidOrder,
     required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
   }) {
     return fetch(this);
   }
@@ -237,6 +247,7 @@ class _$FetchImpl implements _Fetch {
     TResult? Function(_Clear value)? clear,
     TResult? Function(_VoidOrder value)? voidOrder,
     TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
   }) {
     return fetch?.call(this);
   }
@@ -253,6 +264,7 @@ class _$FetchImpl implements _Fetch {
     TResult Function(_Clear value)? clear,
     TResult Function(_VoidOrder value)? voidOrder,
     TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
     required TResult orElse(),
   }) {
     if (fetch != null) {
@@ -368,6 +380,7 @@ class _$MoveTableImpl implements _MoveTable {
     required TResult Function(int orderId, String? reason) voidOrder,
     required TResult Function(int orderId, String targetTableCode)
     transferTable,
+    required TResult Function(int tableId) checkIn,
   }) {
     return moveTable(tableId, newX, newY);
   }
@@ -384,6 +397,7 @@ class _$MoveTableImpl implements _MoveTable {
     TResult? Function(int tableId)? clear,
     TResult? Function(int orderId, String? reason)? voidOrder,
     TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
   }) {
     return moveTable?.call(tableId, newX, newY);
   }
@@ -400,6 +414,7 @@ class _$MoveTableImpl implements _MoveTable {
     TResult Function(int tableId)? clear,
     TResult Function(int orderId, String? reason)? voidOrder,
     TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
     required TResult orElse(),
   }) {
     if (moveTable != null) {
@@ -420,6 +435,7 @@ class _$MoveTableImpl implements _MoveTable {
     required TResult Function(_Clear value) clear,
     required TResult Function(_VoidOrder value) voidOrder,
     required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
   }) {
     return moveTable(this);
   }
@@ -436,6 +452,7 @@ class _$MoveTableImpl implements _MoveTable {
     TResult? Function(_Clear value)? clear,
     TResult? Function(_VoidOrder value)? voidOrder,
     TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
   }) {
     return moveTable?.call(this);
   }
@@ -452,6 +469,7 @@ class _$MoveTableImpl implements _MoveTable {
     TResult Function(_Clear value)? clear,
     TResult Function(_VoidOrder value)? voidOrder,
     TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
     required TResult orElse(),
   }) {
     if (moveTable != null) {
@@ -532,6 +550,7 @@ class _$SavePositionsImpl implements _SavePositions {
     required TResult Function(int orderId, String? reason) voidOrder,
     required TResult Function(int orderId, String targetTableCode)
     transferTable,
+    required TResult Function(int tableId) checkIn,
   }) {
     return savePositions();
   }
@@ -548,6 +567,7 @@ class _$SavePositionsImpl implements _SavePositions {
     TResult? Function(int tableId)? clear,
     TResult? Function(int orderId, String? reason)? voidOrder,
     TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
   }) {
     return savePositions?.call();
   }
@@ -564,6 +584,7 @@ class _$SavePositionsImpl implements _SavePositions {
     TResult Function(int tableId)? clear,
     TResult Function(int orderId, String? reason)? voidOrder,
     TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
     required TResult orElse(),
   }) {
     if (savePositions != null) {
@@ -584,6 +605,7 @@ class _$SavePositionsImpl implements _SavePositions {
     required TResult Function(_Clear value) clear,
     required TResult Function(_VoidOrder value) voidOrder,
     required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
   }) {
     return savePositions(this);
   }
@@ -600,6 +622,7 @@ class _$SavePositionsImpl implements _SavePositions {
     TResult? Function(_Clear value)? clear,
     TResult? Function(_VoidOrder value)? voidOrder,
     TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
   }) {
     return savePositions?.call(this);
   }
@@ -616,6 +639,7 @@ class _$SavePositionsImpl implements _SavePositions {
     TResult Function(_Clear value)? clear,
     TResult Function(_VoidOrder value)? voidOrder,
     TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
     required TResult orElse(),
   }) {
     if (savePositions != null) {
@@ -715,6 +739,7 @@ class _$AddTableImpl implements _AddTable {
     required TResult Function(int orderId, String? reason) voidOrder,
     required TResult Function(int orderId, String targetTableCode)
     transferTable,
+    required TResult Function(int tableId) checkIn,
   }) {
     return addTable(data);
   }
@@ -731,6 +756,7 @@ class _$AddTableImpl implements _AddTable {
     TResult? Function(int tableId)? clear,
     TResult? Function(int orderId, String? reason)? voidOrder,
     TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
   }) {
     return addTable?.call(data);
   }
@@ -747,6 +773,7 @@ class _$AddTableImpl implements _AddTable {
     TResult Function(int tableId)? clear,
     TResult Function(int orderId, String? reason)? voidOrder,
     TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
     required TResult orElse(),
   }) {
     if (addTable != null) {
@@ -767,6 +794,7 @@ class _$AddTableImpl implements _AddTable {
     required TResult Function(_Clear value) clear,
     required TResult Function(_VoidOrder value) voidOrder,
     required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
   }) {
     return addTable(this);
   }
@@ -783,6 +811,7 @@ class _$AddTableImpl implements _AddTable {
     TResult? Function(_Clear value)? clear,
     TResult? Function(_VoidOrder value)? voidOrder,
     TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
   }) {
     return addTable?.call(this);
   }
@@ -799,6 +828,7 @@ class _$AddTableImpl implements _AddTable {
     TResult Function(_Clear value)? clear,
     TResult Function(_VoidOrder value)? voidOrder,
     TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
     required TResult orElse(),
   }) {
     if (addTable != null) {
@@ -914,6 +944,7 @@ class _$UpdateTableImpl implements _UpdateTable {
     required TResult Function(int orderId, String? reason) voidOrder,
     required TResult Function(int orderId, String targetTableCode)
     transferTable,
+    required TResult Function(int tableId) checkIn,
   }) {
     return updateTable(id, data);
   }
@@ -930,6 +961,7 @@ class _$UpdateTableImpl implements _UpdateTable {
     TResult? Function(int tableId)? clear,
     TResult? Function(int orderId, String? reason)? voidOrder,
     TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
   }) {
     return updateTable?.call(id, data);
   }
@@ -946,6 +978,7 @@ class _$UpdateTableImpl implements _UpdateTable {
     TResult Function(int tableId)? clear,
     TResult Function(int orderId, String? reason)? voidOrder,
     TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
     required TResult orElse(),
   }) {
     if (updateTable != null) {
@@ -966,6 +999,7 @@ class _$UpdateTableImpl implements _UpdateTable {
     required TResult Function(_Clear value) clear,
     required TResult Function(_VoidOrder value) voidOrder,
     required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
   }) {
     return updateTable(this);
   }
@@ -982,6 +1016,7 @@ class _$UpdateTableImpl implements _UpdateTable {
     TResult? Function(_Clear value)? clear,
     TResult? Function(_VoidOrder value)? voidOrder,
     TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
   }) {
     return updateTable?.call(this);
   }
@@ -998,6 +1033,7 @@ class _$UpdateTableImpl implements _UpdateTable {
     TResult Function(_Clear value)? clear,
     TResult Function(_VoidOrder value)? voidOrder,
     TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
     required TResult orElse(),
   }) {
     if (updateTable != null) {
@@ -1101,6 +1137,7 @@ class _$DeleteTableImpl implements _DeleteTable {
     required TResult Function(int orderId, String? reason) voidOrder,
     required TResult Function(int orderId, String targetTableCode)
     transferTable,
+    required TResult Function(int tableId) checkIn,
   }) {
     return deleteTable(id);
   }
@@ -1117,6 +1154,7 @@ class _$DeleteTableImpl implements _DeleteTable {
     TResult? Function(int tableId)? clear,
     TResult? Function(int orderId, String? reason)? voidOrder,
     TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
   }) {
     return deleteTable?.call(id);
   }
@@ -1133,6 +1171,7 @@ class _$DeleteTableImpl implements _DeleteTable {
     TResult Function(int tableId)? clear,
     TResult Function(int orderId, String? reason)? voidOrder,
     TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
     required TResult orElse(),
   }) {
     if (deleteTable != null) {
@@ -1153,6 +1192,7 @@ class _$DeleteTableImpl implements _DeleteTable {
     required TResult Function(_Clear value) clear,
     required TResult Function(_VoidOrder value) voidOrder,
     required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
   }) {
     return deleteTable(this);
   }
@@ -1169,6 +1209,7 @@ class _$DeleteTableImpl implements _DeleteTable {
     TResult? Function(_Clear value)? clear,
     TResult? Function(_VoidOrder value)? voidOrder,
     TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
   }) {
     return deleteTable?.call(this);
   }
@@ -1185,6 +1226,7 @@ class _$DeleteTableImpl implements _DeleteTable {
     TResult Function(_Clear value)? clear,
     TResult Function(_VoidOrder value)? voidOrder,
     TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
     required TResult orElse(),
   }) {
     if (deleteTable != null) {
@@ -1286,6 +1328,7 @@ class _$ClearImpl implements _Clear {
     required TResult Function(int orderId, String? reason) voidOrder,
     required TResult Function(int orderId, String targetTableCode)
     transferTable,
+    required TResult Function(int tableId) checkIn,
   }) {
     return clear(tableId);
   }
@@ -1302,6 +1345,7 @@ class _$ClearImpl implements _Clear {
     TResult? Function(int tableId)? clear,
     TResult? Function(int orderId, String? reason)? voidOrder,
     TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
   }) {
     return clear?.call(tableId);
   }
@@ -1318,6 +1362,7 @@ class _$ClearImpl implements _Clear {
     TResult Function(int tableId)? clear,
     TResult Function(int orderId, String? reason)? voidOrder,
     TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
     required TResult orElse(),
   }) {
     if (clear != null) {
@@ -1338,6 +1383,7 @@ class _$ClearImpl implements _Clear {
     required TResult Function(_Clear value) clear,
     required TResult Function(_VoidOrder value) voidOrder,
     required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
   }) {
     return clear(this);
   }
@@ -1354,6 +1400,7 @@ class _$ClearImpl implements _Clear {
     TResult? Function(_Clear value)? clear,
     TResult? Function(_VoidOrder value)? voidOrder,
     TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
   }) {
     return clear?.call(this);
   }
@@ -1370,6 +1417,7 @@ class _$ClearImpl implements _Clear {
     TResult Function(_Clear value)? clear,
     TResult Function(_VoidOrder value)? voidOrder,
     TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
     required TResult orElse(),
   }) {
     if (clear != null) {
@@ -1478,6 +1526,7 @@ class _$VoidOrderImpl implements _VoidOrder {
     required TResult Function(int orderId, String? reason) voidOrder,
     required TResult Function(int orderId, String targetTableCode)
     transferTable,
+    required TResult Function(int tableId) checkIn,
   }) {
     return voidOrder(orderId, reason);
   }
@@ -1494,6 +1543,7 @@ class _$VoidOrderImpl implements _VoidOrder {
     TResult? Function(int tableId)? clear,
     TResult? Function(int orderId, String? reason)? voidOrder,
     TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
   }) {
     return voidOrder?.call(orderId, reason);
   }
@@ -1510,6 +1560,7 @@ class _$VoidOrderImpl implements _VoidOrder {
     TResult Function(int tableId)? clear,
     TResult Function(int orderId, String? reason)? voidOrder,
     TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
     required TResult orElse(),
   }) {
     if (voidOrder != null) {
@@ -1530,6 +1581,7 @@ class _$VoidOrderImpl implements _VoidOrder {
     required TResult Function(_Clear value) clear,
     required TResult Function(_VoidOrder value) voidOrder,
     required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
   }) {
     return voidOrder(this);
   }
@@ -1546,6 +1598,7 @@ class _$VoidOrderImpl implements _VoidOrder {
     TResult? Function(_Clear value)? clear,
     TResult? Function(_VoidOrder value)? voidOrder,
     TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
   }) {
     return voidOrder?.call(this);
   }
@@ -1562,6 +1615,7 @@ class _$VoidOrderImpl implements _VoidOrder {
     TResult Function(_Clear value)? clear,
     TResult Function(_VoidOrder value)? voidOrder,
     TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
     required TResult orElse(),
   }) {
     if (voidOrder != null) {
@@ -1676,6 +1730,7 @@ class _$TransferTableImpl implements _TransferTable {
     required TResult Function(int orderId, String? reason) voidOrder,
     required TResult Function(int orderId, String targetTableCode)
     transferTable,
+    required TResult Function(int tableId) checkIn,
   }) {
     return transferTable(orderId, targetTableCode);
   }
@@ -1692,6 +1747,7 @@ class _$TransferTableImpl implements _TransferTable {
     TResult? Function(int tableId)? clear,
     TResult? Function(int orderId, String? reason)? voidOrder,
     TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
   }) {
     return transferTable?.call(orderId, targetTableCode);
   }
@@ -1708,6 +1764,7 @@ class _$TransferTableImpl implements _TransferTable {
     TResult Function(int tableId)? clear,
     TResult Function(int orderId, String? reason)? voidOrder,
     TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
     required TResult orElse(),
   }) {
     if (transferTable != null) {
@@ -1728,6 +1785,7 @@ class _$TransferTableImpl implements _TransferTable {
     required TResult Function(_Clear value) clear,
     required TResult Function(_VoidOrder value) voidOrder,
     required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
   }) {
     return transferTable(this);
   }
@@ -1744,6 +1802,7 @@ class _$TransferTableImpl implements _TransferTable {
     TResult? Function(_Clear value)? clear,
     TResult? Function(_VoidOrder value)? voidOrder,
     TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
   }) {
     return transferTable?.call(this);
   }
@@ -1760,6 +1819,7 @@ class _$TransferTableImpl implements _TransferTable {
     TResult Function(_Clear value)? clear,
     TResult Function(_VoidOrder value)? voidOrder,
     TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
     required TResult orElse(),
   }) {
     if (transferTable != null) {
@@ -1782,6 +1842,197 @@ abstract class _TransferTable implements TableEvent {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$TransferTableImplCopyWith<_$TransferTableImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$CheckInImplCopyWith<$Res> {
+  factory _$$CheckInImplCopyWith(
+    _$CheckInImpl value,
+    $Res Function(_$CheckInImpl) then,
+  ) = __$$CheckInImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int tableId});
+}
+
+/// @nodoc
+class __$$CheckInImplCopyWithImpl<$Res>
+    extends _$TableEventCopyWithImpl<$Res, _$CheckInImpl>
+    implements _$$CheckInImplCopyWith<$Res> {
+  __$$CheckInImplCopyWithImpl(
+    _$CheckInImpl _value,
+    $Res Function(_$CheckInImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of TableEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? tableId = null}) {
+    return _then(
+      _$CheckInImpl(
+        null == tableId
+            ? _value.tableId
+            : tableId // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CheckInImpl implements _CheckIn {
+  const _$CheckInImpl(this.tableId);
+
+  @override
+  final int tableId;
+
+  @override
+  String toString() {
+    return 'TableEvent.checkIn(tableId: $tableId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CheckInImpl &&
+            (identical(other.tableId, tableId) || other.tableId == tableId));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, tableId);
+
+  /// Create a copy of TableEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CheckInImplCopyWith<_$CheckInImpl> get copyWith =>
+      __$$CheckInImplCopyWithImpl<_$CheckInImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() fetch,
+    required TResult Function(int tableId, double newX, double newY) moveTable,
+    required TResult Function() savePositions,
+    required TResult Function(Map<String, dynamic> data) addTable,
+    required TResult Function(int id, Map<String, dynamic> data) updateTable,
+    required TResult Function(int id) deleteTable,
+    required TResult Function(int tableId) clear,
+    required TResult Function(int orderId, String? reason) voidOrder,
+    required TResult Function(int orderId, String targetTableCode)
+    transferTable,
+    required TResult Function(int tableId) checkIn,
+  }) {
+    return checkIn(tableId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? fetch,
+    TResult? Function(int tableId, double newX, double newY)? moveTable,
+    TResult? Function()? savePositions,
+    TResult? Function(Map<String, dynamic> data)? addTable,
+    TResult? Function(int id, Map<String, dynamic> data)? updateTable,
+    TResult? Function(int id)? deleteTable,
+    TResult? Function(int tableId)? clear,
+    TResult? Function(int orderId, String? reason)? voidOrder,
+    TResult? Function(int orderId, String targetTableCode)? transferTable,
+    TResult? Function(int tableId)? checkIn,
+  }) {
+    return checkIn?.call(tableId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? fetch,
+    TResult Function(int tableId, double newX, double newY)? moveTable,
+    TResult Function()? savePositions,
+    TResult Function(Map<String, dynamic> data)? addTable,
+    TResult Function(int id, Map<String, dynamic> data)? updateTable,
+    TResult Function(int id)? deleteTable,
+    TResult Function(int tableId)? clear,
+    TResult Function(int orderId, String? reason)? voidOrder,
+    TResult Function(int orderId, String targetTableCode)? transferTable,
+    TResult Function(int tableId)? checkIn,
+    required TResult orElse(),
+  }) {
+    if (checkIn != null) {
+      return checkIn(tableId);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Fetch value) fetch,
+    required TResult Function(_MoveTable value) moveTable,
+    required TResult Function(_SavePositions value) savePositions,
+    required TResult Function(_AddTable value) addTable,
+    required TResult Function(_UpdateTable value) updateTable,
+    required TResult Function(_DeleteTable value) deleteTable,
+    required TResult Function(_Clear value) clear,
+    required TResult Function(_VoidOrder value) voidOrder,
+    required TResult Function(_TransferTable value) transferTable,
+    required TResult Function(_CheckIn value) checkIn,
+  }) {
+    return checkIn(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Fetch value)? fetch,
+    TResult? Function(_MoveTable value)? moveTable,
+    TResult? Function(_SavePositions value)? savePositions,
+    TResult? Function(_AddTable value)? addTable,
+    TResult? Function(_UpdateTable value)? updateTable,
+    TResult? Function(_DeleteTable value)? deleteTable,
+    TResult? Function(_Clear value)? clear,
+    TResult? Function(_VoidOrder value)? voidOrder,
+    TResult? Function(_TransferTable value)? transferTable,
+    TResult? Function(_CheckIn value)? checkIn,
+  }) {
+    return checkIn?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Fetch value)? fetch,
+    TResult Function(_MoveTable value)? moveTable,
+    TResult Function(_SavePositions value)? savePositions,
+    TResult Function(_AddTable value)? addTable,
+    TResult Function(_UpdateTable value)? updateTable,
+    TResult Function(_DeleteTable value)? deleteTable,
+    TResult Function(_Clear value)? clear,
+    TResult Function(_VoidOrder value)? voidOrder,
+    TResult Function(_TransferTable value)? transferTable,
+    TResult Function(_CheckIn value)? checkIn,
+    required TResult orElse(),
+  }) {
+    if (checkIn != null) {
+      return checkIn(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _CheckIn implements TableEvent {
+  const factory _CheckIn(final int tableId) = _$CheckInImpl;
+
+  int get tableId;
+
+  /// Create a copy of TableEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CheckInImplCopyWith<_$CheckInImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

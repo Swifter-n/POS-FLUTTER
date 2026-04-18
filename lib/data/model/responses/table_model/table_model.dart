@@ -14,6 +14,10 @@ class TableModel with _$TableModel {
     int? capacity,
     @JsonKey(name: 'active_order_id') int? activeOrderId,
     @JsonKey(name: 'is_occupied') bool? isOccupied,
+    @JsonKey(name: 'customer_name') String? customerName,
+    @JsonKey(name: 'upcoming_reservation') String? upcomingReservation,
+    @JsonKey(name: 'reserved_customer_name') String? reservedCustomerName,
+    @JsonKey(name: 'reservation_status') String? reservationStatus,
   }) = _TableModel;
 
   factory TableModel.fromJson(Map<String, dynamic> json) =>
