@@ -371,7 +371,7 @@ class QuickCartView extends StatelessWidget {
                                         showDialog(
                                           context: context,
                                           barrierDismissible: false,
-                                          builder: (context) => PaymentModal(
+                                          builder: (dialogContext) => PaymentModal(
                                             subtotal: subTotal,
                                             tax: taxAmount,
                                             discount: discountAmount,

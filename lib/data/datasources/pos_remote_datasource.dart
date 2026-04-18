@@ -662,7 +662,9 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
       final List data = json.decode(response.body)['data'];
       return data.map((e) => ReservationModel.fromJson(e)).toList();
     }
-    throw Exception('Gagal memuat reservasi');
+
+    // 🔥 Tangkap pesan error asli dari backend jika bukan 200
+    throw Exception('Gagal memuat reservasi: ${response.body}');
   }
 
   @override

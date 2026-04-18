@@ -45,6 +45,7 @@ class _TableManagementPageState extends State<TableManagementPage> {
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(isEdit ? 'Edit Meja' : 'Tambah Meja Baru'),
         content: Column(
@@ -122,6 +123,7 @@ class _TableManagementPageState extends State<TableManagementPage> {
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
           title: const Text('Batalkan Pesanan (Void)'),
@@ -188,6 +190,7 @@ class _TableManagementPageState extends State<TableManagementPage> {
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -298,6 +301,10 @@ class _TableManagementPageState extends State<TableManagementPage> {
   void _showReservationCheckInMenu(TableModel table) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
       builder: (context) => Container(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -325,12 +332,10 @@ class _TableManagementPageState extends State<TableManagementPage> {
                   ),
                 );
 
-                Navigator.pop(context); // Tutup BottomSheet
-                Navigator.popUntil(
-                  context,
-                  (route) => route.isFirst,
-                ); // Ke Home
-
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context); // Tutup BottomSheet
+                }
+                
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -376,7 +381,8 @@ class _TableManagementPageState extends State<TableManagementPage> {
       // JIKA KOSONG: Menu buka bill baru
       showDialog(
         context: context,
-        builder: (context) => NewBillModal(initialTableCode: table.code),
+        barrierDismissible: false,
+        builder: (dialogContext) => NewBillModal(initialTableCode: table.code),
       );
     }
   }
@@ -601,6 +607,7 @@ class _TableManagementPageState extends State<TableManagementPage> {
   void _confirmClearTable(TableModel table) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: const Row(
           children: [

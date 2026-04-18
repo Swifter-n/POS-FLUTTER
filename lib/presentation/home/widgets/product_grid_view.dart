@@ -53,8 +53,8 @@ class ProductGridView extends StatelessWidget {
                     final CartItemPayload? result =
                         await showDialog<CartItemPayload>(
                           context: context,
-                          barrierDismissible: true,
-                          builder: (context) =>
+                          barrierDismissible: false,
+                          builder: (dialogContext) =>
                               AddonSelectionDialog(product: product),
                         );
 

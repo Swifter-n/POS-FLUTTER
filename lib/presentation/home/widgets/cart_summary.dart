@@ -402,7 +402,8 @@ class CartSummary extends StatelessWidget {
                                 }
                                 showDialog(
                                   context: context,
-                                  builder: (context) => PaymentModal(
+                                  barrierDismissible: false, // Mencegah modal tertutup saat area luar diklik
+                                  builder: (dialogContext) => PaymentModal(
                                     subtotal: subtotal,
                                     tax: tax,
                                     discount: discount,

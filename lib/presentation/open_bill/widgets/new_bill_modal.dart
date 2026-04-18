@@ -42,13 +42,17 @@ class _NewBillModalState extends State<NewBillModal> {
           listener: (context, state) {
             state.maybeWhen(
               memberFound: (member) {
+                if (!context.mounted) return;
                 setState(() {
                   _selectedMemberId = member.id;
                   _selectedMemberName = member.name;
                   _guestNameController.text =
                       member.name; // Otomatis isi nama tamu
                 });
-                Navigator.pop(dialogContext);
+                // Pastikan pop hanya terjadi jika dialog ini memang yang aktif
+                if (Navigator.canPop(dialogContext)) {
+                  Navigator.pop(dialogContext);
+                }
               },
               error: (msg) => ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(msg), backgroundColor: Colors.red),

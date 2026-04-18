@@ -427,6 +427,7 @@ class _PaymentModalState extends State<PaymentModal> {
 
   void _showMemberSearchDialog() {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (dialogContext) {
         String searchInput = '';
@@ -466,14 +467,15 @@ class _PaymentModalState extends State<PaymentModal> {
                             builder: (_) => const QRScannerPage(),
                           ),
                         );
-                        if (code != null && context.mounted)
+                        if (code != null && context.mounted) {
                           context.read<MemberBloc>().add(
                             MemberEvent.checkMember(code),
                           );
-                        if (context.mounted)
-                          Navigator.pop(
-                            dialogContext,
-                          ); // Tutup dialog agar dihandle listener utama
+                          // Hanya pop jika dialogContext masih valid dan ini bukan aksi yang membatalkan segalanya
+                          if (Navigator.canPop(dialogContext)) {
+                            Navigator.pop(dialogContext);
+                          }
+                        }
                       },
                     ),
                   ),
@@ -495,9 +497,10 @@ class _PaymentModalState extends State<PaymentModal> {
                   context.read<MemberBloc>().add(
                     MemberEvent.checkMember(searchInput),
                   );
-                  Navigator.pop(
-                    dialogContext,
-                  ); // Tutup dialog agar dihandle listener utama
+                  // Tutup dialog agar dihandle listener utama
+                  if (Navigator.canPop(dialogContext)) {
+                    Navigator.pop(dialogContext);
+                  }
                 }
               },
               child: const Text(
@@ -645,11 +648,11 @@ class _PaymentModalState extends State<PaymentModal> {
               ? inputAmount - grandTotal
               : 0;
 
-          return SingleChildScrollView(
-            child: Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: SingleChildScrollView(
               child: Container(
                 width: 850,
                 padding: const EdgeInsets.all(32),
@@ -745,6 +748,8 @@ class _PaymentModalState extends State<PaymentModal> {
                                                   : () {
                                                       // --- BUKA MODAL CINEMA SEAT ---
                                                       showDialog(
+                                                        barrierDismissible:
+                                                            false,
                                                         context: context,
                                                         builder: (dialogContext) => AlertDialog(
                                                           shape: RoundedRectangleBorder(
