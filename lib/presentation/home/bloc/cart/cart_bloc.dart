@@ -20,8 +20,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<_ClearCart>(_onClearCart);
     on<_Checkout>(_onCheckout);
     on<_IgnorePromo>(_onIgnorePromo);
-
-    // ✅ DAFTARKAN EVENT SET CONTEXT
     on<_SetContext>(_onSetContext);
   }
 
@@ -29,15 +27,13 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     emit(const CartState.loaded());
   }
 
-  // ✅ LOGIKA SET CONTEXT
   void _onSetContext(_SetContext event, Emitter<CartState> emit) {
-    // Saat kasir mengklik "Tambah Pesanan" dari Denah Meja,
-    // keranjang dikosongkan (agar tidak kecampur belanjaan orang lain)
-    // dan konteks meja disematkan.
     emit(
       CartState.loaded(
         tableNumber: event.tableNumber,
         activeOrder: event.activeOrder,
+        orderType: event.orderType, // 🔥 PASTIKAN INI ADA
+        customerName: event.customerName, // 🔥 PASTIKAN INI ADA
       ),
     );
   }
@@ -47,6 +43,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     List<String> currentIgnored = [];
     String? currentTable;
     OrderModel? currentOrder;
+    String? currentOrderType; // 🔥 Tambahan
+    String? currentCustomerName; // 🔥 Tambahan
 
     state.maybeWhen(
       loaded:
@@ -65,6 +63,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             currentIgnored = ignoredRules;
             currentTable = tableNumber;
             currentOrder = activeOrder;
+            currentOrderType = orderType; // 🔥 Tangkap
+            currentCustomerName = customerName; // 🔥 Tangkap
 
             updatedItems = List.from(items);
             final existingIndex = updatedItems.indexWhere(
@@ -94,6 +94,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       ignoredRules: currentIgnored,
       tableNumber: currentTable,
       activeOrder: currentOrder,
+      orderType: currentOrderType, // 🔥 Teruskan ke kalkulasi
+      customerName: currentCustomerName, // 🔥 Teruskan ke kalkulasi
     );
 
     if (!emit.isDone) emit(newState);
@@ -104,6 +106,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     List<String> currentIgnored = [];
     String? currentTable;
     OrderModel? currentOrder;
+    String? currentOrderType;
+    String? currentCustomerName;
 
     state.maybeWhen(
       loaded:
@@ -122,6 +126,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             currentIgnored = ignoredRules;
             currentTable = tableNumber;
             currentOrder = activeOrder;
+            currentOrderType = orderType;
+            currentCustomerName = customerName;
 
             updatedItems = items
                 .where(
@@ -139,6 +145,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       ignoredRules: currentIgnored,
       tableNumber: currentTable,
       activeOrder: currentOrder,
+      orderType: currentOrderType,
+      customerName: currentCustomerName,
     );
     if (!emit.isDone) emit(newState);
   }
@@ -151,6 +159,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     List<String> currentIgnored = [];
     String? currentTable;
     OrderModel? currentOrder;
+    String? currentOrderType;
+    String? currentCustomerName;
 
     state.maybeWhen(
       loaded:
@@ -169,6 +179,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             currentIgnored = ignoredRules;
             currentTable = tableNumber;
             currentOrder = activeOrder;
+            currentOrderType = orderType;
+            currentCustomerName = customerName;
 
             for (var item in items) {
               if (item.productId == event.productId && item.uom == event.uom) {
@@ -188,12 +200,13 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       ignoredRules: currentIgnored,
       tableNumber: currentTable,
       activeOrder: currentOrder,
+      orderType: currentOrderType,
+      customerName: currentCustomerName,
     );
     if (!emit.isDone) emit(newState);
   }
 
   void _onClearCart(_ClearCart event, Emitter<CartState> emit) {
-    // Reset seluruh state ke kondisi default yang suci (tanpa konteks)
     emit(const CartState.loaded());
   }
 
@@ -213,7 +226,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         },
         (order) {
           emit(CartState.checkoutSuccess(order));
-          // Reset cart setelah sukses bayar
           emit(const CartState.loaded());
         },
       );
@@ -250,6 +262,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
               ignoredRules: newList,
               tableNumber: tableNumber,
               activeOrder: activeOrder,
+              orderType: orderType,
+              customerName: customerName,
             );
             if (!emit.isDone) emit(newState);
           },
@@ -257,12 +271,14 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     );
   }
 
-  // ✅ HELPER: Membawa tableNumber dan activeOrder setiap kali di-kalkulasi
+  // ✅ HELPER: Membawa orderType dan customerName setiap kali di-kalkulasi
   Future<CartState> _calculateCartState(
     List<CartItemPayload> items, {
     List<String> ignoredRules = const [],
     String? tableNumber,
     OrderModel? activeOrder,
+    String? orderType, // 🔥 WAJIB ADA
+    String? customerName, // 🔥 WAJIB ADA
   }) async {
     double subtotal = 0;
 
@@ -323,8 +339,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       tax: tax,
       appliedPromos: appliedRules,
       ignoredRules: ignoredRules,
-      tableNumber: tableNumber, // ✅ Konteks tetap hidup
-      activeOrder: activeOrder, // ✅ Konteks tetap hidup
+      tableNumber: tableNumber,
+      activeOrder: activeOrder,
+      orderType: orderType, // 🔥 KONTEKS TETAP HIDUP
+      customerName: customerName, // 🔥 KONTEKS TETAP HIDUP
     );
   }
 

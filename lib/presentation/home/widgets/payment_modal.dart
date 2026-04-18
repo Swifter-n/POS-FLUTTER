@@ -124,13 +124,13 @@ class _PaymentModalState extends State<PaymentModal> {
             cartOrderType,
             cartCustomerName,
           ) {
-            // 1. Set Table & Default Order Type (Dine In)
+            // 1. Set Table
             if (tableNumber != null) {
               _selectedTableCode = tableNumber;
               _isContextLocked = true;
             }
 
-            // 2. Handle State jika ada activeOrder (Berarti Open Bill)
+            // 2. Handle State jika ada activeOrder (Tagihan Aktif / Open Bill)
             if (activeOrder != null) {
               String dbType = activeOrder.typeOrder ?? 'Open Bill';
               _orderType =
@@ -143,10 +143,10 @@ class _PaymentModalState extends State<PaymentModal> {
                   ? dbType
                   : 'Open Bill';
               _selectedMemberId = activeOrder.memberId;
+
               _selectedMemberName = activeOrder.customerName ?? 'Guest';
               _guestNameController.text = activeOrder.customerName ?? '';
 
-              // Jika ada relasi member dari database backend
               if (activeOrder.member != null) {
                 _selectedMemberName =
                     activeOrder.member!.name ?? _selectedMemberName;
@@ -157,7 +157,6 @@ class _PaymentModalState extends State<PaymentModal> {
                 _memberTotalSpend = activeOrder.member!.totalSpend ?? 0.0;
               }
 
-              // Silent Auto-Fetch! Memuat data CRM terbaru di background
               if (_selectedMemberId != null &&
                   activeOrder.customerName != null &&
                   activeOrder.customerName != 'Guest') {
@@ -166,54 +165,19 @@ class _PaymentModalState extends State<PaymentModal> {
                 );
               }
 
-              // Inisialisasi Guest Name Controller jika dia bukan member
               final cName = activeOrder.customerName ?? '';
               if (cName != 'Guest' && cName != _selectedMemberName) {
                 _guestNameController.text = cName;
               }
             } else {
-              // 3. Eksplisit: Jika pesanan baru (Dine In / Takeaway) tanpa activeOrder
-              // Pastikan state di-reset agar form input "Nama Customer" muncul
+              // 3. Pesanan Baru (Belum ada activeOrder)
               _selectedMemberId = null;
+
+              // 🔥 BACA MURNI DARI CART STATE, Tanpa lagi menebak status fisik meja!
+              // Jika kasir mengklik "Tambah Pesanan", isinya PASTI "Dine In"
+              // Jika kasir mengklik "Isi Pesanan Reservasi", isinya PASTI "Reservasi"
               _orderType = cartOrderType ?? 'Dine In';
               _guestNameController.text = cartCustomerName ?? '';
-
-              // 👇 Cek apakah meja ini adalah Dine In yang sedang berjalan (Lunas)
-              String prepopulatedName = '';
-              if (_selectedTableCode != null) {
-                final tableState = context.read<TableBloc>().state;
-                tableState.maybeWhen(
-                  loaded: (tables, _) {
-                    try {
-                      final matchingTable = tables.firstWhere(
-                        (t) => t.code == _selectedTableCode,
-                      );
-                      final resStatus = matchingTable.reservationStatus;
-                      final bool isOccupiedFisik =
-                          matchingTable.isOccupied ?? false;
-
-                      // 🔥 LOGIKA PRODUKSI: Deteksi Reservasi yang baru Check-In
-                      if ((resStatus == 'seated' || resStatus == 'booked') &&
-                          !isOccupiedFisik) {
-                        _guestNameController.text =
-                            matchingTable.reservedCustomerName ?? '';
-                        _orderType =
-                            'RESERVASI'; // Simpan tipe asli ke database
-                      } else {
-                        _orderType = 'Dine In'; // Default untuk tamu Walk-In
-                        if (matchingTable.customerName != null &&
-                            matchingTable.customerName != 'Guest') {
-                          _guestNameController.text =
-                              matchingTable.customerName!;
-                        }
-                      }
-                    } catch (_) {}
-                  },
-                  orElse: () {},
-                );
-              }
-
-              _guestNameController.text = prepopulatedName;
             }
           },
       orElse: () {},
@@ -341,8 +305,19 @@ class _PaymentModalState extends State<PaymentModal> {
     final cartState = context.read<CartBloc>().state;
     OrderModel? activeOrder;
     cartState.maybeWhen(
-      loaded: (_, __, ___, ____, _____, ______, _______, order, ________, _________) =>
-          activeOrder = order,
+      loaded:
+          (
+            _,
+            __,
+            ___,
+            ____,
+            _____,
+            ______,
+            _______,
+            order,
+            ________,
+            _________,
+          ) => activeOrder = order,
       orElse: () {},
     );
 

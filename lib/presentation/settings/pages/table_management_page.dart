@@ -318,7 +318,11 @@ class _TableManagementPageState extends State<TableManagementPage> {
 
                 // 2. Set konteks meja di keranjang
                 context.read<CartBloc>().add(
-                  CartEvent.setContext(tableNumber: table.code),
+                  CartEvent.setContext(
+                    tableNumber: table.code,
+                    orderType: 'Reservasi',
+                    customerName: table.reservedCustomerName,
+                  ),
                 );
 
                 Navigator.pop(context); // Tutup BottomSheet
@@ -354,8 +358,12 @@ class _TableManagementPageState extends State<TableManagementPage> {
     }
 
     final String? resStatus = table.reservationStatus;
-    final bool isBooked = (resStatus == 'booked');
-    final bool isSeated = (resStatus == 'seated');
+    final bool isBooked =
+        (resStatus == 'booked') &&
+        (table.reservedCustomerName?.isNotEmpty ?? false);
+    final bool isSeated =
+        (resStatus == 'seated') &&
+        (table.reservedCustomerName?.isNotEmpty ?? false);
     final bool isOccupiedFisik = table.isOccupied ?? false;
 
     if (isBooked) {
@@ -469,7 +477,8 @@ class _TableManagementPageState extends State<TableManagementPage> {
                       context.read<CartBloc>().add(
                         CartEvent.setContext(
                           tableNumber: table.code,
-                          orderType: 'Dine In',
+                          activeOrder: activeOrder,
+                          orderType: hasActiveOrder ? null : 'Dine In',
                         ),
                       );
                       Navigator.popUntil(context, (route) => route.isFirst);
@@ -858,8 +867,12 @@ class _TableManagementPageState extends State<TableManagementPage> {
                           final bool isOccupiedFisik =
                               table.isOccupied ?? false;
                           final String? resStatus = table.reservationStatus;
-                          final bool isBooked = (resStatus == 'booked');
-                          final bool isSeated = (resStatus == 'seated');
+                          final bool isBooked =
+                              (resStatus == 'booked') &&
+                              (table.reservedCustomerName?.isNotEmpty ?? false);
+                          final bool isSeated =
+                              (resStatus == 'seated') &&
+                              (table.reservedCustomerName?.isNotEmpty ?? false);
 
                           Color cardColor = Colors.white;
                           Color borderColor = _isEditMode
