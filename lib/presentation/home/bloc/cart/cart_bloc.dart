@@ -32,8 +32,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       CartState.loaded(
         tableNumber: event.tableNumber,
         activeOrder: event.activeOrder,
-        orderType: event.orderType, // 🔥 PASTIKAN INI ADA
-        customerName: event.customerName, // 🔥 PASTIKAN INI ADA
+        orderType: event.orderType, // 🔥 WAJIB ADA: Menyimpan niat kasir
+        customerName: event.customerName, // 🔥 WAJIB ADA: Menyimpan nama tamu
       ),
     );
   }

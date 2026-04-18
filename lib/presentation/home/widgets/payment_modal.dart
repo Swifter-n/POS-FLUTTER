@@ -128,6 +128,18 @@ class _PaymentModalState extends State<PaymentModal> {
             if (tableNumber != null) {
               _selectedTableCode = tableNumber;
               _isContextLocked = true;
+
+              // ✅ FIX: Cari tableId yang sesuai dari TableBloc state
+              final tableState = context.read<TableBloc>().state;
+              tableState.maybeWhen(
+                loaded: (tables, _) {
+                  try {
+                    _selectedTableId =
+                        tables.firstWhere((t) => t.code == tableNumber).id;
+                  } catch (_) {}
+                },
+                orElse: () {},
+              );
             }
 
             // 2. Handle State jika ada activeOrder (Tagihan Aktif / Open Bill)
@@ -268,8 +280,14 @@ class _PaymentModalState extends State<PaymentModal> {
 
     final payload = QuickCheckoutPayload(
       typeOrder: _orderType,
-      tableId: _orderType == 'Dine In' ? _selectedTableId : null,
-      tableNumber: _orderType == 'Dine In' ? _selectedTableCode : null,
+      tableId:
+          ['Dine In', 'Reservasi', 'Open Bill'].contains(_orderType)
+              ? _selectedTableId
+              : null,
+      tableNumber:
+          ['Dine In', 'Reservasi', 'Open Bill'].contains(_orderType)
+              ? _selectedTableCode
+              : null,
       paymentMethod: _paymentMethod,
       amountPaid: amountPaid,
       items: currentCartItems.cast(),
@@ -588,6 +606,25 @@ class _PaymentModalState extends State<PaymentModal> {
             );
           },
         ),
+        // ✅ Listener TableBloc: Sinkronkan ID meja jika baru saja termuat
+        BlocListener<TableBloc, TableState>(
+          listener: (context, state) {
+            state.maybeWhen(
+              loaded: (tables, _) {
+                if (_selectedTableCode != null && _selectedTableId == null) {
+                  setState(() {
+                    try {
+                      _selectedTableId = tables
+                          .firstWhere((t) => t.code == _selectedTableCode)
+                          .id;
+                    } catch (_) {}
+                  });
+                }
+              },
+              orElse: () {},
+            );
+          },
+        ),
       ],
       child: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
@@ -701,6 +738,8 @@ class _PaymentModalState extends State<PaymentModal> {
                                       _orderTypeChip('Dine In'),
                                       const SizedBox(width: 8),
                                       _orderTypeChip('Open Bill'),
+                                      const SizedBox(width: 8),
+                                      _orderTypeChip('Reservasi'),
                                     ],
                                   ),
 
