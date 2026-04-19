@@ -243,7 +243,7 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Kertas: ${printer.paperWidth ?? "80mm"}',
+                      'Kertas: ${printer.paperWidth ?? 80}mm',
                       style: TextStyle(
                         color: Colors.grey.shade700,
                         fontSize: 13,

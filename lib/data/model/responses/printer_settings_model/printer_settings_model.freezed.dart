@@ -253,7 +253,8 @@ mixin _$PrinterModel {
   @JsonKey(name: 'ip_address')
   String? get ipAddress => throw _privateConstructorUsedError;
   @JsonKey(name: 'paper_width')
-  String get paperWidth => throw _privateConstructorUsedError; // '58', '80'
+  int get paperWidth => throw _privateConstructorUsedError; // 58, 80
+  @JsonKey(name: 'default')
   bool get defaultStatus => throw _privateConstructorUsedError;
 
   /// Serializes this PrinterModel to a JSON map.
@@ -279,8 +280,8 @@ abstract class $PrinterModelCopyWith<$Res> {
     @JsonKey(name: 'connection_type') String connectionType,
     @JsonKey(name: 'mac_address') String? macAddress,
     @JsonKey(name: 'ip_address') String? ipAddress,
-    @JsonKey(name: 'paper_width') String paperWidth,
-    bool defaultStatus,
+    @JsonKey(name: 'paper_width') int paperWidth,
+    @JsonKey(name: 'default') bool defaultStatus,
   });
 }
 
@@ -332,7 +333,7 @@ class _$PrinterModelCopyWithImpl<$Res, $Val extends PrinterModel>
             paperWidth: null == paperWidth
                 ? _value.paperWidth
                 : paperWidth // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as int,
             defaultStatus: null == defaultStatus
                 ? _value.defaultStatus
                 : defaultStatus // ignore: cast_nullable_to_non_nullable
@@ -358,8 +359,8 @@ abstract class _$$PrinterModelImplCopyWith<$Res>
     @JsonKey(name: 'connection_type') String connectionType,
     @JsonKey(name: 'mac_address') String? macAddress,
     @JsonKey(name: 'ip_address') String? ipAddress,
-    @JsonKey(name: 'paper_width') String paperWidth,
-    bool defaultStatus,
+    @JsonKey(name: 'paper_width') int paperWidth,
+    @JsonKey(name: 'default') bool defaultStatus,
   });
 }
 
@@ -410,7 +411,7 @@ class __$$PrinterModelImplCopyWithImpl<$Res>
         paperWidth: null == paperWidth
             ? _value.paperWidth
             : paperWidth // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as int,
         defaultStatus: null == defaultStatus
             ? _value.defaultStatus
             : defaultStatus // ignore: cast_nullable_to_non_nullable
@@ -430,7 +431,7 @@ class _$PrinterModelImpl implements _PrinterModel {
     @JsonKey(name: 'mac_address') this.macAddress,
     @JsonKey(name: 'ip_address') this.ipAddress,
     @JsonKey(name: 'paper_width') required this.paperWidth,
-    this.defaultStatus = false,
+    @JsonKey(name: 'default') this.defaultStatus = false,
   });
 
   factory _$PrinterModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -452,10 +453,10 @@ class _$PrinterModelImpl implements _PrinterModel {
   final String? ipAddress;
   @override
   @JsonKey(name: 'paper_width')
-  final String paperWidth;
-  // '58', '80'
+  final int paperWidth;
+  // 58, 80
   @override
-  @JsonKey()
+  @JsonKey(name: 'default')
   final bool defaultStatus;
 
   @override
@@ -516,8 +517,8 @@ abstract class _PrinterModel implements PrinterModel {
     @JsonKey(name: 'connection_type') required final String connectionType,
     @JsonKey(name: 'mac_address') final String? macAddress,
     @JsonKey(name: 'ip_address') final String? ipAddress,
-    @JsonKey(name: 'paper_width') required final String paperWidth,
-    final bool defaultStatus,
+    @JsonKey(name: 'paper_width') required final int paperWidth,
+    @JsonKey(name: 'default') final bool defaultStatus,
   }) = _$PrinterModelImpl;
 
   factory _PrinterModel.fromJson(Map<String, dynamic> json) =
@@ -538,8 +539,9 @@ abstract class _PrinterModel implements PrinterModel {
   String? get ipAddress;
   @override
   @JsonKey(name: 'paper_width')
-  String get paperWidth; // '58', '80'
+  int get paperWidth; // 58, 80
   @override
+  @JsonKey(name: 'default')
   bool get defaultStatus;
 
   /// Create a copy of PrinterModel

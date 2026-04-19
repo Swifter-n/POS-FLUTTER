@@ -33,8 +33,8 @@ _$PrinterModelImpl _$$PrinterModelImplFromJson(Map<String, dynamic> json) =>
       connectionType: json['connection_type'] as String,
       macAddress: json['mac_address'] as String?,
       ipAddress: json['ip_address'] as String?,
-      paperWidth: json['paper_width'] as String,
-      defaultStatus: json['defaultStatus'] as bool? ?? false,
+      paperWidth: (json['paper_width'] as num).toInt(),
+      defaultStatus: json['default'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$PrinterModelImplToJson(_$PrinterModelImpl instance) =>
@@ -45,5 +45,5 @@ Map<String, dynamic> _$$PrinterModelImplToJson(_$PrinterModelImpl instance) =>
       'mac_address': instance.macAddress,
       'ip_address': instance.ipAddress,
       'paper_width': instance.paperWidth,
-      'defaultStatus': instance.defaultStatus,
+      'default': instance.defaultStatus,
     };

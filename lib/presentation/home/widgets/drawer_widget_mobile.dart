@@ -8,7 +8,7 @@ import 'package:avis_pos/presentation/reservation/pages/reservation_list_page.da
 import 'package:avis_pos/presentation/settings/pages/table_management_page.dart';
 import 'package:avis_pos/presentation/stock_count/pages/stock_count_list_page.dart';
 import 'package:avis_pos/presentation/settings/pages/printer_settings_page.dart';
-import 'package:avis_pos/presentation/shift/pages/open_shift_page.dart';
+import 'package:avis_pos/presentation/shift/pages/close_shift_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,16 +22,6 @@ class DrawerWidgetMobile extends StatelessWidget {
       MaterialPageRoute(builder: (context) => const LoginPage()),
       (route) => false,
     );
-  }
-
-  // ✅ FIX: Helper navigasi — tunggu animasi Drawer selesai baru push
-  void _navigateTo(BuildContext context, Widget page) {
-    Navigator.pop(context);
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (context.mounted) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => page));
-      }
-    });
   }
 
   @override
@@ -121,29 +111,63 @@ class DrawerWidgetMobile extends StatelessWidget {
                 _buildDrawerItem(
                   icon: Icons.receipt_long,
                   title: 'Reservation',
-                  onTap: () =>
-                      _navigateTo(context, const ReservationListPage()),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ReservationListPage(),
+                      ),
+                    );
+                  },
                 ),
                 _buildDrawerItem(
                   icon: Icons.table_bar_outlined,
                   title: 'Table Management',
-                  onTap: () =>
-                      _navigateTo(context, const TableManagementPage()),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const TableManagementPage(),
+                      ),
+                    );
+                  },
                 ),
                 _buildDrawerItem(
                   icon: Icons.inventory_2_outlined,
                   title: 'Inventories',
-                  onTap: () => _navigateTo(context, const InventoryPage()),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const InventoryPage()),
+                    );
+                  },
                 ),
                 _buildDrawerItem(
                   icon: Icons.warehouse_outlined,
                   title: 'Stock Count',
-                  onTap: () => _navigateTo(context, const StockCountListPage()),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const StockCountListPage(),
+                      ),
+                    );
+                  },
                 ),
                 _buildDrawerItem(
                   icon: Icons.card_membership_outlined,
                   title: 'Member',
-                  onTap: () => _navigateTo(context, const MemberListPage()),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MemberListPage()),
+                    );
+                  },
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
@@ -156,39 +180,52 @@ class DrawerWidgetMobile extends StatelessWidget {
                 _buildDrawerItem(
                   icon: Icons.print,
                   title: 'Pengaturan Printer',
-                  onTap: () =>
-                      _navigateTo(context, const PrinterSettingsPage()),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const PrinterSettingsPage(),
+                      ),
+                    );
+                  },
                 ),
                 _buildDrawerItem(
                   icon: Icons.schedule,
                   title: 'Manajemen Shift',
-                  onTap: () => _navigateTo(context, const OpenShiftPage()),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CloseShiftPage()),
+                    );
+                  },
                 ),
               ],
             ),
           ),
 
           // --- LOGOUT BUTTON ---
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade50,
-                foregroundColor: AppColors.red,
-                elevation: 0,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              icon: const Icon(Icons.logout),
-              label: const Text(
-                'Keluar (Logout)',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              onPressed: () => _handleLogout(context),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(24.0),
+          //   child: ElevatedButton.icon(
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: Colors.red.shade50,
+          //       foregroundColor: AppColors.red,
+          //       elevation: 0,
+          //       minimumSize: const Size(double.infinity, 50),
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(16),
+          //       ),
+          //     ),
+          //     icon: const Icon(Icons.logout),
+          //     label: const Text(
+          //       'Keluar (Logout)',
+          //       style: TextStyle(fontWeight: FontWeight.bold),
+          //     ),
+          //     onPressed: () => _handleLogout(context),
+          //   ),
+          // ),
         ],
       ),
     );

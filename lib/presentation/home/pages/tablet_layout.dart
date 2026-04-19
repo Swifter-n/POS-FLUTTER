@@ -11,19 +11,43 @@ import 'package:avis_pos/presentation/settings/pages/table_management_page.dart'
 import 'package:avis_pos/presentation/stock_count/pages/stock_count_list_page.dart';
 import 'package:avis_pos/presentation/settings/pages/printer_settings_page.dart';
 import 'package:avis_pos/presentation/home/widgets/search_product_widget.dart';
+import 'package:avis_pos/presentation/shift/pages/close_shift_page.dart';
+import 'package:avis_pos/presentation/auth/bloc/auth/auth_bloc.dart';
+import 'package:avis_pos/presentation/auth/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TabletLayout extends StatelessWidget {
   const TabletLayout({super.key});
 
-  // ✅ FIX: Helper navigasi aman — beri jeda agar frame aktif stabil dulu
-  void _navigateTo(BuildContext context, Widget page) {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (context.mounted) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => page));
-      }
-    });
+
+
+  void _handleLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Konfirmasi Logout'),
+        content: const Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Batal', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              context.read<AuthBloc>().add(const AuthEvent.logoutRequested());
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+                (route) => false,
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Logout', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -105,57 +129,67 @@ class TabletLayout extends StatelessWidget {
     return Container(
       width: 80,
       color: Colors.white,
-      child: Column(
-        children: [
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: AppColors.primaryLight,
-              shape: BoxShape.circle,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: const BoxDecoration(
+                color: AppColors.primaryLight,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.point_of_sale,
+                color: AppColors.primary,
+                size: 28,
+              ),
             ),
-            child: const Icon(
-              Icons.point_of_sale,
-              color: AppColors.primary,
-              size: 28,
+            const SizedBox(height: 40),
+
+            _buildNavItem(Icons.shopping_bag, 'Kasir', true, () {}),
+
+            _buildNavItem(Icons.receipt_long, 'Reservation', false, () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ReservationListPage()));
+            }),
+
+            _buildNavItem(
+              Icons.table_bar_outlined,
+              'Table Management',
+              false,
+              () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const TableManagementPage()));
+              },
             ),
-          ),
-          const SizedBox(height: 40),
 
-          _buildNavItem(Icons.shopping_bag, 'Kasir', true, () {}),
+            _buildNavItem(Icons.inventory_2_outlined, 'Inventories', false, () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const InventoryPage()));
+            }),
 
-          _buildNavItem(Icons.receipt_long, 'Reservation', false, () {
-            _navigateTo(context, const ReservationListPage());
-          }),
+            _buildNavItem(Icons.warehouse_outlined, 'Stock Count', false, () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const StockCountListPage()));
+            }),
 
-          _buildNavItem(
-            Icons.table_bar_outlined,
-            'Table Management',
-            false,
-            () {
-              _navigateTo(context, const TableManagementPage());
-            },
-          ),
+            _buildNavItem(Icons.people_outline_outlined, 'Member', false, () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const MemberListPage()));
+            }),
 
-          _buildNavItem(Icons.inventory_2_outlined, 'Inventories', false, () {
-            _navigateTo(context, const InventoryPage());
-          }),
+            const SizedBox(height: 20),
 
-          _buildNavItem(Icons.warehouse_outlined, 'Stock Count', false, () {
-            _navigateTo(context, const StockCountListPage());
-          }),
+            _buildNavItem(Icons.settings_outlined, 'Setting', false, () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const PrinterSettingsPage()));
+            }),
 
-          _buildNavItem(Icons.people_outline_outlined, 'Member', false, () {
-            _navigateTo(context, const MemberListPage());
-          }),
+            _buildNavItem(Icons.sync_alt, 'Ganti Shift', false, () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const CloseShiftPage()));
+            }),
 
-          const Spacer(),
-
-          _buildNavItem(Icons.settings_outlined, 'Setting', false, () {
-            _navigateTo(context, const PrinterSettingsPage());
-          }),
-          const SizedBox(height: 24),
-        ],
+            _buildNavItem(Icons.logout, 'Logout', false, () {
+              _handleLogout(context);
+            }),
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }

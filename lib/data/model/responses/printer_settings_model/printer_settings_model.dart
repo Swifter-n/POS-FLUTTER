@@ -23,8 +23,8 @@ class PrinterModel with _$PrinterModel {
     required String connectionType, // 'bluetooth', 'usb', 'network'
     @JsonKey(name: 'mac_address') String? macAddress,
     @JsonKey(name: 'ip_address') String? ipAddress,
-    @JsonKey(name: 'paper_width') required String paperWidth, // '58', '80'
-    @Default(false) bool defaultStatus,
+    @JsonKey(name: 'paper_width') required int paperWidth, // 58, 80
+    @JsonKey(name: 'default') @Default(false) bool defaultStatus,
   }) = _PrinterModel;
 
   factory PrinterModel.fromJson(Map<String, dynamic> json) =>

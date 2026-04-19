@@ -80,7 +80,7 @@ class PrinterService {
   Future<Generator> _getGenerator(dynamic printer) async {
     final profile = await CapabilityProfile.load();
     // Default fallback ke 80mm jika tidak ada pengaturan kertas
-    final paperSize = printer.paperWidth == '58mm'
+    final paperSize = printer.paperWidth == 58
         ? PaperSize.mm58
         : PaperSize.mm80;
     return Generator(paperSize, profile);
@@ -241,6 +241,23 @@ class PrinterService {
       }
     }
 
+    bytes += generator.feed(1);
+    bytes += generator.text(
+      'Kritik & Saran:',
+      styles: const PosStyles(align: PosAlign.center, bold: true),
+    );
+    bytes += generator.qrcode('https://avis.id/survey');
+    bytes += generator.feed(1);
+    bytes += generator.text(
+      'Kunjungi Website Kami:',
+      styles: const PosStyles(align: PosAlign.center, bold: true),
+    );
+    bytes += generator.qrcode('https://avis.id');
+    bytes += generator.feed(1);
+    bytes += generator.text(
+      'Terima Kasih Atas Kunjungan Anda',
+      styles: const PosStyles(align: PosAlign.center),
+    );
     bytes += generator.feed(3);
     bytes += generator.cut();
     return bytes;

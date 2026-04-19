@@ -1,9 +1,10 @@
 import 'package:avis_pos/core/components/buttons.dart';
 import 'package:avis_pos/core/components/form_fields.dart';
 import 'package:avis_pos/core/constants/colors.dart';
-import 'package:avis_pos/presentation/auth/pages/login_page.dart'; // Sesuaikan path jika berbeda
+import 'package:avis_pos/presentation/auth/pages/login_page.dart';
 import 'package:avis_pos/presentation/shift/bloc/shift/shift_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -230,14 +231,29 @@ class _CloseShiftPageState extends State<CloseShiftPage> {
                         const SizedBox(height: 32),
 
                         // INPUT ACTUAL CASH & SELISIH
-                        AppTextField(
-                          label: 'Actual Cash (Count in Drawer)',
-                          hint: '0',
+                        TextFormField(
                           controller: _actualAmountController,
                           keyboardType: TextInputType.number,
-                          prefixIcon: const Icon(
-                            Icons.account_balance_wallet,
-                            color: AppColors.primary,
+                          inputFormatters: [_CurrencyFormatter()],
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Actual Cash (Count in Drawer)',
+                            hintText: 'Rp 0',
+                            prefixIcon: const Icon(
+                              Icons.payments,
+                              color: AppColors.primary,
+                              size: 28,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 16,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -360,6 +376,29 @@ class _CloseShiftPageState extends State<CloseShiftPage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CurrencyFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) return newValue;
+    final intValue = int.tryParse(
+      newValue.text.replaceAll(RegExp(r'[^0-9]'), ''),
+    );
+    if (intValue == null) return oldValue;
+    final newString = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(intValue);
+    return TextEditingValue(
+      text: newString,
+      selection: TextSelection.collapsed(offset: newString.length),
     );
   }
 }
