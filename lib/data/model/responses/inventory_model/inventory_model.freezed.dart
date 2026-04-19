@@ -22,17 +22,14 @@ InventoryModel _$InventoryModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$InventoryModel {
   int? get id => throw _privateConstructorUsedError;
-  @JsonKey(name: 'product_id')
-  int? get productId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'product_name')
-  String? get productName => throw _privateConstructorUsedError;
+  String? get name => throw _privateConstructorUsedError;
   String? get sku => throw _privateConstructorUsedError;
-  double? get quantity => throw _privateConstructorUsedError;
-  String? get uom => throw _privateConstructorUsedError;
-  @JsonKey(name: 'minimum_stock')
-  double? get minimumStock => throw _privateConstructorUsedError;
-  @JsonKey(name: 'last_updated')
-  String? get lastUpdated => throw _privateConstructorUsedError;
+  String? get barcode => throw _privateConstructorUsedError;
+  String? get image => throw _privateConstructorUsedError;
+  String? get unit => throw _privateConstructorUsedError;
+  @JsonKey(name: 'current_stock')
+  double get currentStock => throw _privateConstructorUsedError;
+  String? get status => throw _privateConstructorUsedError;
 
   /// Serializes this InventoryModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -53,13 +50,13 @@ abstract class $InventoryModelCopyWith<$Res> {
   @useResult
   $Res call({
     int? id,
-    @JsonKey(name: 'product_id') int? productId,
-    @JsonKey(name: 'product_name') String? productName,
+    String? name,
     String? sku,
-    double? quantity,
-    String? uom,
-    @JsonKey(name: 'minimum_stock') double? minimumStock,
-    @JsonKey(name: 'last_updated') String? lastUpdated,
+    String? barcode,
+    String? image,
+    String? unit,
+    @JsonKey(name: 'current_stock') double currentStock,
+    String? status,
   });
 }
 
@@ -79,13 +76,13 @@ class _$InventoryModelCopyWithImpl<$Res, $Val extends InventoryModel>
   @override
   $Res call({
     Object? id = freezed,
-    Object? productId = freezed,
-    Object? productName = freezed,
+    Object? name = freezed,
     Object? sku = freezed,
-    Object? quantity = freezed,
-    Object? uom = freezed,
-    Object? minimumStock = freezed,
-    Object? lastUpdated = freezed,
+    Object? barcode = freezed,
+    Object? image = freezed,
+    Object? unit = freezed,
+    Object? currentStock = null,
+    Object? status = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -93,33 +90,33 @@ class _$InventoryModelCopyWithImpl<$Res, $Val extends InventoryModel>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as int?,
-            productId: freezed == productId
-                ? _value.productId
-                : productId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            productName: freezed == productName
-                ? _value.productName
-                : productName // ignore: cast_nullable_to_non_nullable
+            name: freezed == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
                       as String?,
             sku: freezed == sku
                 ? _value.sku
                 : sku // ignore: cast_nullable_to_non_nullable
                       as String?,
-            quantity: freezed == quantity
-                ? _value.quantity
-                : quantity // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            uom: freezed == uom
-                ? _value.uom
-                : uom // ignore: cast_nullable_to_non_nullable
+            barcode: freezed == barcode
+                ? _value.barcode
+                : barcode // ignore: cast_nullable_to_non_nullable
                       as String?,
-            minimumStock: freezed == minimumStock
-                ? _value.minimumStock
-                : minimumStock // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            lastUpdated: freezed == lastUpdated
-                ? _value.lastUpdated
-                : lastUpdated // ignore: cast_nullable_to_non_nullable
+            image: freezed == image
+                ? _value.image
+                : image // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            unit: freezed == unit
+                ? _value.unit
+                : unit // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            currentStock: null == currentStock
+                ? _value.currentStock
+                : currentStock // ignore: cast_nullable_to_non_nullable
+                      as double,
+            status: freezed == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
                       as String?,
           )
           as $Val,
@@ -138,13 +135,13 @@ abstract class _$$InventoryModelImplCopyWith<$Res>
   @useResult
   $Res call({
     int? id,
-    @JsonKey(name: 'product_id') int? productId,
-    @JsonKey(name: 'product_name') String? productName,
+    String? name,
     String? sku,
-    double? quantity,
-    String? uom,
-    @JsonKey(name: 'minimum_stock') double? minimumStock,
-    @JsonKey(name: 'last_updated') String? lastUpdated,
+    String? barcode,
+    String? image,
+    String? unit,
+    @JsonKey(name: 'current_stock') double currentStock,
+    String? status,
   });
 }
 
@@ -163,13 +160,13 @@ class __$$InventoryModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
-    Object? productId = freezed,
-    Object? productName = freezed,
+    Object? name = freezed,
     Object? sku = freezed,
-    Object? quantity = freezed,
-    Object? uom = freezed,
-    Object? minimumStock = freezed,
-    Object? lastUpdated = freezed,
+    Object? barcode = freezed,
+    Object? image = freezed,
+    Object? unit = freezed,
+    Object? currentStock = null,
+    Object? status = freezed,
   }) {
     return _then(
       _$InventoryModelImpl(
@@ -177,33 +174,33 @@ class __$$InventoryModelImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as int?,
-        productId: freezed == productId
-            ? _value.productId
-            : productId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        productName: freezed == productName
-            ? _value.productName
-            : productName // ignore: cast_nullable_to_non_nullable
+        name: freezed == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
                   as String?,
         sku: freezed == sku
             ? _value.sku
             : sku // ignore: cast_nullable_to_non_nullable
                   as String?,
-        quantity: freezed == quantity
-            ? _value.quantity
-            : quantity // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        uom: freezed == uom
-            ? _value.uom
-            : uom // ignore: cast_nullable_to_non_nullable
+        barcode: freezed == barcode
+            ? _value.barcode
+            : barcode // ignore: cast_nullable_to_non_nullable
                   as String?,
-        minimumStock: freezed == minimumStock
-            ? _value.minimumStock
-            : minimumStock // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        lastUpdated: freezed == lastUpdated
-            ? _value.lastUpdated
-            : lastUpdated // ignore: cast_nullable_to_non_nullable
+        image: freezed == image
+            ? _value.image
+            : image // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        unit: freezed == unit
+            ? _value.unit
+            : unit // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        currentStock: null == currentStock
+            ? _value.currentStock
+            : currentStock // ignore: cast_nullable_to_non_nullable
+                  as double,
+        status: freezed == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
                   as String?,
       ),
     );
@@ -215,13 +212,13 @@ class __$$InventoryModelImplCopyWithImpl<$Res>
 class _$InventoryModelImpl implements _InventoryModel {
   const _$InventoryModelImpl({
     this.id,
-    @JsonKey(name: 'product_id') this.productId,
-    @JsonKey(name: 'product_name') this.productName,
+    this.name,
     this.sku,
-    this.quantity,
-    this.uom,
-    @JsonKey(name: 'minimum_stock') this.minimumStock,
-    @JsonKey(name: 'last_updated') this.lastUpdated,
+    this.barcode,
+    this.image,
+    this.unit,
+    @JsonKey(name: 'current_stock') this.currentStock = 0,
+    this.status,
   });
 
   factory _$InventoryModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -230,27 +227,24 @@ class _$InventoryModelImpl implements _InventoryModel {
   @override
   final int? id;
   @override
-  @JsonKey(name: 'product_id')
-  final int? productId;
-  @override
-  @JsonKey(name: 'product_name')
-  final String? productName;
+  final String? name;
   @override
   final String? sku;
   @override
-  final double? quantity;
+  final String? barcode;
   @override
-  final String? uom;
+  final String? image;
   @override
-  @JsonKey(name: 'minimum_stock')
-  final double? minimumStock;
+  final String? unit;
   @override
-  @JsonKey(name: 'last_updated')
-  final String? lastUpdated;
+  @JsonKey(name: 'current_stock')
+  final double currentStock;
+  @override
+  final String? status;
 
   @override
   String toString() {
-    return 'InventoryModel(id: $id, productId: $productId, productName: $productName, sku: $sku, quantity: $quantity, uom: $uom, minimumStock: $minimumStock, lastUpdated: $lastUpdated)';
+    return 'InventoryModel(id: $id, name: $name, sku: $sku, barcode: $barcode, image: $image, unit: $unit, currentStock: $currentStock, status: $status)';
   }
 
   @override
@@ -259,18 +253,14 @@ class _$InventoryModelImpl implements _InventoryModel {
         (other.runtimeType == runtimeType &&
             other is _$InventoryModelImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.productId, productId) ||
-                other.productId == productId) &&
-            (identical(other.productName, productName) ||
-                other.productName == productName) &&
+            (identical(other.name, name) || other.name == name) &&
             (identical(other.sku, sku) || other.sku == sku) &&
-            (identical(other.quantity, quantity) ||
-                other.quantity == quantity) &&
-            (identical(other.uom, uom) || other.uom == uom) &&
-            (identical(other.minimumStock, minimumStock) ||
-                other.minimumStock == minimumStock) &&
-            (identical(other.lastUpdated, lastUpdated) ||
-                other.lastUpdated == lastUpdated));
+            (identical(other.barcode, barcode) || other.barcode == barcode) &&
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.unit, unit) || other.unit == unit) &&
+            (identical(other.currentStock, currentStock) ||
+                other.currentStock == currentStock) &&
+            (identical(other.status, status) || other.status == status));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -278,13 +268,13 @@ class _$InventoryModelImpl implements _InventoryModel {
   int get hashCode => Object.hash(
     runtimeType,
     id,
-    productId,
-    productName,
+    name,
     sku,
-    quantity,
-    uom,
-    minimumStock,
-    lastUpdated,
+    barcode,
+    image,
+    unit,
+    currentStock,
+    status,
   );
 
   /// Create a copy of InventoryModel
@@ -307,13 +297,13 @@ class _$InventoryModelImpl implements _InventoryModel {
 abstract class _InventoryModel implements InventoryModel {
   const factory _InventoryModel({
     final int? id,
-    @JsonKey(name: 'product_id') final int? productId,
-    @JsonKey(name: 'product_name') final String? productName,
+    final String? name,
     final String? sku,
-    final double? quantity,
-    final String? uom,
-    @JsonKey(name: 'minimum_stock') final double? minimumStock,
-    @JsonKey(name: 'last_updated') final String? lastUpdated,
+    final String? barcode,
+    final String? image,
+    final String? unit,
+    @JsonKey(name: 'current_stock') final double currentStock,
+    final String? status,
   }) = _$InventoryModelImpl;
 
   factory _InventoryModel.fromJson(Map<String, dynamic> json) =
@@ -322,23 +312,20 @@ abstract class _InventoryModel implements InventoryModel {
   @override
   int? get id;
   @override
-  @JsonKey(name: 'product_id')
-  int? get productId;
-  @override
-  @JsonKey(name: 'product_name')
-  String? get productName;
+  String? get name;
   @override
   String? get sku;
   @override
-  double? get quantity;
+  String? get barcode;
   @override
-  String? get uom;
+  String? get image;
   @override
-  @JsonKey(name: 'minimum_stock')
-  double? get minimumStock;
+  String? get unit;
   @override
-  @JsonKey(name: 'last_updated')
-  String? get lastUpdated;
+  @JsonKey(name: 'current_stock')
+  double get currentStock;
+  @override
+  String? get status;
 
   /// Create a copy of InventoryModel
   /// with the given fields replaced by the non-null parameter values.

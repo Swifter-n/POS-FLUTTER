@@ -9,24 +9,24 @@ part of 'inventory_model.dart';
 _$InventoryModelImpl _$$InventoryModelImplFromJson(Map<String, dynamic> json) =>
     _$InventoryModelImpl(
       id: (json['id'] as num?)?.toInt(),
-      productId: (json['product_id'] as num?)?.toInt(),
-      productName: json['product_name'] as String?,
+      name: json['name'] as String?,
       sku: json['sku'] as String?,
-      quantity: (json['quantity'] as num?)?.toDouble(),
-      uom: json['uom'] as String?,
-      minimumStock: (json['minimum_stock'] as num?)?.toDouble(),
-      lastUpdated: json['last_updated'] as String?,
+      barcode: json['barcode'] as String?,
+      image: json['image'] as String?,
+      unit: json['unit'] as String?,
+      currentStock: (json['current_stock'] as num?)?.toDouble() ?? 0,
+      status: json['status'] as String?,
     );
 
 Map<String, dynamic> _$$InventoryModelImplToJson(
   _$InventoryModelImpl instance,
 ) => <String, dynamic>{
   'id': instance.id,
-  'product_id': instance.productId,
-  'product_name': instance.productName,
+  'name': instance.name,
   'sku': instance.sku,
-  'quantity': instance.quantity,
-  'uom': instance.uom,
-  'minimum_stock': instance.minimumStock,
-  'last_updated': instance.lastUpdated,
+  'barcode': instance.barcode,
+  'image': instance.image,
+  'unit': instance.unit,
+  'current_stock': instance.currentStock,
+  'status': instance.status,
 };

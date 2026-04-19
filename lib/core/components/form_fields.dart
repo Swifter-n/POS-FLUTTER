@@ -13,6 +13,9 @@ class AppTextField extends StatelessWidget {
   final int? maxLines;
   final String? initialValue;
   final ValueChanged<String>? onChanged;
+  final TextSelectionControls? selectionControls;
+  final EditableTextContextMenuBuilder? contextMenuBuilder;
+  final VoidCallback? onTap;
 
   const AppTextField({
     super.key,
@@ -26,6 +29,9 @@ class AppTextField extends StatelessWidget {
     this.maxLines = 1,
     this.initialValue,
     this.onChanged,
+    this.selectionControls,
+    this.contextMenuBuilder,
+    this.onTap,
   });
 
   @override
@@ -48,6 +54,9 @@ class AppTextField extends StatelessWidget {
           maxLines: maxLines,
           initialValue: initialValue,
           onChanged: onChanged,
+          selectionControls: selectionControls,
+          contextMenuBuilder: contextMenuBuilder,
+          onTap: onTap,
           style: AppTextStyles.body,
           decoration: InputDecoration(
             hintText: hint,

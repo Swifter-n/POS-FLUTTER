@@ -11,15 +11,17 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   final IPosRepository _repository;
 
   InventoryBloc(this._repository) : super(const InventoryState.initial()) {
-    on<_Fetch>((event, emit) async {
-      emit(const InventoryState.loading());
-      final result = await _repository.getInventory(search: event.search);
-      result.fold(
-        (failure) => emit(
-          InventoryState.error(failure.message ?? 'Gagal memuat data stok'),
-        ),
-        (items) => emit(InventoryState.loaded(items)),
-      );
-    });
+    on<_Fetch>(_onFetch);
+  }
+
+  Future<void> _onFetch(_Fetch event, Emitter<InventoryState> emit) async {
+    emit(const InventoryState.loading());
+    final result = await _repository.getInventory(search: event.search);
+    result.fold(
+      (failure) => emit(
+        InventoryState.error(failure.message ?? 'Gagal memuat data stok'),
+      ),
+      (items) => emit(InventoryState.loaded(items)),
+    );
   }
 }

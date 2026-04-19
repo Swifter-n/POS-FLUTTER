@@ -313,7 +313,7 @@ class PosRepositoryImpl implements IPosRepository {
     String? search,
   }) async {
     try {
-      final result = await remoteDataSource.getInventory(search: search);
+      final result = await remoteDataSource.getInventories(search: search);
       return Right(result);
     } catch (e) {
       return Left(Failure.apiError(message: e.toString()));

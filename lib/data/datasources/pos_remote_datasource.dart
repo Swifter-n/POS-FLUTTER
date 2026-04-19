@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:avis_pos/core/constants/variables.dart';
+import 'package:avis_pos/core/services/intercepted_client.dart';
 import 'package:avis_pos/data/model/payloads/quick_checkout_payload/quick_checkout_payload.dart';
 import 'package:avis_pos/data/model/payloads/open_bill_payload/open_bill_payload.dart';
 import 'package:avis_pos/data/model/payloads/cart_item_payload/cart_item_payload.dart';
@@ -67,7 +68,7 @@ abstract class IPosRemoteDataSource {
   Future<List<RewardModel>> getRewardCatalog();
   Future<Map<String, dynamic>> redeemReward(int rewardId, int memberId);
 
-  Future<List<InventoryModel>> getInventory({String? search});
+  Future<List<InventoryModel>> getInventories({String? search});
   Future<List<StockCountTaskModel>> getStockCountTasks();
   Future<List<StockCountItemModel>> getStockCountItems(int taskId);
   Future<void> updateStockCountItem(int itemId, double qty, bool isZero);
@@ -450,17 +451,21 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
   }
 
   @override
-  Future<List<InventoryModel>> getInventory({String? search}) async {
-    final query = search != null ? '?search=$search' : '';
-    final url = Uri.parse(
-      '${Variables.baseUrl}${Variables.apiVersion}pos/inventory$query',
-    );
-    final response = await client.get(url, headers: await _getHeaders());
-    if (response.statusCode == 200) {
-      final List data = json.decode(response.body)['data'];
-      return data.map((e) => InventoryModel.fromJson(e)).toList();
+  Future<List<InventoryModel>> getInventories({String? search}) async {
+    String urlContainer =
+        '${Variables.baseUrl}${Variables.apiVersion}pos/inventory';
+    if (search != null && search.isNotEmpty) {
+      urlContainer += '?search=$search';
     }
-    throw Exception('Gagal memuat stok');
+    final url = Uri.parse(urlContainer);
+    final response = await client.get(url, headers: await _getHeaders());
+
+    if (response.statusCode == 200) {
+      final List data = json.decode(response.body)['data'] ?? [];
+      return data.map((e) => InventoryModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Gagal memuat stok: ${response.statusCode}');
+    }
   }
 
   @override

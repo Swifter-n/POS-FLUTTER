@@ -1,8 +1,13 @@
 import 'dart:async';
+
+import 'package:avis_pos/core/components/form_fields.dart';
 import 'package:avis_pos/core/constants/colors.dart';
+import 'package:avis_pos/core/constants/variables.dart';
 import 'package:avis_pos/presentation/inventory/bloc/inventory/inventory_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avis_pos/core/constants/text_styles.dart';
 
 class InventoryPage extends StatefulWidget {
   const InventoryPage({super.key});
@@ -12,24 +17,20 @@ class InventoryPage extends StatefulWidget {
 }
 
 class _InventoryPageState extends State<InventoryPage> {
-  final TextEditingController _searchController = TextEditingController();
+  late final TextEditingController _searchController;
+  late final FocusNode _searchFocus;
   Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
-    // Tarik semua data stok saat pertama kali dibuka
+    _searchController = TextEditingController();
+    _searchFocus = FocusNode();
+    // Memanggil data stok saat halaman dibuka
     context.read<InventoryBloc>().add(const InventoryEvent.fetch());
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _debounce?.cancel();
-    super.dispose();
-  }
-
-  // Fitur pencarian dengan jeda (debounce) agar tidak spam API
+  // --- SOLUSI OPTIMASI: Murni logika Debounce TANPA setState ---
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
@@ -38,20 +39,26 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    _searchFocus.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text(
-          'Ketersediaan Stok',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        title: const Text('Pantau Stok Outlet'),
         elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: AppColors.primary),
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Segarkan Data',
             onPressed: () {
               _searchController.clear();
               context.read<InventoryBloc>().add(const InventoryEvent.fetch());
@@ -59,222 +66,271 @@ class _InventoryPageState extends State<InventoryPage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // --- KOLOM PENCARIAN ---
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _onSearchChanged,
-              decoration: InputDecoration(
-                hintText: 'Cari nama barang atau SKU...',
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.grey),
-                  onPressed: () {
-                    _searchController.clear();
-                    context.read<InventoryBloc>().add(
-                      const InventoryEvent.fetch(),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              // --- SEARCH BAR (Menggunakan Core Component) ---
+              AppTextField(
+                key: const ValueKey('inventory_search_field_final'),
+                label: '',
+                hint: 'Cari nama produk, sku, atau barcode...',
+                controller: _searchController,
+                prefixIcon: const Icon(Icons.search),
+                onChanged: _onSearchChanged,
+                // Mencegah toolbar "Copy/Paste" menutupi input saat klik 2x
+                contextMenuBuilder: (context, editableTextState) {
+                  return const SizedBox.shrink(); // Tidak menampilkan menu popup
+                },
+                onTap: () {
+                  // Mempermudah pengetikan: Pilih semua teks saat di-tap
+                  if (_searchController.text.isNotEmpty) {
+                    _searchController.selection = TextSelection(
+                      baseOffset: 0,
+                      extentOffset: _searchController.text.length,
                     );
-                  },
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
+                  }
+                },
+                // Stabilitas Desktop
+                selectionControls: materialTextSelectionControls,
               ),
-            ),
-          ),
+              const SizedBox(height: 24),
 
-          // --- DAFTAR STOK ---
-          Expanded(
-            child: BlocBuilder<InventoryBloc, InventoryState>(
-              builder: (context, state) {
-                return state.maybeWhen(
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
-                  ),
-                  error: (msg) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 60,
-                          color: Colors.red,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(msg, style: const TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                  ),
-                  loaded: (items) {
-                    if (items.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.inventory_2_outlined,
-                              size: 80,
-                              color: Colors.grey.shade300,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Tidak ada data stok ditemukan',
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
+            // --- LIST INVENTORY ---
+            Expanded(
+              child: BlocBuilder<InventoryBloc, InventoryState>(
+                builder: (context, state) {
+                  return state.maybeWhen(
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    loaded: (inventories) {
+                      // Logic filter lokal dipertahankan,
+                      // namun langsung diekstrak dari _searchController.text secara realtime.
+                      final query = _searchController.text.toLowerCase();
+                      final filtered = inventories.where((e) {
+                        final name = e.name?.toLowerCase() ?? '';
+                        final sku = e.sku?.toLowerCase() ?? '';
+                        final barcode = e.barcode?.toLowerCase() ?? '';
+                        return name.contains(query) ||
+                            sku.contains(query) ||
+                            barcode.contains(query);
+                      }).toList();
 
-                    return RefreshIndicator(
-                      onRefresh: () async {
-                        context.read<InventoryBloc>().add(
-                          InventoryEvent.fetch(search: _searchController.text),
+                      if (filtered.isEmpty) {
+                        return const Center(
+                          child: Text('Tidak ada data stok ditemukan.'),
                         );
-                      },
-                      child: ListView.separated(
-                        padding: const EdgeInsets.all(24),
-                        itemCount: items.length,
+                      }
+
+                      return ListView.separated(
+                        // --- SOLUSI SCROLL: Memaksa physics untuk scroll yang mulus dan konsisten ---
+                        physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics(),
+                        ),
+                        itemCount: filtered.length,
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 12),
                         itemBuilder: (context, index) {
-                          final item = items[index];
+                          final item = filtered[index];
 
-                          // Deteksi jika stok menipis (Misal di bawah 10)
-                          // Sesuaikan parameter qty/stock dengan nama field di InventoryModel Anda
-                          final double currentStock = item.quantity ?? 0.0;
-                          final bool isLowStock = currentStock <= 10;
+                          // --- SMART STATUS LOGIC ---
+                          // Menggunakan status murni dari backend (IN_STOCK, LOW_STOCK, OUT_OF_STOCK)
+                          final String status = item.status ?? 'IN_STOCK';
+                          final bool isOutOfStock = status == 'OUT_OF_STOCK';
+                          final bool isLowStock = status == 'LOW_STOCK';
+
+                          final Color statusColor = isOutOfStock
+                              ? Colors.red
+                              : isLowStock
+                              ? Colors.orange
+                              : Colors.blue;
+
+                          final Color bgColor = isOutOfStock
+                              ? Colors.red.shade50
+                              : isLowStock
+                              ? Colors.orange.shade50
+                              : Colors.blue.shade50;
+
+                          final Color badgeColor = isOutOfStock
+                              ? Colors.red.shade100
+                              : isLowStock
+                              ? Colors.orange.shade100
+                              : Colors.green.shade100;
+
+                          final Color badgeTextColor = isOutOfStock
+                              ? Colors.red.shade900
+                              : isLowStock
+                              ? Colors.orange.shade900
+                              : Colors.green.shade900;
 
                           return Container(
-                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: AppColors.stroke),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.02),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
                                 ),
                               ],
                             ),
-                            child: Row(
-                              children: [
-                                // Icon Box
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: isLowStock
-                                        ? Colors.red.shade50
-                                        : AppColors.primaryLight,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(
-                                    Icons.inventory,
-                                    color: isLowStock
-                                        ? Colors.red
-                                        : AppColors.primary,
-                                  ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
+                              leading: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: bgColor,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                const SizedBox(width: 16),
-
-                                // Detail Barang
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item.productName ?? '-',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                                child:
+                                    (item.image != null &&
+                                        item.image!.isNotEmpty)
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: CachedNetworkImage(
+                                          imageUrl: item.image!.startsWith('http')
+                                              ? item.image!
+                                              : '${Variables.imageBaseUrl}${item.image}',
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) =>
+                                              const Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                              ),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(
+                                                isOutOfStock
+                                                    ? Icons.block
+                                                    : isLowStock
+                                                    ? Icons
+                                                          .warning_amber_rounded
+                                                    : Icons.inventory_2,
+                                                color: statusColor,
+                                              ),
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                      )
+                                    : Icon(
+                                        isOutOfStock
+                                            ? Icons.block
+                                            : isLowStock
+                                            ? Icons.warning_amber_rounded
+                                            : Icons.inventory_2,
+                                        color: statusColor,
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'SKU: ${item.sku ?? '-'}',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade600,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                              ),
+                              title: Text(
+                                item.name ?? 'Unknown Product',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
-
-                                // Nominal Stok
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'Sisa Stok',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
                                     Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.baseline,
-                                      textBaseline: TextBaseline.alphabetic,
                                       children: [
-                                        Text(
-                                          currentStock.toStringAsFixed(
-                                            currentStock.truncateToDouble() ==
-                                                    currentStock
-                                                ? 0
-                                                : 2,
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
                                           ),
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                            color: isLowStock
-                                                ? Colors.red
-                                                : Colors.black87,
+                                          decoration: BoxDecoration(
+                                            color: badgeColor,
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'Sisa: ${item.currentStock} ${item.unit ?? ''}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                              color: badgeTextColor,
+                                            ),
                                           ),
                                         ),
-                                        const SizedBox(width: 4),
+                                        const SizedBox(width: 8),
+                                        // --- SMART STATUS LABEL ---
                                         Text(
-                                          item.uom ?? 'PCS',
+                                          isOutOfStock
+                                              ? 'Stok Habis'
+                                              : isLowStock
+                                              ? 'Stok Tipis'
+                                              : 'Tersedia',
                                           style: TextStyle(
+                                            color: statusColor,
                                             fontSize: 12,
-                                            color: Colors.grey.shade700,
-                                            fontWeight: FontWeight.bold,
+                                            fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                       ],
                                     ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        if (item.sku != null &&
+                                            item.sku!.isNotEmpty)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 12.0,
+                                            ),
+                                            child: Text(
+                                              'SKU: ${item.sku}',
+                                              style: const TextStyle(
+                                                fontSize: 11,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                        if (item.barcode != null &&
+                                            item.barcode!.isNotEmpty)
+                                          Text(
+                                            'Barcode: ${item.barcode}',
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
                           );
                         },
+                      );
+                    },
+                    error: (msg) => Center(
+                      child: Text(
+                        msg,
+                        style: const TextStyle(color: Colors.red),
                       ),
-                    );
-                  },
-                  orElse: () => const SizedBox.shrink(),
-                );
-              },
+                    ),
+                    orElse: () =>
+                        const Center(child: Text('Memuat data stok...')),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

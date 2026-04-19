@@ -1,3 +1,4 @@
+import 'package:avis_pos/data/model/responses/product/product_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'inventory_model.freezed.dart';
@@ -7,13 +8,13 @@ part 'inventory_model.g.dart';
 class InventoryModel with _$InventoryModel {
   const factory InventoryModel({
     int? id,
-    @JsonKey(name: 'product_id') int? productId,
-    @JsonKey(name: 'product_name') String? productName,
+    String? name,
     String? sku,
-    double? quantity,
-    String? uom,
-    @JsonKey(name: 'minimum_stock') double? minimumStock,
-    @JsonKey(name: 'last_updated') String? lastUpdated,
+    String? barcode,
+    String? image,
+    String? unit,
+    @JsonKey(name: 'current_stock') @Default(0) double currentStock,
+    String? status,
   }) = _InventoryModel;
 
   factory InventoryModel.fromJson(Map<String, dynamic> json) =>
