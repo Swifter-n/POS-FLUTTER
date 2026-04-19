@@ -14,7 +14,7 @@ _$MemberModelImpl _$$MemberModelImplFromJson(
   phone: json['phone'] as String,
   email: json['email'] as String?,
   memberCode: json['member_code'] as String?,
-  currentPoints: (json['points'] as num?)?.toInt(),
+  currentPoints: (_readPoints(json, 'points') as num?)?.toDouble(),
   tier: json['tier'] as String? ?? 'Basic',
   vouchers:
       (json['vouchers'] as List<dynamic>?)

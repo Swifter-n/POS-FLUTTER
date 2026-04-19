@@ -439,12 +439,12 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
   @override
   Future<Map<String, dynamic>> redeemReward(int rewardId, int memberId) async {
     final url = Uri.parse(
-      '${Variables.baseUrl}${Variables.apiVersion}pos/rewards/redeem',
+      '${Variables.baseUrl}${Variables.apiVersion}pos/rewards/$rewardId/redeem',
     );
     final response = await client.post(
       url,
       headers: await _getHeaders(),
-      body: json.encode({'reward_id': rewardId, 'member_id': memberId}),
+      body: json.encode({'member_id': memberId}),
     );
     if (response.statusCode == 200) return json.decode(response.body);
     throw Exception('Gagal klaim hadiah');
@@ -474,6 +474,7 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
       '${Variables.baseUrl}${Variables.apiVersion}pos/stock-counts',
     );
     final response = await client.get(url, headers: await _getHeaders());
+    print('StockCount Response: ${response.body}');
     if (response.statusCode == 200) {
       final List data = json.decode(response.body)['data'];
       return data.map((e) => StockCountTaskModel.fromJson(e)).toList();

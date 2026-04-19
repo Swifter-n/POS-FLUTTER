@@ -10,7 +10,7 @@ _$StockCountTaskModelImpl _$$StockCountTaskModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$StockCountTaskModelImpl(
   id: (json['id'] as num?)?.toInt(),
-  referenceNumber: json['reference_number'] as String?,
+  countNumber: json['count_number'] as String?,
   status: json['status'] as String?,
   createdAt: json['created_at'] as String?,
   completedAt: json['completed_at'] as String?,
@@ -20,7 +20,7 @@ Map<String, dynamic> _$$StockCountTaskModelImplToJson(
   _$StockCountTaskModelImpl instance,
 ) => <String, dynamic>{
   'id': instance.id,
-  'reference_number': instance.referenceNumber,
+  'count_number': instance.countNumber,
   'status': instance.status,
   'created_at': instance.createdAt,
   'completed_at': instance.completedAt,

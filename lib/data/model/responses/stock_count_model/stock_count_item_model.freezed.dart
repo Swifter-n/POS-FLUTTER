@@ -27,8 +27,8 @@ mixin _$StockCountItemModel {
   @JsonKey(name: 'product_name')
   String? get productName => throw _privateConstructorUsedError;
   String? get uom => throw _privateConstructorUsedError;
-  @JsonKey(name: 'system_qty')
-  double? get systemQty => throw _privateConstructorUsedError;
+  @JsonKey(name: 'system_stock')
+  double? get systemStock => throw _privateConstructorUsedError;
   @JsonKey(name: 'counted_qty')
   double? get countedQty => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_zero_count')
@@ -56,7 +56,7 @@ abstract class $StockCountItemModelCopyWith<$Res> {
     @JsonKey(name: 'product_id') int? productId,
     @JsonKey(name: 'product_name') String? productName,
     String? uom,
-    @JsonKey(name: 'system_qty') double? systemQty,
+    @JsonKey(name: 'system_stock') double? systemStock,
     @JsonKey(name: 'counted_qty') double? countedQty,
     @JsonKey(name: 'is_zero_count') bool? isZeroCount,
   });
@@ -81,7 +81,7 @@ class _$StockCountItemModelCopyWithImpl<$Res, $Val extends StockCountItemModel>
     Object? productId = freezed,
     Object? productName = freezed,
     Object? uom = freezed,
-    Object? systemQty = freezed,
+    Object? systemStock = freezed,
     Object? countedQty = freezed,
     Object? isZeroCount = freezed,
   }) {
@@ -103,9 +103,9 @@ class _$StockCountItemModelCopyWithImpl<$Res, $Val extends StockCountItemModel>
                 ? _value.uom
                 : uom // ignore: cast_nullable_to_non_nullable
                       as String?,
-            systemQty: freezed == systemQty
-                ? _value.systemQty
-                : systemQty // ignore: cast_nullable_to_non_nullable
+            systemStock: freezed == systemStock
+                ? _value.systemStock
+                : systemStock // ignore: cast_nullable_to_non_nullable
                       as double?,
             countedQty: freezed == countedQty
                 ? _value.countedQty
@@ -135,7 +135,7 @@ abstract class _$$StockCountItemModelImplCopyWith<$Res>
     @JsonKey(name: 'product_id') int? productId,
     @JsonKey(name: 'product_name') String? productName,
     String? uom,
-    @JsonKey(name: 'system_qty') double? systemQty,
+    @JsonKey(name: 'system_stock') double? systemStock,
     @JsonKey(name: 'counted_qty') double? countedQty,
     @JsonKey(name: 'is_zero_count') bool? isZeroCount,
   });
@@ -159,7 +159,7 @@ class __$$StockCountItemModelImplCopyWithImpl<$Res>
     Object? productId = freezed,
     Object? productName = freezed,
     Object? uom = freezed,
-    Object? systemQty = freezed,
+    Object? systemStock = freezed,
     Object? countedQty = freezed,
     Object? isZeroCount = freezed,
   }) {
@@ -181,9 +181,9 @@ class __$$StockCountItemModelImplCopyWithImpl<$Res>
             ? _value.uom
             : uom // ignore: cast_nullable_to_non_nullable
                   as String?,
-        systemQty: freezed == systemQty
-            ? _value.systemQty
-            : systemQty // ignore: cast_nullable_to_non_nullable
+        systemStock: freezed == systemStock
+            ? _value.systemStock
+            : systemStock // ignore: cast_nullable_to_non_nullable
                   as double?,
         countedQty: freezed == countedQty
             ? _value.countedQty
@@ -206,7 +206,7 @@ class _$StockCountItemModelImpl implements _StockCountItemModel {
     @JsonKey(name: 'product_id') this.productId,
     @JsonKey(name: 'product_name') this.productName,
     this.uom,
-    @JsonKey(name: 'system_qty') this.systemQty,
+    @JsonKey(name: 'system_stock') this.systemStock,
     @JsonKey(name: 'counted_qty') this.countedQty,
     @JsonKey(name: 'is_zero_count') this.isZeroCount,
   });
@@ -225,8 +225,8 @@ class _$StockCountItemModelImpl implements _StockCountItemModel {
   @override
   final String? uom;
   @override
-  @JsonKey(name: 'system_qty')
-  final double? systemQty;
+  @JsonKey(name: 'system_stock')
+  final double? systemStock;
   @override
   @JsonKey(name: 'counted_qty')
   final double? countedQty;
@@ -236,7 +236,7 @@ class _$StockCountItemModelImpl implements _StockCountItemModel {
 
   @override
   String toString() {
-    return 'StockCountItemModel(id: $id, productId: $productId, productName: $productName, uom: $uom, systemQty: $systemQty, countedQty: $countedQty, isZeroCount: $isZeroCount)';
+    return 'StockCountItemModel(id: $id, productId: $productId, productName: $productName, uom: $uom, systemStock: $systemStock, countedQty: $countedQty, isZeroCount: $isZeroCount)';
   }
 
   @override
@@ -250,8 +250,8 @@ class _$StockCountItemModelImpl implements _StockCountItemModel {
             (identical(other.productName, productName) ||
                 other.productName == productName) &&
             (identical(other.uom, uom) || other.uom == uom) &&
-            (identical(other.systemQty, systemQty) ||
-                other.systemQty == systemQty) &&
+            (identical(other.systemStock, systemStock) ||
+                other.systemStock == systemStock) &&
             (identical(other.countedQty, countedQty) ||
                 other.countedQty == countedQty) &&
             (identical(other.isZeroCount, isZeroCount) ||
@@ -266,7 +266,7 @@ class _$StockCountItemModelImpl implements _StockCountItemModel {
     productId,
     productName,
     uom,
-    systemQty,
+    systemStock,
     countedQty,
     isZeroCount,
   );
@@ -294,7 +294,7 @@ abstract class _StockCountItemModel implements StockCountItemModel {
     @JsonKey(name: 'product_id') final int? productId,
     @JsonKey(name: 'product_name') final String? productName,
     final String? uom,
-    @JsonKey(name: 'system_qty') final double? systemQty,
+    @JsonKey(name: 'system_stock') final double? systemStock,
     @JsonKey(name: 'counted_qty') final double? countedQty,
     @JsonKey(name: 'is_zero_count') final bool? isZeroCount,
   }) = _$StockCountItemModelImpl;
@@ -313,8 +313,8 @@ abstract class _StockCountItemModel implements StockCountItemModel {
   @override
   String? get uom;
   @override
-  @JsonKey(name: 'system_qty')
-  double? get systemQty;
+  @JsonKey(name: 'system_stock')
+  double? get systemStock;
   @override
   @JsonKey(name: 'counted_qty')
   double? get countedQty;

@@ -10,7 +10,7 @@ class StockCountItemModel with _$StockCountItemModel {
     @JsonKey(name: 'product_id') int? productId,
     @JsonKey(name: 'product_name') String? productName,
     String? uom,
-    @JsonKey(name: 'system_qty') double? systemQty,
+    @JsonKey(name: 'system_stock') double? systemStock,
     @JsonKey(name: 'counted_qty') double? countedQty,
     @JsonKey(name: 'is_zero_count') bool? isZeroCount,
   }) = _StockCountItemModel;

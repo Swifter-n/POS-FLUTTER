@@ -39,7 +39,7 @@ class RewardBloc extends Bloc<RewardEvent, RewardState> {
           emit(
             RewardState.redeemSuccess(
               data['voucher_code'] ?? '-',
-              data['remaining_points'] ?? 0,
+              (data['remaining_points'] as num?)?.toDouble() ?? 0.0,
             ),
           );
         },

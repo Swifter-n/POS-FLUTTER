@@ -22,8 +22,8 @@ StockCountTaskModel _$StockCountTaskModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$StockCountTaskModel {
   int? get id => throw _privateConstructorUsedError;
-  @JsonKey(name: 'reference_number')
-  String? get referenceNumber => throw _privateConstructorUsedError;
+  @JsonKey(name: 'count_number')
+  String? get countNumber => throw _privateConstructorUsedError;
   String? get status => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   String? get createdAt => throw _privateConstructorUsedError;
@@ -49,7 +49,7 @@ abstract class $StockCountTaskModelCopyWith<$Res> {
   @useResult
   $Res call({
     int? id,
-    @JsonKey(name: 'reference_number') String? referenceNumber,
+    @JsonKey(name: 'count_number') String? countNumber,
     String? status,
     @JsonKey(name: 'created_at') String? createdAt,
     @JsonKey(name: 'completed_at') String? completedAt,
@@ -72,7 +72,7 @@ class _$StockCountTaskModelCopyWithImpl<$Res, $Val extends StockCountTaskModel>
   @override
   $Res call({
     Object? id = freezed,
-    Object? referenceNumber = freezed,
+    Object? countNumber = freezed,
     Object? status = freezed,
     Object? createdAt = freezed,
     Object? completedAt = freezed,
@@ -83,9 +83,9 @@ class _$StockCountTaskModelCopyWithImpl<$Res, $Val extends StockCountTaskModel>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as int?,
-            referenceNumber: freezed == referenceNumber
-                ? _value.referenceNumber
-                : referenceNumber // ignore: cast_nullable_to_non_nullable
+            countNumber: freezed == countNumber
+                ? _value.countNumber
+                : countNumber // ignore: cast_nullable_to_non_nullable
                       as String?,
             status: freezed == status
                 ? _value.status
@@ -116,7 +116,7 @@ abstract class _$$StockCountTaskModelImplCopyWith<$Res>
   @useResult
   $Res call({
     int? id,
-    @JsonKey(name: 'reference_number') String? referenceNumber,
+    @JsonKey(name: 'count_number') String? countNumber,
     String? status,
     @JsonKey(name: 'created_at') String? createdAt,
     @JsonKey(name: 'completed_at') String? completedAt,
@@ -138,7 +138,7 @@ class __$$StockCountTaskModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
-    Object? referenceNumber = freezed,
+    Object? countNumber = freezed,
     Object? status = freezed,
     Object? createdAt = freezed,
     Object? completedAt = freezed,
@@ -149,9 +149,9 @@ class __$$StockCountTaskModelImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as int?,
-        referenceNumber: freezed == referenceNumber
-            ? _value.referenceNumber
-            : referenceNumber // ignore: cast_nullable_to_non_nullable
+        countNumber: freezed == countNumber
+            ? _value.countNumber
+            : countNumber // ignore: cast_nullable_to_non_nullable
                   as String?,
         status: freezed == status
             ? _value.status
@@ -175,7 +175,7 @@ class __$$StockCountTaskModelImplCopyWithImpl<$Res>
 class _$StockCountTaskModelImpl implements _StockCountTaskModel {
   const _$StockCountTaskModelImpl({
     this.id,
-    @JsonKey(name: 'reference_number') this.referenceNumber,
+    @JsonKey(name: 'count_number') this.countNumber,
     this.status,
     @JsonKey(name: 'created_at') this.createdAt,
     @JsonKey(name: 'completed_at') this.completedAt,
@@ -187,8 +187,8 @@ class _$StockCountTaskModelImpl implements _StockCountTaskModel {
   @override
   final int? id;
   @override
-  @JsonKey(name: 'reference_number')
-  final String? referenceNumber;
+  @JsonKey(name: 'count_number')
+  final String? countNumber;
   @override
   final String? status;
   @override
@@ -200,7 +200,7 @@ class _$StockCountTaskModelImpl implements _StockCountTaskModel {
 
   @override
   String toString() {
-    return 'StockCountTaskModel(id: $id, referenceNumber: $referenceNumber, status: $status, createdAt: $createdAt, completedAt: $completedAt)';
+    return 'StockCountTaskModel(id: $id, countNumber: $countNumber, status: $status, createdAt: $createdAt, completedAt: $completedAt)';
   }
 
   @override
@@ -209,8 +209,8 @@ class _$StockCountTaskModelImpl implements _StockCountTaskModel {
         (other.runtimeType == runtimeType &&
             other is _$StockCountTaskModelImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.referenceNumber, referenceNumber) ||
-                other.referenceNumber == referenceNumber) &&
+            (identical(other.countNumber, countNumber) ||
+                other.countNumber == countNumber) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -220,14 +220,8 @@ class _$StockCountTaskModelImpl implements _StockCountTaskModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    referenceNumber,
-    status,
-    createdAt,
-    completedAt,
-  );
+  int get hashCode =>
+      Object.hash(runtimeType, id, countNumber, status, createdAt, completedAt);
 
   /// Create a copy of StockCountTaskModel
   /// with the given fields replaced by the non-null parameter values.
@@ -249,7 +243,7 @@ class _$StockCountTaskModelImpl implements _StockCountTaskModel {
 abstract class _StockCountTaskModel implements StockCountTaskModel {
   const factory _StockCountTaskModel({
     final int? id,
-    @JsonKey(name: 'reference_number') final String? referenceNumber,
+    @JsonKey(name: 'count_number') final String? countNumber,
     final String? status,
     @JsonKey(name: 'created_at') final String? createdAt,
     @JsonKey(name: 'completed_at') final String? completedAt,
@@ -261,8 +255,8 @@ abstract class _StockCountTaskModel implements StockCountTaskModel {
   @override
   int? get id;
   @override
-  @JsonKey(name: 'reference_number')
-  String? get referenceNumber;
+  @JsonKey(name: 'count_number')
+  String? get countNumber;
   @override
   String? get status;
   @override

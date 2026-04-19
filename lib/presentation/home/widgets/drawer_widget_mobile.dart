@@ -24,6 +24,16 @@ class DrawerWidgetMobile extends StatelessWidget {
     );
   }
 
+  // ✅ FIX: Helper navigasi — tunggu animasi Drawer selesai baru push
+  void _navigateTo(BuildContext context, Widget page) {
+    Navigator.pop(context);
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (context.mounted) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -60,23 +70,17 @@ class DrawerWidgetMobile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // ✅ FIX: Ambil Nama User dari AuthBloc
                 BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
-                    // Ambil nama dari state (Asumsi state Anda menggunakan 'authenticated')
                     final String cashierName = state.maybeWhen(
                       authenticated: (user) => user.name ?? 'Kasir',
                       orElse: () => 'Kasir Aktif',
                     );
-
                     final String cashierEmail = state.maybeWhen(
                       authenticated: (user) => user.email ?? 'Email',
                       orElse: () => 'Email',
                     );
-
                     return Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
@@ -117,69 +121,30 @@ class DrawerWidgetMobile extends StatelessWidget {
                 _buildDrawerItem(
                   icon: Icons.receipt_long,
                   title: 'Reservation',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ReservationListPage(),
-                      ),
-                    );
-                  },
+                  onTap: () =>
+                      _navigateTo(context, const ReservationListPage()),
                 ),
-
                 _buildDrawerItem(
                   icon: Icons.table_bar_outlined,
                   title: 'Table Management',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const TableManagementPage(),
-                      ),
-                    );
-                  },
+                  onTap: () =>
+                      _navigateTo(context, const TableManagementPage()),
                 ),
-
                 _buildDrawerItem(
                   icon: Icons.inventory_2_outlined,
                   title: 'Inventories',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const InventoryPage()),
-                    );
-                  },
+                  onTap: () => _navigateTo(context, const InventoryPage()),
                 ),
-
                 _buildDrawerItem(
                   icon: Icons.warehouse_outlined,
                   title: 'Stock Count',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const StockCountListPage(),
-                      ),
-                    );
-                  },
+                  onTap: () => _navigateTo(context, const StockCountListPage()),
                 ),
-
                 _buildDrawerItem(
                   icon: Icons.card_membership_outlined,
                   title: 'Member',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const MemberListPage()),
-                    );
-                  },
+                  onTap: () => _navigateTo(context, const MemberListPage()),
                 ),
-
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Divider(
@@ -188,30 +153,16 @@ class DrawerWidgetMobile extends StatelessWidget {
                     color: AppColors.stroke,
                   ),
                 ),
-
                 _buildDrawerItem(
                   icon: Icons.print,
                   title: 'Pengaturan Printer',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const PrinterSettingsPage(),
-                      ),
-                    );
-                  },
+                  onTap: () =>
+                      _navigateTo(context, const PrinterSettingsPage()),
                 ),
                 _buildDrawerItem(
                   icon: Icons.schedule,
                   title: 'Manajemen Shift',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const OpenShiftPage()),
-                    );
-                  },
+                  onTap: () => _navigateTo(context, const OpenShiftPage()),
                 ),
               ],
             ),
@@ -243,7 +194,6 @@ class DrawerWidgetMobile extends StatelessWidget {
     );
   }
 
-  // Widget helper untuk merapikan baris menu
   Widget _buildDrawerItem({
     required IconData icon,
     required String title,

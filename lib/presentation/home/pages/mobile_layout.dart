@@ -3,6 +3,7 @@ import 'package:avis_pos/presentation/home/widgets/active_promo_slider.dart';
 import 'package:avis_pos/presentation/home/widgets/checkout_bar_mobile.dart';
 import 'package:avis_pos/presentation/home/widgets/drawer_widget_mobile.dart';
 import 'package:avis_pos/presentation/home/widgets/mobile_product_view.dart';
+import 'package:avis_pos/presentation/home/widgets/search_product_widget.dart';
 import 'package:flutter/material.dart';
 
 class MobileLayout extends StatelessWidget {
@@ -25,12 +26,16 @@ class MobileLayout extends StatelessWidget {
           ),
         ),
         iconTheme: const IconThemeData(color: AppColors.primary),
-        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
       ),
       body: Column(
         children: [
+          // Cari Produk Mobile
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SearchProductWidget(),
+          ),
+
           // Promo Slider (Mobile sedikit lebih kecil)
-          const SizedBox(height: 8),
           const ActivePromoSlider(),
 
           // List Produk Mobile

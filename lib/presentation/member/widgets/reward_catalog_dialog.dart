@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class RewardCatalogDialog extends StatefulWidget {
-  final MemberModel member; // Menerima data member untuk validasi sisa poin
+  final MemberModel member;
 
   const RewardCatalogDialog({super.key, required this.member});
 
@@ -15,13 +15,20 @@ class RewardCatalogDialog extends StatefulWidget {
 }
 
 class _RewardCatalogDialogState extends State<RewardCatalogDialog> {
-  late int _currentPoints;
+  late double _currentPoints;
 
   @override
   void initState() {
     super.initState();
-    _currentPoints = widget.member.currentPoints ?? 0;
-    context.read<RewardBloc>().add(const RewardEvent.fetchCatalog());
+    _currentPoints = widget.member.currentPoints ?? 0.0;
+
+    // ✅ FIX: Gunakan Future.microtask agar tidak memicu
+    // semantics dirty saat dialog pertama kali dirender
+    Future.microtask(() {
+      if (mounted) {
+        context.read<RewardBloc>().add(const RewardEvent.fetchCatalog());
+      }
+    });
   }
 
   void _showRedeemConfirmation(
@@ -47,8 +54,7 @@ class _RewardCatalogDialogState extends State<RewardCatalogDialog> {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(ctx); // Tutup dialog konfirmasi
-              // Tembak event redeem
+              Navigator.pop(ctx);
               context.read<RewardBloc>().add(
                 RewardEvent.redeemReward(rewardId, widget.member.id),
               );
@@ -75,7 +81,7 @@ class _RewardCatalogDialogState extends State<RewardCatalogDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- HEADER: INFO MEMBER & POIN ---
+            // --- HEADER ---
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -128,16 +134,17 @@ class _RewardCatalogDialogState extends State<RewardCatalogDialog> {
             ),
             const Divider(height: 32),
 
-            // --- KONTEN: BLOC CONSUMER ---
+            // --- KONTEN ---
             Expanded(
               child: BlocConsumer<RewardBloc, RewardState>(
                 listener: (context, state) {
                   state.maybeWhen(
                     redeemSuccess: (voucherCode, remainingPoints) {
-                      // Update UI Poin secara lokal
-                      setState(() => _currentPoints = remainingPoints);
+                      if (!mounted) return;
+                      setState(() {
+                        _currentPoints = (remainingPoints as num).toDouble();
+                      });
 
-                      // Tampilkan pop-up sukses dengan Kode Voucher
                       showDialog(
                         context: context,
                         builder: (ctx) => AlertDialog(
@@ -200,9 +207,14 @@ class _RewardCatalogDialogState extends State<RewardCatalogDialog> {
                               child: ElevatedButton(
                                 onPressed: () {
                                   Navigator.pop(ctx);
-                                  context.read<RewardBloc>().add(
-                                    const RewardEvent.fetchCatalog(),
-                                  ); // Refresh katalog
+                                  // ✅ FIX: Juga pakai microtask saat refresh setelah redeem
+                                  Future.microtask(() {
+                                    if (mounted) {
+                                      context.read<RewardBloc>().add(
+                                        const RewardEvent.fetchCatalog(),
+                                      );
+                                    }
+                                  });
                                 },
                                 child: const Text('Tutup'),
                               ),
@@ -212,6 +224,7 @@ class _RewardCatalogDialogState extends State<RewardCatalogDialog> {
                       );
                     },
                     error: (msg) {
+                      if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(msg),
@@ -267,7 +280,6 @@ class _RewardCatalogDialogState extends State<RewardCatalogDialog> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                // Gambar/Ikon Hadiah
                                 Expanded(
                                   child: Container(
                                     decoration: BoxDecoration(
@@ -287,7 +299,6 @@ class _RewardCatalogDialogState extends State<RewardCatalogDialog> {
                                     ),
                                   ),
                                 ),
-                                // Info Hadiah
                                 Padding(
                                   padding: const EdgeInsets.all(16),
                                   child: Column(
@@ -321,7 +332,7 @@ class _RewardCatalogDialogState extends State<RewardCatalogDialog> {
                                                   reward.name,
                                                   reward.pointsRequired,
                                                 )
-                                              : null, // Disable tombol jika poin kurang
+                                              : null,
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: AppColors.primary,
                                             disabledBackgroundColor:

@@ -27,8 +27,8 @@ mixin _$MemberModel {
   String? get email => throw _privateConstructorUsedError;
   @JsonKey(name: 'member_code')
   String? get memberCode => throw _privateConstructorUsedError;
-  @JsonKey(name: 'points')
-  int? get currentPoints => throw _privateConstructorUsedError;
+  @JsonKey(name: 'points', readValue: _readPoints)
+  double? get currentPoints => throw _privateConstructorUsedError;
   String get tier => throw _privateConstructorUsedError;
   List<MemberVoucherModel> get vouchers =>
       throw _privateConstructorUsedError; // Insight CRM
@@ -62,7 +62,7 @@ abstract class $MemberModelCopyWith<$Res> {
     String phone,
     String? email,
     @JsonKey(name: 'member_code') String? memberCode,
-    @JsonKey(name: 'points') int? currentPoints,
+    @JsonKey(name: 'points', readValue: _readPoints) double? currentPoints,
     String tier,
     List<MemberVoucherModel> vouchers,
     @JsonKey(name: 'last_visit', readValue: _readLastVisit) String? lastVisit,
@@ -125,7 +125,7 @@ class _$MemberModelCopyWithImpl<$Res, $Val extends MemberModel>
             currentPoints: freezed == currentPoints
                 ? _value.currentPoints
                 : currentPoints // ignore: cast_nullable_to_non_nullable
-                      as int?,
+                      as double?,
             tier: null == tier
                 ? _value.tier
                 : tier // ignore: cast_nullable_to_non_nullable
@@ -167,7 +167,7 @@ abstract class _$$MemberModelImplCopyWith<$Res>
     String phone,
     String? email,
     @JsonKey(name: 'member_code') String? memberCode,
-    @JsonKey(name: 'points') int? currentPoints,
+    @JsonKey(name: 'points', readValue: _readPoints) double? currentPoints,
     String tier,
     List<MemberVoucherModel> vouchers,
     @JsonKey(name: 'last_visit', readValue: _readLastVisit) String? lastVisit,
@@ -229,7 +229,7 @@ class __$$MemberModelImplCopyWithImpl<$Res>
         currentPoints: freezed == currentPoints
             ? _value.currentPoints
             : currentPoints // ignore: cast_nullable_to_non_nullable
-                  as int?,
+                  as double?,
         tier: null == tier
             ? _value.tier
             : tier // ignore: cast_nullable_to_non_nullable
@@ -264,7 +264,7 @@ class _$MemberModelImpl implements _MemberModel {
     required this.phone,
     this.email,
     @JsonKey(name: 'member_code') this.memberCode,
-    @JsonKey(name: 'points') this.currentPoints,
+    @JsonKey(name: 'points', readValue: _readPoints) this.currentPoints,
     this.tier = 'Basic',
     final List<MemberVoucherModel> vouchers = const [],
     @JsonKey(name: 'last_visit', readValue: _readLastVisit) this.lastVisit,
@@ -288,8 +288,8 @@ class _$MemberModelImpl implements _MemberModel {
   @JsonKey(name: 'member_code')
   final String? memberCode;
   @override
-  @JsonKey(name: 'points')
-  final int? currentPoints;
+  @JsonKey(name: 'points', readValue: _readPoints)
+  final double? currentPoints;
   @override
   @JsonKey()
   final String tier;
@@ -379,7 +379,8 @@ abstract class _MemberModel implements MemberModel {
     required final String phone,
     final String? email,
     @JsonKey(name: 'member_code') final String? memberCode,
-    @JsonKey(name: 'points') final int? currentPoints,
+    @JsonKey(name: 'points', readValue: _readPoints)
+    final double? currentPoints,
     final String tier,
     final List<MemberVoucherModel> vouchers,
     @JsonKey(name: 'last_visit', readValue: _readLastVisit)
@@ -405,8 +406,8 @@ abstract class _MemberModel implements MemberModel {
   @JsonKey(name: 'member_code')
   String? get memberCode;
   @override
-  @JsonKey(name: 'points')
-  int? get currentPoints;
+  @JsonKey(name: 'points', readValue: _readPoints)
+  double? get currentPoints;
   @override
   String get tier;
   @override

@@ -7,7 +7,7 @@ part 'stock_count_task_model.g.dart';
 class StockCountTaskModel with _$StockCountTaskModel {
   const factory StockCountTaskModel({
     int? id,
-    @JsonKey(name: 'reference_number') String? referenceNumber,
+    @JsonKey(name: 'count_number') String? countNumber,
     String? status,
     @JsonKey(name: 'created_at') String? createdAt,
     @JsonKey(name: 'completed_at') String? completedAt,

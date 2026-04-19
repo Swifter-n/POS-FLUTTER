@@ -10,7 +10,7 @@ class RewardState with _$RewardState {
   // State khusus saat sukses redeem, membawa data kode voucher dan sisa poin
   const factory RewardState.redeemSuccess(
     String voucherCode,
-    int remainingPoints,
+    double remainingPoints,
   ) = _RedeemSuccess;
 
   const factory RewardState.error(String message) = _Error;

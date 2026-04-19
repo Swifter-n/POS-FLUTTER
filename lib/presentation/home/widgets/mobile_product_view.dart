@@ -1,3 +1,5 @@
+import 'package:avis_pos/data/model/payloads/cart_item_payload/cart_item_payload.dart';
+import 'package:avis_pos/presentation/home/bloc/cart/cart_bloc.dart';
 import 'package:avis_pos/presentation/home/bloc/product/product_bloc.dart';
 import 'package:avis_pos/presentation/home/widgets/addon_selection_dialog.dart';
 import 'package:avis_pos/presentation/home/widgets/product_card.dart';
@@ -53,12 +55,15 @@ class MobileProductView extends StatelessWidget {
                 final product = products[index];
                 return ProductCard(
                   product: product,
-                  onTap: () {
-                    showDialog(
+                  onTap: () async {
+                    final payload = await showDialog<CartItemPayload>(
                       context: context,
                       builder: (context) =>
                           AddonSelectionDialog(product: product),
                     );
+                    if (payload != null && context.mounted) {
+                      context.read<CartBloc>().add(CartEvent.addItem(payload));
+                    }
                   },
                 );
               },

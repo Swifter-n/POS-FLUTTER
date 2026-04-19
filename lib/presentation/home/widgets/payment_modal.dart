@@ -88,7 +88,7 @@ class _PaymentModalState extends State<PaymentModal> {
   String? _ignoredVoucherName;
 
   bool _usePoints = false;
-  int _memberPoints = 0;
+  double _memberPoints = 0;
   String _memberTier = 'Basic';
   String? _memberLastVisit;
   String? _memberFavorite;
@@ -168,7 +168,7 @@ class _PaymentModalState extends State<PaymentModal> {
               if (activeOrder.member != null) {
                 _selectedMemberName =
                     activeOrder.member!.name ?? _selectedMemberName;
-                _memberPoints = activeOrder.member!.currentPoints ?? 0;
+                _memberPoints = activeOrder.member!.currentPoints ?? 0.0;
                 _memberTier = activeOrder.member!.tier ?? 'Basic';
                 _memberLastVisit = activeOrder.member!.lastVisit;
                 _memberFavorite = activeOrder.member!.favoriteProduct;
@@ -755,7 +755,7 @@ class _PaymentModalState extends State<PaymentModal> {
                 setState(() {
                   _selectedMemberId = member.id;
                   _selectedMemberName = member.name;
-                  _memberPoints = member.currentPoints ?? 0;
+                  _memberPoints = member.currentPoints ?? 0.0;
                   _memberTier = member.tier ?? 'Basic';
                   _memberLastVisit = member.lastVisit;
                   _memberFavorite = member.favoriteProduct;

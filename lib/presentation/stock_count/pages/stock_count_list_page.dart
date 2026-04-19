@@ -146,7 +146,7 @@ class _StockCountListPageState extends State<StockCountListPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    task.referenceNumber ?? 'TASK-${task.id}',
+                                    task.countNumber ?? 'TASK-${task.id}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,

@@ -340,7 +340,7 @@ mixin _$RewardState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(List<RewardModel> rewards) catalogLoaded,
-    required TResult Function(String voucherCode, int remainingPoints)
+    required TResult Function(String voucherCode, double remainingPoints)
     redeemSuccess,
     required TResult Function(String message) error,
   }) => throw _privateConstructorUsedError;
@@ -349,7 +349,8 @@ mixin _$RewardState {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult? Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult? Function(String voucherCode, double remainingPoints)?
+    redeemSuccess,
     TResult? Function(String message)? error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -357,7 +358,7 @@ mixin _$RewardState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult Function(String voucherCode, double remainingPoints)? redeemSuccess,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -456,7 +457,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(List<RewardModel> rewards) catalogLoaded,
-    required TResult Function(String voucherCode, int remainingPoints)
+    required TResult Function(String voucherCode, double remainingPoints)
     redeemSuccess,
     required TResult Function(String message) error,
   }) {
@@ -469,7 +470,8 @@ class _$InitialImpl implements _Initial {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult? Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult? Function(String voucherCode, double remainingPoints)?
+    redeemSuccess,
     TResult? Function(String message)? error,
   }) {
     return initial?.call();
@@ -481,7 +483,7 @@ class _$InitialImpl implements _Initial {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult Function(String voucherCode, double remainingPoints)? redeemSuccess,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -582,7 +584,7 @@ class _$LoadingImpl implements _Loading {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(List<RewardModel> rewards) catalogLoaded,
-    required TResult Function(String voucherCode, int remainingPoints)
+    required TResult Function(String voucherCode, double remainingPoints)
     redeemSuccess,
     required TResult Function(String message) error,
   }) {
@@ -595,7 +597,8 @@ class _$LoadingImpl implements _Loading {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult? Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult? Function(String voucherCode, double remainingPoints)?
+    redeemSuccess,
     TResult? Function(String message)? error,
   }) {
     return loading?.call();
@@ -607,7 +610,7 @@ class _$LoadingImpl implements _Loading {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult Function(String voucherCode, double remainingPoints)? redeemSuccess,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -742,7 +745,7 @@ class _$CatalogLoadedImpl implements _CatalogLoaded {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(List<RewardModel> rewards) catalogLoaded,
-    required TResult Function(String voucherCode, int remainingPoints)
+    required TResult Function(String voucherCode, double remainingPoints)
     redeemSuccess,
     required TResult Function(String message) error,
   }) {
@@ -755,7 +758,8 @@ class _$CatalogLoadedImpl implements _CatalogLoaded {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult? Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult? Function(String voucherCode, double remainingPoints)?
+    redeemSuccess,
     TResult? Function(String message)? error,
   }) {
     return catalogLoaded?.call(rewards);
@@ -767,7 +771,7 @@ class _$CatalogLoadedImpl implements _CatalogLoaded {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult Function(String voucherCode, double remainingPoints)? redeemSuccess,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -838,7 +842,7 @@ abstract class _$$RedeemSuccessImplCopyWith<$Res> {
     $Res Function(_$RedeemSuccessImpl) then,
   ) = __$$RedeemSuccessImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String voucherCode, int remainingPoints});
+  $Res call({String voucherCode, double remainingPoints});
 }
 
 /// @nodoc
@@ -864,7 +868,7 @@ class __$$RedeemSuccessImplCopyWithImpl<$Res>
         null == remainingPoints
             ? _value.remainingPoints
             : remainingPoints // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as double,
       ),
     );
   }
@@ -878,7 +882,7 @@ class _$RedeemSuccessImpl implements _RedeemSuccess {
   @override
   final String voucherCode;
   @override
-  final int remainingPoints;
+  final double remainingPoints;
 
   @override
   String toString() {
@@ -913,7 +917,7 @@ class _$RedeemSuccessImpl implements _RedeemSuccess {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(List<RewardModel> rewards) catalogLoaded,
-    required TResult Function(String voucherCode, int remainingPoints)
+    required TResult Function(String voucherCode, double remainingPoints)
     redeemSuccess,
     required TResult Function(String message) error,
   }) {
@@ -926,7 +930,8 @@ class _$RedeemSuccessImpl implements _RedeemSuccess {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult? Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult? Function(String voucherCode, double remainingPoints)?
+    redeemSuccess,
     TResult? Function(String message)? error,
   }) {
     return redeemSuccess?.call(voucherCode, remainingPoints);
@@ -938,7 +943,7 @@ class _$RedeemSuccessImpl implements _RedeemSuccess {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult Function(String voucherCode, double remainingPoints)? redeemSuccess,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -992,11 +997,11 @@ class _$RedeemSuccessImpl implements _RedeemSuccess {
 abstract class _RedeemSuccess implements RewardState {
   const factory _RedeemSuccess(
     final String voucherCode,
-    final int remainingPoints,
+    final double remainingPoints,
   ) = _$RedeemSuccessImpl;
 
   String get voucherCode;
-  int get remainingPoints;
+  double get remainingPoints;
 
   /// Create a copy of RewardState
   /// with the given fields replaced by the non-null parameter values.
@@ -1078,7 +1083,7 @@ class _$ErrorImpl implements _Error {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(List<RewardModel> rewards) catalogLoaded,
-    required TResult Function(String voucherCode, int remainingPoints)
+    required TResult Function(String voucherCode, double remainingPoints)
     redeemSuccess,
     required TResult Function(String message) error,
   }) {
@@ -1091,7 +1096,8 @@ class _$ErrorImpl implements _Error {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult? Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult? Function(String voucherCode, double remainingPoints)?
+    redeemSuccess,
     TResult? Function(String message)? error,
   }) {
     return error?.call(message);
@@ -1103,7 +1109,7 @@ class _$ErrorImpl implements _Error {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(List<RewardModel> rewards)? catalogLoaded,
-    TResult Function(String voucherCode, int remainingPoints)? redeemSuccess,
+    TResult Function(String voucherCode, double remainingPoints)? redeemSuccess,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {

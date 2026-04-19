@@ -62,7 +62,7 @@ class _StockCountExecutionPageState extends State<StockCountExecutionPage> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Opname: ${widget.task.referenceNumber ?? ''}',
+          'Opname: ${widget.task.countNumber ?? ''}',
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         backgroundColor: Colors.white,
@@ -256,7 +256,7 @@ class _StockCountItemRowState extends State<_StockCountItemRow> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Sistem mencatat: ${widget.item.systemQty ?? 0} ${widget.item.uom ?? ""}',
+                  'Sistem mencatat: ${widget.item.systemStock ?? 0} ${widget.item.uom ?? ""}',
                   style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                 ),
               ],
