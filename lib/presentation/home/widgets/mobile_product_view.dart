@@ -56,6 +56,7 @@ class MobileProductView extends StatelessWidget {
                 return ProductCard(
                   product: product,
                   onTap: () async {
+                    print('✅ >>> TOMBOL PRODUCT DITEKAN: ${product.name}');
                     final payload = await showDialog<CartItemPayload>(
                       context: context,
                       builder: (context) =>

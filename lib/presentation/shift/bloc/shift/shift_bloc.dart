@@ -25,7 +25,11 @@ class ShiftBloc extends Bloc<ShiftEvent, ShiftState> {
             emit(const ShiftState.closed());
           } else {
             // Jika error lain (seperti gagal parsing JSON atau server 500)
-            emit(ShiftState.error('Gagal memuat status shift: ${l.message}'));
+            emit(
+              ShiftState.error(
+                l.message ?? 'Gagal memuat status shift dari server.',
+              ),
+            );
           }
         },
         (r) => emit(

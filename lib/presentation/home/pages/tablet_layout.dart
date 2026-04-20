@@ -20,8 +20,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class TabletLayout extends StatelessWidget {
   const TabletLayout({super.key});
 
-
-
   void _handleLogout(BuildContext context) {
     showDialog(
       context: context,
@@ -150,7 +148,11 @@ class TabletLayout extends StatelessWidget {
             _buildNavItem(Icons.shopping_bag, 'Kasir', true, () {}),
 
             _buildNavItem(Icons.receipt_long, 'Reservation', false, () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const ReservationListPage()));
+              print('✅ >>> TOMBOL MENU RESERVASI DITEKAN!');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ReservationListPage()),
+              );
             }),
 
             _buildNavItem(
@@ -158,30 +160,82 @@ class TabletLayout extends StatelessWidget {
               'Table Management',
               false,
               () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const TableManagementPage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const TableManagementPage(),
+                  ),
+                );
               },
             ),
 
             _buildNavItem(Icons.inventory_2_outlined, 'Inventories', false, () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const InventoryPage()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const InventoryPage()),
+              );
             }),
 
             _buildNavItem(Icons.warehouse_outlined, 'Stock Count', false, () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const StockCountListPage()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const StockCountListPage()),
+              );
             }),
 
             _buildNavItem(Icons.people_outline_outlined, 'Member', false, () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const MemberListPage()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MemberListPage()),
+              );
             }),
 
             const SizedBox(height: 20),
 
             _buildNavItem(Icons.settings_outlined, 'Setting', false, () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const PrinterSettingsPage()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PrinterSettingsPage()),
+              );
             }),
 
             _buildNavItem(Icons.sync_alt, 'Ganti Shift', false, () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const CloseShiftPage()));
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Ganti Shift'),
+                  content: const Text(
+                    'Apakah Anda yakin ingin ke halaman tutup/ganti shift sekarang?',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text(
+                        'Batal',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CloseShiftPage(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                      ),
+                      child: const Text(
+                        'Ya, Lanjut',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }),
 
             _buildNavItem(Icons.logout, 'Logout', false, () {

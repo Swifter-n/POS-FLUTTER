@@ -290,7 +290,7 @@ class CartSummary extends StatelessWidget {
                                       runSpacing: 8,
                                       children: appliedPromos
                                           .map(
-                                            (promoName) => InputChip(
+                                            (promoName) => Chip(
                                               label: Text(
                                                 promoName
                                                     .toUpperCase()
@@ -303,7 +303,6 @@ class CartSummary extends StatelessWidget {
                                               ),
                                               backgroundColor:
                                                   Colors.green.shade600,
-                                              deleteIconColor: Colors.white,
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(6),
@@ -311,14 +310,6 @@ class CartSummary extends StatelessWidget {
                                                   color: Colors.green.shade700,
                                                 ),
                                               ),
-                                              onDeleted: () {
-                                                // Silang promo dari sini
-                                                context.read<CartBloc>().add(
-                                                  CartEvent.ignorePromo(
-                                                    promoName,
-                                                  ),
-                                                );
-                                              },
                                             ),
                                           )
                                           .toList(),
@@ -402,7 +393,8 @@ class CartSummary extends StatelessWidget {
                                 }
                                 showDialog(
                                   context: context,
-                                  barrierDismissible: false, // Mencegah modal tertutup saat area luar diklik
+                                  barrierDismissible:
+                                      false, // Mencegah modal tertutup saat area luar diklik
                                   builder: (dialogContext) => PaymentModal(
                                     subtotal: subtotal,
                                     tax: tax,

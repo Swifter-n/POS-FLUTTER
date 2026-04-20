@@ -194,10 +194,44 @@ class DrawerWidgetMobile extends StatelessWidget {
                   icon: Icons.schedule,
                   title: 'Manajemen Shift',
                   onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const CloseShiftPage()),
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Ganti Shift'),
+                        content: const Text(
+                          'Apakah Anda yakin ingin ke halaman tutup/ganti shift sekarang?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text(
+                              'Batal',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(ctx); // Tutup dialog konfirmasi
+                              Navigator.pop(
+                                context,
+                              ); // Tutup navigasi drawer sisi kiri
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const CloseShiftPage(),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                            ),
+                            child: const Text(
+                              'Ya, Lanjut',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),

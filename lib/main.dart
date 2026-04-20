@@ -23,6 +23,20 @@ import 'package:http/http.dart' as http;
 import 'package:avis_pos/data/datasources/auth_remote_datasource.dart';
 import 'package:avis_pos/data/datasources/pos_remote_datasource.dart';
 
+// class AppRouteObserver extends NavigatorObserver {
+//   @override
+//   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+//     print(
+//       '🧭 >>> NAVIGATOR PUSHED: ${route.settings.name} | Type: ${route.runtimeType}',
+//     );
+//     if (route is MaterialPageRoute) {
+//       print('📜 >>> STACKTRACE FOR MATERIALPAGEROUTE PUSH:');
+//       print(StackTrace.current.toString());
+//     }
+//     super.didPush(route, previousRoute);
+//   }
+// }
+
 void main() {
   // 1. Inisialisasi Binding Flutter & Observer
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,6 +97,7 @@ class MyApp extends StatelessWidget {
           title: 'TAIYO POS',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(primarySwatch: Colors.teal),
+          // navigatorObservers: [AppRouteObserver()],
           home: const SplashPage(),
         ),
       ),

@@ -229,7 +229,7 @@ class _PaymentModalState extends State<PaymentModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Pilih Meja (Cinema Seat)",
+                    "Pilih Meja",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
@@ -604,34 +604,67 @@ class _PaymentModalState extends State<PaymentModal> {
     try {
       final printerState = context.read<PrinterBloc>().state;
       final ps = PrinterService();
-      printerState.maybeWhen(
+
+      await printerState.maybeWhen(
         loaded: (printerData) async {
+          // 1. Cari Printer Kasir (Default)
           final receiptPrinter = printerData.defaultPrinter;
-          final labelPrinter = printerData.allPrinters?.firstWhere(
+
+          // 2. Cari Printer Checker (Dapur)
+          final checkerPrinter = printerData.allPrinters.firstWhere(
+            (p) =>
+                p.name!.toLowerCase().contains('checker') ||
+                p.name!.toLowerCase().contains('dapur') ||
+                p.name!.toLowerCase().contains('kitchen'),
+            orElse: () => printerData.defaultPrinter!,
+          );
+
+          // 3. Cari Printer Label (Stiker)
+          final labelPrinter = printerData.allPrinters.firstWhere(
             (p) =>
                 p.name!.toLowerCase().contains('label') ||
                 p.name!.toLowerCase().contains('stiker'),
             orElse: () => printerData.defaultPrinter!,
           );
+          
           if (receiptPrinter != null) {
             try {
+              print('🖨️ >>> Mencetak Struk di: ${receiptPrinter.name}');
               await ps.printReceipt(
                 receiptPrinter,
                 order,
                 amountPaid: amountPaid,
               );
-              await ps.printChecker(receiptPrinter, order);
-            } catch (e) {}
+            } catch (e) {
+              print('❌ >>> Gagal Cetak Struk: $e');
+            }
           }
+
+          if (checkerPrinter != null) {
+            try {
+              print('🍳 >>> Mencetak Checker di: ${checkerPrinter.name}');
+              await ps.printChecker(checkerPrinter, order);
+            } catch (e) {
+              print('❌ >>> Gagal Cetak Checker: $e');
+            }
+          }
+          
           if (labelPrinter != null) {
             try {
+              print('🏷️ >>> Mencetak Label di: ${labelPrinter.name}');
               await ps.printCupLabel(labelPrinter, order);
-            } catch (e) {}
+            } catch (e) {
+              print('❌ >>> Gagal Cetak Label: $e');
+            }
           }
         },
-        orElse: () {},
+        orElse: () async {
+          print('⚠️ >>> PrinterBloc State bukan Loaded, tidak bisa mencetak.');
+        },
       );
-    } catch (e) {}
+    } catch (e) {
+      print('❌ >>> Error di _executePrint: $e');
+    }
   }
 
   void _showMemberSearchDialog() {
@@ -1402,7 +1435,7 @@ class _PaymentModalState extends State<PaymentModal> {
                                               children: [
                                                 ...currentAppliedPromos
                                                     .map(
-                                                      (promoName) => InputChip(
+                                                      (promoName) => Chip(
                                                         label: Text(
                                                           promoName
                                                               .toUpperCase()
@@ -1422,23 +1455,11 @@ class _PaymentModalState extends State<PaymentModal> {
                                                         backgroundColor: Colors
                                                             .green
                                                             .shade100,
-                                                        deleteIconColor: Colors
-                                                            .green
-                                                            .shade900,
                                                         side: BorderSide(
                                                           color: Colors
                                                               .green
                                                               .shade300,
                                                         ),
-                                                        onDeleted: () {
-                                                          context
-                                                              .read<CartBloc>()
-                                                              .add(
-                                                                CartEvent.ignorePromo(
-                                                                  promoName,
-                                                                ),
-                                                              );
-                                                        },
                                                       ),
                                                     )
                                                     .toList(),

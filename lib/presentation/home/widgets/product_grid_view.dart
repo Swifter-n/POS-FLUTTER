@@ -49,6 +49,7 @@ class ProductGridView extends StatelessWidget {
                 return ProductCard(
                   product: product,
                   onTap: () async {
+                    print('✅ >>> TOMBOL PRODUCT DITEKAN: ${product.name}');
                     // 1. Tampilkan Dialog dan tunggu hasilnya (CartItemPayload)
                     final CartItemPayload? result =
                         await showDialog<CartItemPayload>(

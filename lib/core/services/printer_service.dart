@@ -93,15 +93,70 @@ class PrinterService {
       if (printer.macAddress == null || printer.macAddress!.isEmpty)
         throw Exception('MAC Address kosong.');
 
+      final String sanitizedMac = printer.macAddress!
+          .replaceAll('-', ':')
+          .toUpperCase();
+
+      print('🔎 >>> PRINTER SERVICE: Mencoba koneksi ke MAC: $sanitizedMac');
+
+      // 1. Cek lzin Bluetooth (Runtime)
+      final bool hasPermission =
+          await PrintBluetoothThermal.isPermissionBluetoothGranted;
+      if (!hasPermission) {
+        throw Exception(
+          'Izin Bluetooth belum diberikan. Silakan aktifkan izin di pengaturan aplikasi.',
+        );
+      }
+
+      // 2. Diagnosa Paired Devices (Untuk melihat apa yang dideteksi sistem)
+      try {
+        final List<BluetoothInfo> pairedDevices =
+            await PrintBluetoothThermal.pairedBluetooths;
+        print('📋 >>> DAFTAR PAIRED DEVICES DI SISTEM:');
+        for (var device in pairedDevices) {
+          print('   - Name: ${device.name}, MAC: ${device.macAdress}');
+        }
+
+        final bool isPaired = pairedDevices.any(
+          (d) => d.macAdress.replaceAll('-', ':').toUpperCase() == sanitizedMac,
+        );
+        if (!isPaired) {
+          print(
+            '⚠️ >>> PERINGATAN: MAC $sanitizedMac tidak ditemukan di daftar Paired Devices!',
+          );
+        }
+      } catch (e) {
+        print('❌ >>> Gagal mengambil daftar paired devices: $e');
+      }
+
       final bool isConnected = await PrintBluetoothThermal.connectionStatus;
       if (!isConnected) {
-        final bool connectResult = await PrintBluetoothThermal.connect(
-          macPrinterAddress: printer.macAddress!,
+        // 3. Force Disconnect sebelum Connect baru (Clear stale socket)
+        try {
+          await PrintBluetoothThermal.disconnect;
+          await Future.delayed(const Duration(milliseconds: 500));
+        } catch (_) {}
+
+        print('📡 >>> Memulai proses PrintBluetoothThermal.connect...');
+        bool connectResult = await PrintBluetoothThermal.connect(
+          macPrinterAddress: sanitizedMac,
         );
-        if (!connectResult)
-          throw Exception(
-            'Gagal terhubung ke Bluetooth Printer ${printer.name}.',
+
+        if (!connectResult) {
+          print('⏳ >>> Percobaan pertama gagal, mencoba ulang (Retry)...');
+          await Future.delayed(const Duration(seconds: 2));
+          connectResult = await PrintBluetoothThermal.connect(
+            macPrinterAddress: sanitizedMac,
           );
+        }
+
+        if (!connectResult) {
+          throw Exception(
+            'Gagal terhubung ke Bluetooth Printer ${printer.name}. '
+            'Jika sudah di-pairing tapi tetap gagal, matikan & nyalakan bluetooth HP/Tablet Anda.',
+          );
+        }
+        print('✅ >>> Koneksi Bluetooth BERHASIL ke $sanitizedMac');
       }
 
       final bool result = await PrintBluetoothThermal.writeBytes(bytes);
@@ -151,7 +206,7 @@ class PrinterService {
         : DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now());
 
     bytes += generator.text(
-      'TOKO KOPI AVIS',
+      'TAIYO COFFEE',
       styles: const PosStyles(
         align: PosAlign.center,
         bold: true,
@@ -159,10 +214,10 @@ class PrinterService {
         width: PosTextSize.size2,
       ),
     );
-    bytes += generator.text(
-      'Telp: 081234567890',
-      styles: const PosStyles(align: PosAlign.center),
-    );
+    // bytes += generator.text(
+    //   'Telp: 081234567890',
+    //   styles: const PosStyles(align: PosAlign.center),
+    // );
     bytes += generator.feed(1);
 
     bytes += generator.text('No     : ${order.orderNumber}');
@@ -179,13 +234,10 @@ class PrinterService {
         styles: const PosStyles(bold: true),
       );
       bytes += generator.row([
-        PosColumn(text: '${item.quantity} ${item.uom}', width: 3),
+        PosColumn(text: '${item.quantity} pcs', width: 3),
+        PosColumn(text: 'x ${_currencyFormat.format(item.price)}', width: 4),
         PosColumn(
-          text: 'x ${_currencyFormat.format(item.pricePerUom)}',
-          width: 4,
-        ),
-        PosColumn(
-          text: _currencyFormat.format(item.totalPrice),
+          text: _currencyFormat.format(item.total),
           width: 5,
           styles: const PosStyles(align: PosAlign.right),
         ),
@@ -246,13 +298,13 @@ class PrinterService {
       'Kritik & Saran:',
       styles: const PosStyles(align: PosAlign.center, bold: true),
     );
-    bytes += generator.qrcode('https://avis.id/survey');
+    bytes += generator.qrcode('https://taiyo.id/survey');
     bytes += generator.feed(1);
     bytes += generator.text(
       'Kunjungi Website Kami:',
       styles: const PosStyles(align: PosAlign.center, bold: true),
     );
-    bytes += generator.qrcode('https://avis.id');
+    bytes += generator.qrcode('https://taiyo.id');
     bytes += generator.feed(1);
     bytes += generator.text(
       'Terima Kasih Atas Kunjungan Anda',
@@ -303,7 +355,7 @@ class PrinterService {
 
     for (var item in order.items ?? []) {
       bytes += generator.text(
-        '[ ${item.quantity} ${item.uom} ] ${item.productName}',
+        '[ ${item.quantity} pcs ] ${item.productName}',
         styles: const PosStyles(bold: true, height: PosTextSize.size2),
       );
       if (item.addons != null && item.addons!.isNotEmpty) {
@@ -356,7 +408,7 @@ class PrinterService {
 
         // --- DETAIL CUP & UOM ---
         bytes += generator.text(
-          'Cup $i dari $qty (${item.uom})',
+          'Cup $i dari $qty',
           styles: const PosStyles(bold: true),
         );
 

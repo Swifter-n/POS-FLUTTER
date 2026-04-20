@@ -220,13 +220,16 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                       color: Colors.grey,
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      printer.connectionType?.toLowerCase() == 'bluetooth'
-                          ? 'MAC: ${printer.macAddress ?? "-"}'
-                          : 'IP: ${printer.ipAddress ?? "-"}',
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontSize: 13,
+                    Expanded(
+                      child: Text(
+                        printer.connectionType?.toLowerCase() == 'bluetooth'
+                            ? 'MAC: ${printer.macAddress ?? "-"}'
+                            : 'IP: ${printer.ipAddress ?? "-"}',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 13,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -242,11 +245,14 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                       color: Colors.grey,
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      'Kertas: ${printer.paperWidth ?? 80}mm',
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontSize: 13,
+                    Expanded(
+                      child: Text(
+                        'Kertas: ${printer.paperWidth ?? 80}mm',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 13,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],

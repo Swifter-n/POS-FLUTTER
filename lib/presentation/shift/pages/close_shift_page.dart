@@ -30,6 +30,25 @@ class _CloseShiftPageState extends State<CloseShiftPage> {
   @override
   void initState() {
     super.initState();
+    print('🚨 >>> CLOSE SHIFT PAGE INIT STATE TERPANGGIL!');
+    print(StackTrace.current.toString());
+
+    // Defer the ancestor visit until after initState completes, avoiding framework errors
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('🌳 >>> WIDGET TREE ANCESTORS OF CLOSESHIFTPAGE:');
+      try {
+        int depth = 0;
+        context.visitAncestorElements((element) {
+          print('    [$depth] ${element.widget.runtimeType}');
+          depth++;
+          // Batasi maksimal kedalaman agar log tidak terlalu panjang
+          if (depth > 1000) return false;
+          return true; // continue traversing
+        });
+      } catch (e) {
+        print('Error reading ancestors: $e');
+      }
+    });
     // Tarik ringkasan shift saat halaman dibuka
     context.read<ShiftBloc>().add(const ShiftEvent.fetchSummary());
 

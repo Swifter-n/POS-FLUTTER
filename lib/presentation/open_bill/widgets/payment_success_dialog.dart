@@ -111,16 +111,7 @@ class PaymentSuccessDialog extends StatelessWidget {
             // --- ACTIONS ---
             AppButton(
               label: 'Cetak Struk Kasir',
-              onPressed: () {
-                // Eksekusi print struk (Pastikan PrinterBloc disediakan di context atas)
-
-                final printerState = context.read<PrinterBloc>().state;
-                PrinterService().printReceipt(printerState, order);
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Mencetak struk...')),
-                );
-              },
+              onPressed: () => _executePrint(context),
             ),
             const SizedBox(height: 12),
             AppButton(
@@ -132,6 +123,67 @@ class PaymentSuccessDialog extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _executePrint(BuildContext context) async {
+    try {
+      final printerState = context.read<PrinterBloc>().state;
+      final ps = PrinterService();
+
+      await printerState.maybeWhen(
+        loaded: (printerData) async {
+          // 1. Cari Printer Kasir (Default)
+          final receiptPrinter = printerData.defaultPrinter;
+
+          // 2. Cari Printer Checker (Dapur)
+          final checkerPrinter = printerData.allPrinters.firstWhere(
+            (p) =>
+                p.name.toLowerCase().contains('checker') ||
+                p.name.toLowerCase().contains('dapur') ||
+                p.name.toLowerCase().contains('kitchen'),
+            orElse: () => printerData.defaultPrinter!,
+          );
+
+          // 3. Cari Printer Label (Stiker)
+          final labelPrinter = printerData.allPrinters.firstWhere(
+            (p) =>
+                p.name.toLowerCase().contains('label') ||
+                p.name.toLowerCase().contains('stiker'),
+            orElse: () => printerData.defaultPrinter!,
+          );
+
+          // Eksekusi Print Receipt & Checker
+          if (receiptPrinter != null) {
+            print('🖨️ >>> Mencetak Struk di: ${receiptPrinter.name}');
+            await ps.printReceipt(
+              receiptPrinter,
+              order,
+              amountPaid: amountPaid,
+            );
+          }
+
+          if (checkerPrinter != null) {
+            print('🍳 >>> Mencetak Checker di: ${checkerPrinter.name}');
+            await ps.printChecker(checkerPrinter, order);
+          }
+
+          // Eksekusi Print Label
+          if (labelPrinter != null) {
+            print('🏷️ >>> Mencetak Label di: ${labelPrinter.name}');
+            await ps.printCupLabel(labelPrinter, order);
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Proses cetak berhasil.')),
+          );
+        },
+        orElse: () {
+          print('⚠️ >>> PrinterBloc belum Loaded.');
+        },
+      );
+    } catch (e) {
+      print('❌ >>> Gagal Cetak di Success Dialog: $e');
+    }
   }
 
   Widget _buildDetailRow(String label, String value, {bool isBold = false}) {

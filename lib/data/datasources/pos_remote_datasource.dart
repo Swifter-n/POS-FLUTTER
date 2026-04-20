@@ -173,9 +173,19 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
     );
     final response = await client.get(url, headers: await _getHeaders());
     final body = json.decode(response.body);
-    if (response.statusCode == 200 && body['status'] == 'open')
-      return ShiftModel.fromJson(body['data']);
-    throw Exception(body['message'] ?? 'Shift belum dibuka');
+
+    if (body is Map<String, dynamic>) {
+      if (response.statusCode == 200 && body['status'] == 'open') {
+        final data = body['data'];
+        if (data is Map<String, dynamic>) {
+          return ShiftModel.fromJson(data);
+        } else {
+          return const ShiftModel(); // Return empty if data is not a map
+        }
+      }
+      throw Exception(body['message'] ?? 'Shift belum dibuka');
+    }
+    throw Exception('Respons server tidak valid saat mengecek status shift');
   }
 
   @override
@@ -189,8 +199,19 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
       body: json.encode({'opening_amount': openingAmount}),
     );
     final body = json.decode(response.body);
-    if (response.statusCode == 200) return ShiftModel.fromJson(body['data']);
-    throw Exception(body['message'] ?? 'Gagal membuka shift');
+
+    if (body is Map<String, dynamic>) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = body['data'];
+        if (data is Map<String, dynamic>) {
+          return ShiftModel.fromJson(data);
+        } else {
+          return const ShiftModel();
+        }
+      }
+      throw Exception(body['message'] ?? 'Gagal membuka shift');
+    }
+    throw Exception('Respons server tidak valid saat membuka shift');
   }
 
   @override
@@ -199,8 +220,15 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
       '${Variables.baseUrl}${Variables.apiVersion}pos/shift/summary',
     );
     final response = await client.get(url, headers: await _getHeaders());
-    if (response.statusCode == 200)
-      return ShiftModel.fromJson(json.decode(response.body)['data']);
+    final body = json.decode(response.body);
+
+    if (response.statusCode == 200 && body is Map<String, dynamic>) {
+      final data = body['data'];
+      if (data is Map<String, dynamic>) {
+        return ShiftModel.fromJson(data);
+      }
+      return const ShiftModel();
+    }
     throw Exception('Gagal memuat ringkasan shift');
   }
 
@@ -217,8 +245,15 @@ class PosRemoteDataSourceImpl implements IPosRemoteDataSource {
         'closing_note': note,
       }),
     );
-    if (response.statusCode == 200)
-      return ShiftModel.fromJson(json.decode(response.body)['data']);
+    final body = json.decode(response.body);
+
+    if (response.statusCode == 200 && body is Map<String, dynamic>) {
+      final data = body['data'];
+      if (data is Map<String, dynamic>) {
+        return ShiftModel.fromJson(data);
+      }
+      return const ShiftModel();
+    }
     throw Exception('Gagal menutup shift');
   }
 

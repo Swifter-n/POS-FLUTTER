@@ -5,6 +5,7 @@ import 'package:avis_pos/presentation/home/bloc/promo/promo_bloc.dart';
 import 'package:avis_pos/presentation/home/bloc/settings/settings_bloc.dart';
 import 'package:avis_pos/presentation/home/pages/mobile_layout.dart';
 import 'package:avis_pos/presentation/home/pages/tablet_layout.dart';
+import 'package:avis_pos/presentation/settings/bloc/printer/printer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,6 +25,7 @@ class _HomepageState extends State<Homepage> {
     context.read<PromoBloc>().add(const PromoEvent.fetchAll());
     context.read<SettingsBloc>().add(const SettingsEvent.getSettings());
     context.read<CartBloc>().add(const CartEvent.started());
+    context.read<PrinterBloc>().add(const PrinterEvent.fetchSettings());
   }
 
   @override

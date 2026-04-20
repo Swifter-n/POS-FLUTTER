@@ -4,6 +4,7 @@ import 'package:avis_pos/core/constants/colors.dart';
 import 'package:avis_pos/presentation/home/pages/homepage.dart';
 import 'package:avis_pos/presentation/shift/bloc/shift/shift_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -117,14 +118,29 @@ class _OpenShiftPageState extends State<OpenShiftPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  AppTextField(
-                    label: 'Initial Capital',
-                    hint: '0',
+                  TextFormField(
                     controller: _amountController,
                     keyboardType: TextInputType.number,
-                    prefixIcon: const Icon(
-                      Icons.payments,
-                      color: AppColors.primary,
+                    inputFormatters: [_CurrencyFormatter()],
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Initial Capital',
+                      hintText: 'Rp 0',
+                      prefixIcon: const Icon(
+                        Icons.payments,
+                        color: AppColors.primary,
+                        size: 28,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 16,
+                      ),
                     ),
                   ),
 
@@ -143,6 +159,29 @@ class _OpenShiftPageState extends State<OpenShiftPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _CurrencyFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) return newValue;
+    final intValue = int.tryParse(
+      newValue.text.replaceAll(RegExp(r'[^0-9]'), ''),
+    );
+    if (intValue == null) return oldValue;
+    final newString = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(intValue);
+    return TextEditingValue(
+      text: newString,
+      selection: TextSelection.collapsed(offset: newString.length),
     );
   }
 }

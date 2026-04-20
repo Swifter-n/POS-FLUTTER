@@ -37,7 +37,7 @@ class _CreateReservationDialogState extends State<CreateReservationDialog> {
   }
 
   // =========================================================================
-  // MODAL CINEMA SEAT PICKER DENGAN VALIDASI KAPASITAS
+  // MODAL TABLE PICKER DENGAN VALIDASI KAPASITAS
   // =========================================================================
   void _showCinemaTablePicker(BuildContext context) {
     showModalBottomSheet(
@@ -58,7 +58,7 @@ class _CreateReservationDialogState extends State<CreateReservationDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Pilih Meja (Cinema Seat)",
+                    "Pilih Meja",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
@@ -358,7 +358,7 @@ class _CreateReservationDialogState extends State<CreateReservationDialog> {
               ),
               const SizedBox(height: 16),
 
-              // --- BUTTON PILIH MEJA (CINEMA SEAT TRIGGER) ---
+              // --- BUTTON PILIH MEJA ---
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

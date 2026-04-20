@@ -63,7 +63,7 @@ class _NewBillModalState extends State<NewBillModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Pilih Meja (Cinema Seat)",
+                    "Pilih Meja",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
